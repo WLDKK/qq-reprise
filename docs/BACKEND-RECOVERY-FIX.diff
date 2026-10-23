@@ -1,0 +1,24 @@
+--- a/ai-chat.mjs
++++ b/ai-chat.mjs
+@@ -81,7 +81,7 @@
+   }
+   state(includeConfig = true) {
+     this.prune();
+-    return { ...(includeConfig?{settings_schema:SETTING_RULES,configuration_boundaries:CONFIGURATION_BOUNDARIES}:{}),configuration_version:2,memory_retention_version:1,chat_error_feedback:'local_only',backend_recovery_version:1,private_all_paused:this.unresolvedPrivateHolds.length>0,rate_limit_recovery:{mode:this.rateLimitRecovery?'temporary_cooldown':this.blocked?'manual':'none',remainingSeconds:this.rateLimitRecovery?Math.max(0,Math.ceil((this.rateLimitRecovery.until-this.now())/1000)):0,recoveries:this.rateLimitRecoveryCount,limit:this.config.temporary_recovery_attempts,backoffSeconds:this.rateLimitRecovery?.seconds??0,strategy:this.rateLimitRecovery?.strategy??null},enabled: this.config.enabled, backend: this.config.backend, error: this.error, paused: this.blocked, testing:!!this.testController,
++    return { ...(includeConfig?{settings_schema:SETTING_RULES,configuration_boundaries:CONFIGURATION_BOUNDARIES}:{}),configuration_version:2,memory_retention_version:1,chat_error_feedback:'local_only',backend_recovery_version:2,private_all_paused:this.unresolvedPrivateHolds.length>0,rate_limit_recovery:{mode:this.rateLimitRecovery?'temporary_cooldown':this.blocked?'manual':'none',remainingSeconds:this.rateLimitRecovery?Math.max(0,Math.ceil((this.rateLimitRecovery.until-this.now())/1000)):0,recoveries:this.rateLimitRecoveryCount,limit:this.config.temporary_recovery_attempts,backoffSeconds:this.rateLimitRecovery?.seconds??0,strategy:this.rateLimitRecovery?.strategy??null},enabled: this.config.enabled, backend: this.config.backend, error: this.error, paused: this.blocked, testing:!!this.testController,
+       ...(includeConfig?{account_pool:this.poolService.state(true),input_diagnostics:this.inputDiagnostics.state()}:{}), diagnostics:this.diagnostics.state(), combined_control_error:this.app.combinedControlError || '',
+       private_archive_version:1,vision_intent_version:2,private_archived_count:this.privateArchive.forBinding(this.config.binding_qq).length,private_epoch_since:this.privateArchiveFreshSince||null,...(includeConfig?{archived_private_reviews:this.privateArchive.forBinding(this.config.binding_qq)}:{}),
+       group_context: this.groupContext.state(this.config),group_understanding:{version:1,last:this.lastGroupUnderstanding||null},group_participation:{...this.participation.state(this.config),...(includeConfig?{effective:this.participationPolicy()}: {})},...(includeConfig?{persona_suggestion:DEFAULT_PERSONA}:{}), group_sender_policy: this.config.backend === 'api' ? this.config.group_member_policy : 'owner_only',
+@@ -765,7 +765,11 @@
+     if(Object.keys(input).some(key=>key!=='enable')||input.enable!==undefined&&typeof input.enable!=='boolean')throw new AIError('invalid_ai_settings');
+     const proof=this.backendProbe;if(!proof||this.now()-proof.checkedAt>120000||proof.generation!==this.generation||proof.base!==this.config.api_base_url||proof.model!==this.config.api_model||proof.format!==this.config.api_format||proof.credentialId!==this.auth.meta.api_id||!this.app.connected||!this.app.onlineConfirmed||this.config.binding_qq!==this.app.selfId)throw new AIError('backend_probe_required');
+     if(this.active||this.queue.length||this.outbox.snapshot().pending||this.testController)throw new AIError('generation_in_progress');
+-    this.reset();this.blocked=false;this.error='';this.rateLimitRecovery=null;this.rateLimitRecoveryCount=0;this.backendProbe=null;if(input.enable===true)await this.app.setResend(true,{combined:true});this.kick();return this.state();
++    if(input.enable===true&&!this.config.enabled)throw new AIError('ai_disabled');
++    // Recovery only clears the verified upstream pause. Reset/control paths erase
++    // RAM context and cancel deliveries; the idle/proof gates above stay in force.
++    // An explicit AI enable remains a separate action; recall settings stay intact.
++    this.blocked=false;this.error='';this.rateLimitRecovery=null;this.rateLimitRecoveryCount=0;this.backendProbe=null;this.kick();return this.state();
+   }
+   async submit(job) {
+     if (this.permission(job) !== 'ready') throw Object.assign(new AIError('qq_not_submitted'), { notSubmitted: true });

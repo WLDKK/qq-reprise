@@ -1,0 +1,84 @@
+{
+  "checkedAtUTC": "2026-10-23T10:27:49Z",
+  "localRuntimeFilesCompared": 51,
+  "method": "Compare locally computed Git blob SHA1 against complete public upstream trees; no candidate text or hashes sent to upstream",
+  "repositories": [
+    {
+      "repository": "langbot-app/LangBot",
+      "refRequested": "master",
+      "rootTreeSHA": "5ec41f15a16ecdf4354e54456243235b4183c27c",
+      "publicTreeURL": "https://api.github.com/repos/langbot-app/LangBot/git/trees/master?recursive=1",
+      "blobCount": 2339,
+      "fullFileMatches": [],
+      "licensePaths": [
+        "LICENSE",
+        "packaging/fnos/LICENSE",
+        "src/langbot/libs/LICENSE",
+        "src/langbot/libs/wechatpad_api/LICENSE"
+      ],
+      "referencePathsFound": [
+        "ARCHITECTURE.md",
+        "src/langbot/pkg/pipeline/controller.py"
+      ]
+    },
+    {
+      "repository": "AstrBotDevs/AstrBot",
+      "refRequested": "master",
+      "rootTreeSHA": "0cd42bd4dd216d8810da4e3f5fb2e381d3c6817e",
+      "publicTreeURL": "https://api.github.com/repos/AstrBotDevs/AstrBot/git/trees/master?recursive=1",
+      "blobCount": 1848,
+      "fullFileMatches": [],
+      "licensePaths": [
+        "LICENSE",
+        "dashboard/LICENSE"
+      ],
+      "referencePathsFound": []
+    },
+    {
+      "repository": "nonebot/adapter-onebot",
+      "refRequested": "master",
+      "rootTreeSHA": "2f5930d4f6c7fb3a82cf3201639e8f0b0a6c124e",
+      "publicTreeURL": "https://api.github.com/repos/nonebot/adapter-onebot/git/trees/master?recursive=1",
+      "blobCount": 83,
+      "fullFileMatches": [],
+      "licensePaths": [
+        "LICENSE"
+      ],
+      "referencePathsFound": [
+        "nonebot/adapters/onebot/v11/event.py"
+      ]
+    },
+    {
+      "repository": "NapNeko/NapCatQQ",
+      "refRequested": "main",
+      "rootTreeSHA": "3420f0b76d7dc0ac92cde1663f21ea27f61e13bb",
+      "publicTreeURL": "https://api.github.com/repos/NapNeko/NapCatQQ/git/trees/main?recursive=1",
+      "blobCount": 1051,
+      "fullFileMatches": [],
+      "licensePaths": [
+        "LICENSE",
+        "packages/napcat-dpapi/LICENSE",
+        "packages/napcat-webui-frontend/LICENSE"
+      ],
+      "referencePathsFound": [
+        "packages/napcat-onebot/action/go-cqhttp/GetForwardMsg.ts",
+        "packages/napcat-onebot/action/go-cqhttp/SendForwardMsg.ts"
+      ]
+    }
+  ],
+  "runtimeAttributionOrCopyMarkers": [],
+  "fullFileCopyEvidenceFound": false,
+  "scopeLimit": "Exact whole-file and normalized-line-ending comparison plus local imports/vendor/attribution review; not an exhaustive all-Internet fragment-similarity proof",
+  "credentialsRead": false,
+  "privateCodeUploaded": false,
+  "conclusion": "No third-party copied-code evidence found in the examined runtime/imports/vendor/markers and referenced upstream whole-file comparisons. Remaining ownership item is the authors rights/declaration, not discovered infringement.",
+  "oauthRegistrationEntrypoint": {
+    "literal": "dynamic_agent_client",
+    "officiallyDocumented": true,
+    "bundledPreissuedClientIdFound": false,
+    "sources": [
+      "https://developers.openai.com/siwc/token-sharing-open-source",
+      "https://developers.openai.com/siwc/token-sharing-open-source/sign-in"
+    ]
+  }
+}

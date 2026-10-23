@@ -1,0 +1,27 @@
+{
+  "enabled": false,
+  "backend": "api",
+  "api_platform": "custom",
+  "api_format": "chat_completions",
+  "api_base_url": "https://api.openai.com/v1",
+  "api_model": "YOUR_MODEL_NAME",
+  "binding_qq": "",
+  "groups": [],
+  "private_peers": [],
+  "users": [],
+  "allow_self": false,
+  "plan_allow_self": false,
+  "private_reply_mode": "disabled",
+  "group_context_export": false,
+  "group_context_target": "",
+  "participation_enabled": false,
+  "vision_enabled": false,
+  "vision_reference_enabled": false,
+  "vision_recent_enabled": false,
+  "bot_name": "本地助手",
+  "bot_aliases": [
+    "助手"
+  ],
+  "chat_owner_qq": "",
+  "chat_display_overrides": []
+}

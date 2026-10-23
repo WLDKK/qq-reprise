@@ -1,0 +1,26 @@
+--- a/ai-chat.mjs
++++ b/ai-chat.mjs
+@@ -789,7 +789,7 @@
+     if(job.participation&&state==='sent')void this.participation.delivery(job.participationAttemptId,'sent');
+     if(job.diagnosticId)this.diagnostics.progress('generation',job.diagnosticId,{delivery:state,...(state==='sent'?{deliverySubmission:'confirmed'}:{})});
+     if(state==='sent'&&job.localFeedback)this.inputStats.local_feedback_sent=(this.inputStats.local_feedback_sent||0)+1;
+-    if (state === 'sent' && this.valid(job) && !job.visionFailure && !job.localFeedback) {
++    if (state === 'sent' && this.valid(job) && !job.retiredAfterUnknown && !job.visionFailure && !job.localFeedback) {
+       const turn = { source: job.key, prompt: job.prompt, answer: job.answer, replyId: job.receipt,
+         self: job.e.self_id, type: job.e.conversation_type, peer: job.e.peer_id, author:job.participation?job.e.self_id:job.e.user_id,displayName:job.questioner?.display_name||'',inputMentions:job.inputMentions||null,participation:job.participation===true,vision:job.visionRequest===true,visionSourceKey:job.visionSourceKey||null,sourceSequence:job.groupContextSequence,threadKey:job.threadKey||job.key,replyTo:job.replyTo||null,contextReferenceKeys:job.contextReferenceKeys||[] };
+       this.modelReplies.set(turn, turn.answer); job.session.turns.push(turn);
+@@ -801,7 +801,13 @@
+       // Do not replay an uncertain/failed send or hold later AI messages behind it.
+       const errorCode=state==='uncertain'?'qq_delivery_uncertain':'qq_not_submitted';this.error=errorCode;this.counts.failed++;this.inputStats.silent_delivery_failures=(this.inputStats.silent_delivery_failures||0)+1;
+       if(job.diagnosticId)void this.diagnostics.finish('generation',job.diagnosticId,{status:'failed',errorCode,delivery:state,deliverySubmission:state==='uncertain'?'uncertain':'not_submitted'});
+-      this.outbox.cancel(value=>value.key===job.key);
++      if(state==='uncertain'){
++        // Keep the delivery receipt record while retiring only its AI generation.
++        // Uncertain jobs never replay; a late receipt updates delivery state only.
++        job.retiredAfterUnknown=true;clearTimeout(job.expiryTimer);
++        if(job.session.pending===job.key)job.session.pending=null;
++        this.jobs.delete(job.key);this.kick();
++      }else this.outbox.cancel(value=>value.key===job.key);
+     }
+   }
+   disconnected() {this.cancelParticipation();this.participation.clear(); this.recentVisionImages.clear();for (const job of this.jobs.values()) if (job.running && !job.answer) this.cancelJob(job); }

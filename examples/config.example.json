@@ -1,0 +1,22 @@
+{
+  "target_type": "group",
+  "group_id": "",
+  "group_name": "",
+  "friend_id": "",
+  "friend_name": "",
+  "auto_start": false,
+  "auto_resend": false,
+  "resend_self": false,
+  "resend_exempt_qq_ids": [],
+  "cache_messages_per_chat": 200,
+  "cache_ttl_minutes": 30,
+  "outbox_limit": 100,
+  "outbox_ttl_minutes": 30,
+  "recall_match_seconds": 15,
+  "send_interval_seconds": 3,
+  "auto_recovery": false,
+  "recovery_account": "",
+  "command_allow_others": false,
+  "command_permissions": [],
+  "command_account": ""
+}

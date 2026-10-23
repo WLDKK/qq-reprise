@@ -1,0 +1,1157 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QQ 双功能助手</title>
+  <style>
+    :root{font-family:"Microsoft YaHei","Segoe UI",sans-serif;color:#17233b;background:#f3f6fb;color-scheme:light}
+    *{box-sizing:border-box}body{margin:0;padding:40px 20px}main{max-width:1000px;margin:auto}
+    h1{font-size:28px;margin:0 0 12px}h2{font-size:18px;margin:0 0 16px}
+    p{line-height:1.7;margin:0 0 16px;color:#58677e}.tag{font-size:13px;padding:7px 12px;border-radius:18px;background:#e6edf8;display:inline-block}
+    .tag.ok{background:#dff5e9;color:#17683c}.tag.wait{background:#fff0d6;color:#805500}
+    .header{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:24px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    .card{background:white;border:1px solid #e2e8f1;border-radius:16px;padding:24px}
+    .note{background:#eef3ff;border-radius:12px;padding:14px 18px;margin:0 0 20px;color:#334f85;font-size:14px}
+    .mode{display:flex;align-items:center;gap:14px;margin-bottom:18px;padding:14px 16px;border:1px solid #e2e8f1;border-radius:12px;background:white}
+    .mode-copy{flex:1}.mode-copy label{font-size:15px;font-weight:600;cursor:pointer}.mode-copy small{display:block;color:#74829a;font-size:12px;margin-top:5px}
+    input.toggle{appearance:none;width:44px;height:25px;background:#c4cedc;border:0;border-radius:20px;padding:0;cursor:pointer;position:relative;flex:none}
+    input.toggle:before{content:"";position:absolute;top:3px;left:3px;width:19px;height:19px;border-radius:50%;background:white;transition:transform .15s}
+    input.toggle:checked{background:#426ad9}input.toggle:checked:before{transform:translateX(19px)}
+    input{width:100%;padding:12px 14px;border:1px solid #cdd7e5;border-radius:9px;font:inherit;outline:none}
+    input:focus{border-color:#426ad9;box-shadow:0 0 0 3px #426ad91c}
+    .friends{height:286px;overflow:auto;margin:12px 0;border:1px solid #e2e8f1;border-radius:10px}
+    .friend{display:block;width:100%;text-align:left;padding:12px 14px;background:white;border:0;border-bottom:1px solid #edf0f5;cursor:pointer;font:inherit;color:#17233b}
+    .friend:hover{background:#f7f9ff}.friend.selected{background:#eaf0ff;box-shadow:inset 3px 0 #426ad9}
+    .friend small{display:block;margin-top:5px;color:#74829a}.empty{padding:25px 16px;text-align:center;color:#74829a;line-height:1.7}
+    .scopes{display:flex;gap:8px;margin-bottom:16px;padding:4px;background:#f1f4fa;border-radius:10px}
+    .scope{flex:1;padding:10px;border:0;border-radius:8px;background:transparent;color:#58677e;font:inherit;cursor:pointer}
+    .scope[aria-selected="true"]{background:white;color:#365ec9;box-shadow:0 1px 4px #17233b12}
+    .commands{margin-bottom:18px;background:white;border:1px solid #e2e8f1;border-radius:12px;padding:14px 16px}
+    .commands summary{cursor:pointer;font-size:14px;font-weight:600}.commands p{font-size:13px;margin:10px 0;color:#74829a}
+    .command-fields{display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap}.command-fields label{flex:1;min-width:150px;font-size:13px}
+    .command-fields input{margin-top:6px;padding:9px 11px}
+    .permission-switch{display:flex;align-items:center;gap:10px;margin:16px 0;font-size:14px}
+    .permission-switch input{width:18px;height:18px;padding:0}
+    .permission-fields{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin:12px 0}
+    .permission-fields label{flex:1;min-width:150px;font-size:13px}
+    select{width:100%;margin-top:6px;padding:10px;border:1px solid #cdd7e5;border-radius:9px;background:white;font:inherit;color:inherit}
+    .permission-list{display:grid;gap:8px;margin:12px 0}.permission-row{display:flex;gap:12px;align-items:center;padding:10px;background:#f5f7fb;border-radius:9px;font-size:13px}
+    .permission-row span{flex:1;overflow-wrap:anywhere}.permission-row button{flex:none}
+    .login-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+    #login-message{font-size:13px;line-height:1.6;color:#58677e}
+    .pacing{display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:white;padding:14px 16px;border:1px solid #e2e8f1;border-radius:12px;margin-bottom:18px}
+    .pacing label{font-size:14px}.pacing input{width:80px;padding:8px 10px;margin:0 6px}
+    .recovery-note{font-size:13px;color:#74829a;line-height:1.7;margin:-8px 0 18px;padding:0 4px}
+    @media(max-width:500px){.stats{flex-wrap:wrap}.stat{flex:1 1 40%}}
+    .selection{min-height:32px;font-size:14px;color:#58677e;margin:12px 0}
+    .actions{display:flex;gap:10px}button.action{padding:11px 18px;border-radius:9px;border:0;cursor:pointer;font:inherit;background:#426ad9;color:white}
+    button.secondary{background:#eaf0f7;color:#30405c}button:disabled{opacity:.45;cursor:not-allowed}
+    .target{font-size:22px;font-weight:600;overflow-wrap:anywhere;margin:8px 0}.muted{font-size:13px;color:#74829a}
+    .stats{display:flex;gap:12px;margin:24px 0}.stat{background:#f5f7fb;border-radius:10px;padding:14px;flex:1;text-align:center}
+    .stat b{display:block;font-size:25px;margin-bottom:7px}.stat span{font-size:12px;color:#74829a}
+    #error{margin-top:12px;color:#a83b32;font-size:14px;line-height:1.7;min-height:24px}
+    .logs{height:170px;overflow:auto;font-size:13px;line-height:1.7;color:#58677e;margin:0;padding:0;list-style:none}
+    .logs li{border-bottom:1px solid #f0f2f7;padding:7px 0}.logs time{color:#8b96a9;margin-right:8px}
+    .footer{margin-top:18px;font-size:13px}.link{color:#426ad9;text-decoration:none}
+    .recall-panel{margin-top:20px}.recall-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:16px}
+    .recall-head h2{margin:0}.recall-items{display:grid;gap:12px}.recall-item{border:1px solid #e2e8f1;border-radius:12px;padding:16px}
+    .recall-meta{display:flex;justify-content:space-between;gap:12px;color:#74829a;font-size:12px;margin-bottom:12px}
+    .recall-body{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap}.recall-text{white-space:pre-wrap;overflow-wrap:anywhere;max-width:100%;line-height:1.8}
+    .recall-image{display:block;max-width:260px;max-height:260px;object-fit:contain;border-radius:9px;background:#f5f7fb}
+    .recall-other{font-size:13px;padding:7px 10px;border-radius:8px;background:#f0f3f8;color:#58677e}
+    @media(max-width:720px){body{padding:24px 14px}.grid{grid-template-columns:1fr}.header{display:block}.tag{margin-top:8px}.card{padding:20px}}
+    .exemption-field{display:grid;gap:8px;margin:12px 0}
+    .exemption-field textarea{width:100%;min-height:96px;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font:inherit;resize:vertical}
+    [hidden]{display:none!important}.feature-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}.feature-card{min-width:0;border:1px solid #dbe3ef;background:#fff;border-radius:15px;overflow:hidden}.feature-card.active{border-color:#426ad9;box-shadow:0 0 0 2px #426ad91a}.feature-open{display:flex;flex-direction:column;gap:8px;width:100%;min-width:0;border:0;background:transparent;color:#17233b;padding:20px;text-align:left;font:inherit;cursor:pointer}.feature-open strong{font-size:20px}.feature-open span{font-size:13px;color:#63738b;overflow-wrap:anywhere}.feature-switch{display:flex;align-items:center;gap:10px;padding:0 20px 18px;flex-wrap:wrap;font-size:14px}.feature-switch input{margin-left:auto}.feature-switch .muted{font-size:12px}.workspace-panel{min-width:0}.diagnostic-box{padding:15px;background:#f3f6fc;border:1px solid #dbe3ef;border-radius:10px;margin-bottom:18px;overflow-wrap:anywhere}.diagnostic-box h3{font-size:15px;margin:0 0 10px}.diagnostic-box div{font-size:13px;line-height:1.8}.diagnostic-box #ai-error{color:#a83b32;white-space:pre-wrap;margin:8px 0 0}#ai-panel textarea{width:100%;padding:10px;border:1px solid #cdd7e5;border-radius:9px;font:inherit}#ai-panel details{margin:18px 0;padding:12px;border:1px solid #e2e8f1;border-radius:10px}#ai-panel button:not(.action){padding:9px 12px;border:1px solid #cad5e5;border-radius:8px;background:#f3f6fb;color:#243751;font:inherit;cursor:pointer}#ai-panel button:disabled{cursor:wait}button:focus-visible{outline:3px solid #426ad988;outline-offset:2px}
+    @media(max-width:500px){.feature-grid{gap:10px}.feature-open{padding:14px}.feature-open strong{font-size:17px}.feature-switch{padding:0 14px 14px;gap:6px}.feature-switch label{width:100%}.feature-switch input{margin-left:auto}.commands{padding:14px}h1{font-size:25px}.login-actions button{max-width:100%;white-space:normal}}
+    .config-states{display:grid;gap:9px;margin:16px 0}.config-states p{margin:0!important;padding:12px;background:#f3f6fc;border-radius:9px;overflow-wrap:anywhere}.config-states strong{display:block;color:#243751;margin-bottom:4px}#ai-test-reply{white-space:pre-wrap;overflow-wrap:anywhere;max-height:280px;overflow:auto;font:inherit;padding:12px;background:white;border:1px solid #dbe3ef;border-radius:8px}#ai-key-state,#ai-test-target,#ai-draft-status{overflow-wrap:anywhere}
+    #ai-account-pool-settings fieldset{min-width:0;max-width:100%;margin:14px 0;padding:12px;border:1px solid #dbe3ef;border-radius:9px}#ai-account-pool-settings p{overflow-wrap:anywhere}#ai-account-pool-settings .command-fields label{flex:1 1 160px;min-width:0}
+  /* Isolated workbench candidate; existing control identities are retained. */
+:root{font-family:"Segoe UI","Microsoft YaHei",system-ui,sans-serif;color:#203a36;background:#f2f5f1;--ink:#203a36;--accent:#08776c;--muted:#6c7c75;--line:#dce5df}
+body{padding:30px 32px 60px;background:radial-gradient(ellipse at 90% 0,#e4eee5 0,transparent 42%),#f2f5f1}main{max-width:1392px;margin:auto}h1{font-size:28px;letter-spacing:-.8px}h2{font-size:23px;letter-spacing:-.5px}h3{font-size:16px}p{color:var(--muted);line-height:1.7}button,input,select,textarea{font:inherit}input,select,textarea{border-color:#cfdcd4!important;border-radius:9px!important}input:focus,select:focus,textarea:focus{border-color:var(--accent)!important;box-shadow:0 0 0 3px #08776c14!important}.header{margin-bottom:25px}.header p{font-size:13px;margin:8px 0 0}.tag{border:1px solid var(--line);border-radius:8px;padding:8px 12px}.tag.ok{background:#e1f1e8;color:#23704e}.tag.wait{background:#fff1da;color:#8d621b}.feature-grid{gap:16px;margin-bottom:25px}.feature-card{border-color:var(--line);border-radius:14px;background:#ffffffb8;display:flex;align-items:center}.feature-card.active{border-color:#5aa495;box-shadow:0 0 0 1px #5aa495;background:#fff}.feature-open{padding:19px 22px;flex:1}.feature-open strong{font-size:19px}.feature-open span{font-size:12px;color:#72847b}.feature-switch{padding:12px 20px 12px 0;margin:0;gap:8px;flex-wrap:nowrap;white-space:nowrap}.feature-switch .muted{display:none}input.toggle:checked{background:var(--accent)}
+.workbench-grid{display:grid;grid-template-columns:205px minmax(0,1fr);gap:26px;align-items:start}.workbench-nav{position:sticky;top:20px;display:flex;flex-direction:column;gap:5px;padding-top:9px}.workbench-nav small{padding:0 14px 12px;text-transform:uppercase;letter-spacing:2px;color:#8a9b90;font-size:10px;font-weight:700}.workbench-nav button,#ai-panel .workbench-nav button{border:0;background:transparent;border-radius:8px;padding:12px 14px;text-align:left;color:#708179;font-size:14px;cursor:pointer}.workbench-nav button:hover{background:#e7ede7}.workbench-nav button[aria-selected="true"],#ai-panel .workbench-nav button[aria-selected="true"]{background:#ddebe2;color:#1a6955;font-weight:600}.workbench-nav .nav-symbol{display:inline-block;width:25px;color:#7c9384;font-size:13px}.workbench-content{min-width:0}.ui-pane{min-width:0}.pane-header{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin:3px 0 20px}.pane-header h2{margin:0 0 7px}.pane-header p{margin:0;font-size:13px}.eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:2px;font-weight:700;color:#688373;margin-bottom:8px}.surface,.quick-card{background:#fff;border:1px solid var(--line);border-radius:13px;padding:23px;margin-bottom:18px;min-width:0}.quick-card h3{margin:0 0 18px}.quick-card>p{font-size:12px}.summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin-bottom:21px}.summary-metric{border:1px solid var(--line);background:#ffffffb8;padding:17px 19px;border-radius:11px;min-width:0}.summary-metric small{display:block;color:#819187;font-size:11px;margin-bottom:9px}.summary-metric strong{font-size:16px;font-weight:600;overflow-wrap:anywhere}.summary-metric span{display:block;color:#8b9b91;font-size:11px;margin-top:6px}.quick-fields{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}.quick-fields label{font-size:12px;color:#6b7e72}.quick-fields input,.quick-fields select{margin-top:7px;width:100%}.quick-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.quick-status{font-size:12px;min-height:18px;color:#3b7962;margin:10px 0 0;white-space:pre-wrap}.mini-link{border:0;background:transparent;color:#1e7961;cursor:pointer;font-size:12px;padding:8px 0}.section-note{font-size:12px;background:#edf3ee;border-radius:9px;padding:13px 15px;color:#63806e;line-height:1.7;margin-bottom:18px}.control-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:10px}.editor-badge{font-size:10px;padding:5px 9px;border-radius:5px;background:#eaf3ee;color:#3d8069}.workbench-alert{white-space:pre-wrap;font-size:13px;color:#a04a30;background:#fff0e6;padding:12px 15px;border-radius:9px;margin-bottom:16px}.workbench-alert:empty{display:none}.daily-main-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}.daily-main-grid .quick-fields{grid-template-columns:1fr}.account-tabs{display:flex;gap:8px;padding:5px;border:1px solid var(--line);border-radius:10px;background:#e8eee8;margin:18px 0}.account-tabs button{flex:1;border:0!important;background:transparent!important;color:#6e8274!important}.account-tabs button[aria-selected="true"]{background:white!important;color:#23674f!important;box-shadow:0 1px 4px #203a3610}
+#ai-panel{border:0;padding:0;background:transparent;border-radius:0}#ai-panel details,.commands{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 21px;margin:0 0 16px}#ai-panel details>summary,.commands>summary{font-size:15px;cursor:pointer;font-weight:600;color:#2a4c3d}#ai-panel details[open]>summary,.commands[open]>summary{margin-bottom:18px}#ai-panel p,.commands p{font-size:12px;line-height:1.8}.action,#ai-panel button:not(.mini-link):not(.workbench-nav button){background:#edf3ef;border:1px solid #d8e4dc;color:#3d6552;border-radius:8px;padding:10px 15px;cursor:pointer;font-size:13px}.action.primary,#save-recall-name,#quick-save-names,#quick-save-budget,#ui-save-private{background:var(--accent)!important;border-color:var(--accent)!important;color:white!important}.action.secondary{background:#edf3ef;color:#3d6552}.action:disabled,#ai-panel button:disabled{opacity:.55;cursor:wait!important}.permission-list{list-style:none;padding:0;gap:0;border:1px solid var(--line);border-radius:10px;overflow:hidden}.permission-list:empty{display:none}.permission-list li{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0;padding:13px 15px;border-bottom:1px solid #edf2ed;font-size:13px}.permission-list li:last-child{border:0}.permission-list li>span{flex:1 1 240px;min-width:0;overflow-wrap:anywhere}.permission-list button{font-size:12px;padding:7px 11px}.command-fields{margin-bottom:14px}.command-fields label{font-size:12px;min-width:160px}.grid{gap:16px}.card{border-color:var(--line);border-radius:13px;padding:22px}.diagnostic-box{background:#f6f8f5;border-color:var(--line)}.connection-card{margin-bottom:12px!important;padding:16px!important}.connection-card>summary{display:flex;justify-content:space-between;gap:10px;align-items:center}.connection-card>summary small{font-size:10px;color:#6d8d78;font-weight:400}.connection-card fieldset{border:0!important;padding:5px 0 0!important;margin:0!important}.connection-card legend{display:none}.connection-card details{background:#f7f9f6!important;margin-top:15px!important}.settings-footer{background:#f3f6f2;border:1px dashed #cfddd2;border-radius:10px;padding:17px;margin-top:22px}.settings-footer h3{margin:0 0 7px}.settings-footer p{font-size:12px}.settings-footer .login-actions{margin:12px 0 0}.panel-helper{font-size:12px;color:#7d8f82;margin-top:15px}.preview-banner{font-size:12px;background:#fff4dc;border:1px solid #e5d5ac;color:#7d6834;padding:10px 16px;border-radius:8px;margin-bottom:18px}.compact-runtime{font-size:12px;color:#6d8375}.scope-shortcuts{display:grid;grid-template-columns:1fr 1fr;gap:14px}.scope-shortcut{padding:18px;border:1px solid var(--line);border-radius:10px;background:#fff}.scope-shortcut strong{display:block;font-size:14px;margin-bottom:8px}.scope-shortcut p{font-size:12px;margin:0 0 10px}.feature-grid{scroll-margin-top:18px}
+@media(max-width:1050px){body{padding:24px 20px}.workbench-grid{grid-template-columns:170px minmax(0,1fr);gap:20px}.feature-card{align-items:flex-start}.feature-switch{padding-top:20px}.feature-switch label{font-size:11px}.summary-grid{gap:8px}.summary-metric{padding:14px}}
+@media(max-width:760px){body{padding:18px 12px 35px}.header{margin-bottom:17px}.header h1{font-size:24px}.header p{max-width:250px;font-size:11px}.tag{font-size:10px;padding:6px}.feature-grid{gap:10px;margin-bottom:18px}.feature-card{display:block}.feature-open{padding:15px 14px;gap:5px}.feature-open strong{font-size:17px}.feature-open span{font-size:10px}.feature-switch{padding:0 14px 13px;justify-content:space-between}.feature-switch input{margin-left:0}.feature-switch label{width:auto}.workbench-grid{display:block}.workbench-nav{position:static;display:flex;flex-direction:row;overflow:auto;gap:5px;padding:0 0 12px;margin-bottom:13px;max-width:100%;scrollbar-width:none}.workbench-nav small{display:none}.workbench-nav button{white-space:nowrap;padding:9px 12px;font-size:12px;flex:none}.workbench-nav .nav-symbol{display:none}.pane-header{margin-top:0;margin-bottom:17px}.pane-header h2{font-size:21px}.pane-header p{font-size:12px}.summary-grid{grid-template-columns:1fr 1fr}.summary-grid .summary-metric:last-child{display:none}.summary-metric strong{font-size:14px}.quick-fields{grid-template-columns:1fr}.surface,.quick-card,#ai-panel details,.commands{padding:17px;border-radius:10px}.scope-shortcuts{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.command-fields label{min-width:130px}.permission-list li>span{flex-basis:100%}.settings-footer .login-actions{gap:8px}.settings-footer button{max-width:100%;white-space:normal}#ai-panel textarea{max-width:100%}.header .tag{flex-shrink:0}.eyebrow{font-size:9px}.pool-target,.connection-card{max-width:100%;overflow-wrap:anywhere}}
+@media(max-width:760px){.daily-main-grid{grid-template-columns:1fr}.account-tabs{gap:3px}.account-tabs button{font-size:11px!important;padding:10px 4px!important}#ai-panel .workbench-nav button{white-space:nowrap;padding:9px 12px;font-size:12px;flex:none}}
+
+  input,textarea,select{max-width:100%;min-width:0;box-sizing:border-box}.quick-fields>*{min-width:0}.quick-fields label,small{overflow-wrap:anywhere}
+@media(max-width:760px){.workbench-nav{flex-wrap:wrap;overflow:visible}.workbench-nav button{max-width:100%;white-space:normal}}
+.quick-card p,.surface p{overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+  <main>
+    <div class="header">
+      <div><h1>QQ 双功能助手</h1><p>顶部可分别调节撤回重发和AI；开关口令同时控制两项，仅确认一次。切换页面不停止功能。开启条件不满足时两项保持关闭，不发送成功确认，请查看错误。</p></div>
+      <span class="tag wait" id="connection" role="status">正在自动连接…</span>
+    </div>
+    <div class="feature-grid" aria-label="双功能入口">
+      <section class="feature-card" id="feature-recall-card"><button class="feature-open" id="feature-recall" type="button" aria-controls="recall-workspace" aria-pressed="false"><strong>撤回重发</strong><span id="recall-overview">正在读取状态</span></button><div class="feature-switch"><label for="resend">自动重发</label><span id="mode-status" class="muted">已关闭</span><input class="toggle" id="resend" type="checkbox" role="switch" aria-label="自动重发"></div></section>
+      <section class="feature-card active" id="feature-ai-card"><button class="feature-open" id="feature-ai" type="button" aria-controls="ai-workspace" aria-pressed="true"><strong>AI 聊天</strong><span id="ai-overview">正在读取状态</span></button><div class="feature-switch"><label for="ai-enabled">AI聊天</label><span id="ai-live-mode" class="muted">已关闭</span><input class="toggle" id="ai-enabled" type="checkbox" role="switch" aria-label="AI聊天开关"></div></section>
+    </div>
+    <section id="recall-workspace" class="workspace-panel" aria-labelledby="feature-recall" hidden>
+    <h2>撤回重发 · 独立会话范围</h2><p id="mode-help">下方选择仅约束撤回功能，不限制AI普通私聊。关闭自动重发时只在本机显示。</p>
+    <div class="note" id="mode-description">自动重发已关闭：撤回内容只显示在本地页面。所选会话默认在内存保留最多 200 条、30 分钟。</div>
+    <div class="mode">
+      <div class="mode-copy"><label for="self-resend">重发本人撤回消息</label><small>默认关闭。本人自行撤回原样重发，代撤使用统一署名；总自动重发关闭时仅在本页显示。需 NapCat 开启“上报自身消息”。</small></div>
+      <span class="muted" id="self-resend-status">已关闭</span>
+      <input class="toggle" id="self-resend" type="checkbox" role="switch" aria-label="重发本人撤回消息">
+    </div>
+    <details class="commands" id="recall-name-settings">
+      <summary id="recall-name-summary">群内撤回显示名 · 0 条绑定</summary>
+      <p>按群号＋QQ号绑定，只改变撤回重发的文字署名。原发送者与代撤者都使用绑定名；无绑定时沿用原昵称。不会修改QQ群名片、权限或豁免名单。</p>
+      <div class="command-fields">
+        <label for="recall-name-group">群号<input id="recall-name-group" inputmode="numeric" maxlength="12" autocomplete="off"></label>
+        <label for="recall-name-qq">QQ号<input id="recall-name-qq" inputmode="numeric" maxlength="12" autocomplete="off"></label>
+        <label for="recall-name-value">自定义显示名<input id="recall-name-value" maxlength="180" autocomplete="off" placeholder="最多60个字符；清空并保存即删除"></label>
+      </div>
+      <button class="action secondary" id="save-recall-name" type="button">保存绑定</button>
+      <button class="action secondary" id="reset-recall-name" type="button">新增 / 取消编辑</button>
+      <p class="muted" id="recall-name-message" role="status">保存后对之后处理的撤回立即生效，并在脚本重启后保留；已排队或已发送内容不改写。同一QQ在不同群可使用不同名称。</p>
+      <ul id="recall-name-list" class="permission-list" aria-label="群内撤回显示名绑定"></ul>
+    </details>
+    <details class="commands" id="resend-exempt-settings">
+      <summary id="resend-exempt-summary">撤回重发豁免白名单 · 0 人</summary>
+      <p>按消息原作者的 QQ 号判断，名单内作者的撤回只在本页显示。群管理员撤回他人消息时，仍看原作者，不看操作管理员。</p>
+      <label class="exemption-field" for="resend-exempt-ids">豁免 QQ 号（最多 100 个）
+        <textarea id="resend-exempt-ids" rows="4" maxlength="3000" placeholder="每行一个 QQ 号，也支持逗号、分号或空格分隔；留空表示不豁免任何人" spellcheck="false"></textarea>
+      </label>
+      <button class="action secondary" id="save-resend-exemptions" type="button">保存豁免白名单</button>
+      <p class="muted" id="resend-exempt-message" role="status">保存后立即生效，并取消对应作者尚未发送的队列。已提交 QQ 接口的消息无法撤销；移除名单不会补发旧消息。</p>
+    </details>
+    <div class="pacing">
+      <label for="send-interval">重发基准间隔<input id="send-interval" type="number" min="0" max="60" step="0.1" value="3" required aria-label="重发基准间隔秒">秒</label>
+      <button class="action secondary" id="save-interval" type="button">保存速度</button>
+      <span class="muted" id="queue-status" role="status">实际 2.7～3.3 秒，等待重发 0 条</span>
+      <span class="muted">每条随机浮动 ±0.3 秒；最低为 0 秒。首条也按此等待，后续逐条发送。</span>
+    </div>
+    <details class="commands" id="cache-settings">
+      <summary>消息缓存</summary>
+      <div class="pacing">
+        <label for="cache-limit">最多保留<input id="cache-limit" type="number" min="10" max="1000" step="1" value="200" required>条</label>
+        <label for="cache-ttl">最长保留<input id="cache-ttl" type="number" min="1" max="120" step="1" value="30" required>分钟</label>
+        <button class="action secondary" id="save-cache" type="button">保存缓存设置</button>
+      </div>
+      <p class="muted">达到容量或时间上限即淘汰；调小立即生效。临时断线在期限内保留，停止、切换会话或退出清空。图片资源仍有 64MB 总上限。</p>
+      <p class="muted" id="cache-status" role="status">快速撤回默认最多等待原消息15秒，最多同时匹配50条；只处理授权原会话的新通知。</p>
+    </details>
+    <details class="commands" id="delivery-settings">
+      <summary>故障期间待发送队列</summary>
+      <div class="pacing">
+        <label for="outbox-limit">最多保留<input id="outbox-limit" type="number" min="10" max="500" step="1" value="100" required>条</label>
+        <label for="outbox-ttl">最多等待<input id="outbox-ttl" type="number" min="1" max="120" step="1" value="30" required>分钟</label>
+        <label for="match-seconds">快速撤回匹配<input id="match-seconds" type="number" min="1" max="30" step="1" value="15" required>秒</label>
+        <button class="action secondary" id="save-delivery" type="button">保存待发送设置</button>
+      </div>
+      <p class="muted">临时离线或明确尚未提交时留存，恢复同账号原会话后依次发送；超量舍弃最早的未完成项，正在提交的请求除外。发送超时或通用错误不能证明未发送，保留为不确定，不自动重复提交。关闭重发会取消待发项。正文仅在内存，退出即失。</p>
+      <p class="muted" id="delivery-status" role="status">等待状态…</p>
+    </details>
+    <div class="mode">
+      <div class="mode-copy"><label for="recovery">自动恢复 NapCat</label><small>默认关闭；持续离线 90 秒后才尝试，轮次间隔 5 分钟，失败最多 3 次。</small></div>
+      <span class="muted" id="recovery-status">已关闭</span>
+      <input class="toggle" id="recovery" type="checkbox" role="switch" aria-label="自动恢复 NapCat">
+    </div>
+    <div class="recovery-note" id="recovery-message" role="status">首次开启前需成功连接一次 QQ。扫码或验证仍需本人完成；监控在助手运行期间有效。</div>
+    <div class="login-actions">
+      <button class="action secondary" id="quick-login" type="button">快捷登录 QQ</button>
+      <span id="login-message" role="status">复用本机已有登录记录；需要扫码时由本人确认。</span>
+      <a class="link" id="login-link" href="http://127.0.0.1:6099/webui/" target="_blank" rel="noreferrer" hidden>打开登录页面</a>
+    </div>
+    <details class="commands" id="command-settings">
+      <summary id="commands-summary">启停口令与授权：开机 / 关机 · 仅本人</summary>
+      <p>本人可在当前监听会话发送口令。也可授权指定群里的成员或私聊好友；授权者在指定来源发送口令，控制当前监听会话的自动重发。关闭重发后仍在本页展示撤回内容。</p>
+      <div class="command-fields">
+        <label for="command-on">开启重发<input id="command-on" value="开机" maxlength="40" autocomplete="off"></label>
+        <label for="command-off">关闭重发<input id="command-off" value="关机" maxlength="40" autocomplete="off"></label>
+        <label for="command-reply-on">开启后的确认回复<input id="command-reply-on" value="开了" maxlength="200" autocomplete="off"></label>
+        <label for="command-reply-off">关闭后的确认回复<input id="command-reply-off" value="关了" maxlength="200" autocomplete="off"></label>
+      </div>
+      <label class="permission-switch"><input id="allow-others" type="checkbox">允许名单中的人执行启停口令</label>
+      <div class="permission-fields">
+        <label for="permission-type">口令来源<select id="permission-type"><option value="group">指定群聊</option><option value="private">指定私聊好友</option></select></label>
+        <label for="permission-group" id="permission-group-field">群聊<select id="permission-group"><option value="">连接后选择群聊</option></select></label>
+        <label for="permission-user">授权人<select id="permission-user"><option value="">先选择群聊</option></select></label>
+        <button class="action secondary" id="add-permission" type="button" disabled>加入名单</button>
+      </div>
+      <div id="permission-message" class="muted" role="status">默认仅本人；新增或删除后点击保存才生效。</div>
+      <div id="permission-list" class="permission-list"></div>
+      <p>仅识别完整纯文字口令。群聊授权只在所选群内有效，私聊授权只在该好友的私聊中有效；授权与当前登录 QQ 绑定。</p>
+      <button class="action secondary" id="save-commands" type="button">保存口令与授权</button>
+    </details>
+    <div class="grid">
+      <section class="card" aria-labelledby="friend-title">
+        <h2 id="friend-title">选择群聊</h2>
+        <div class="scopes" role="tablist" aria-label="监听类型">
+          <button class="scope" id="group-tab" type="button" role="tab" aria-selected="true" aria-controls="friends">群聊</button>
+          <button class="scope" id="friend-tab" type="button" role="tab" aria-selected="false" aria-controls="friends">好友</button>
+        </div>
+        <input id="search" aria-label="搜索群聊" placeholder="搜索群名或群号" autocomplete="off">
+        <div id="friends" class="friends" role="tabpanel" aria-labelledby="group-tab"><div class="empty">连接成功后会自动显示群聊。</div></div>
+        <div class="selection" id="selection">尚未选择会话</div>
+        <div class="actions">
+          <button class="action" id="start" disabled>开始监听</button>
+          <button class="action secondary" id="stop" disabled>停止</button>
+        </div>
+        <div id="error" role="alert"></div>
+      </section>
+      <section class="card" aria-labelledby="status-title">
+        <h2 id="status-title">当前状态</h2>
+        <div class="muted" id="monitoring">尚未开始监听</div>
+        <div class="target" id="target">先选择群聊或好友</div>
+        <div class="muted" id="target-id"></div>
+        <div class="stats">
+          <div class="stat"><b id="cached">0 / 200</b><span>当前缓存</span></div>
+          <div class="stat"><b id="sent">0</b><span>本次重发</span></div>
+          <div class="stat"><b id="missing">0</b><span>无缓存跳过</span></div>
+          <div class="stat"><b id="pending">0</b><span>等待重发</span></div>
+        </div>
+        <h2>运行记录</h2>
+        <ul class="logs" id="logs" aria-live="polite"><li>等待自动连接。</li></ul>
+      </section>
+    </div>
+    <section class="card recall-panel" aria-labelledby="recall-title">
+      <div class="recall-head"><h2 id="recall-title">最近撤回的内容</h2><span class="muted">最多显示最近 10 条撤回记录</span></div>
+      <div class="recall-items" id="recalls"><div class="empty">开始监听后，撤回的内容会显示在这里。</div></div>
+    </section>
+    <p class="footer">文字、照片、QQ 表情和 GIF 表情包均可处理。停止或退出后会清空缓存。
+      <a class="link" href="http://127.0.0.1:6099/webui/network" target="_blank" rel="noreferrer">打开 NapCat 网络配置</a>
+    </p>
+    </section>
+    <section id="ai-workspace" class="workspace-panel" aria-labelledby="feature-ai">
+    <section class="commands" id="ai-panel">
+      <h2>AI 聊天 · 普通私聊</h2><p>普通API只自动接收对方新发来的普通好友私聊，不需要@或口令，也不用填写群号；黑名单除外。自己的消息和机器人输出不自动触发。</p>
+      <div class="note">私聊支持普通自由提问和多轮问答，例如 <code id="ai-private-example">请解释快速排序的思路</code>，不再限定问候短句。已识别的敏感内容仍拦截；不支持的消息只跳过该条。</div>
+      <p id="ai-image-support" class="muted">正在读取单图识别状态。</p><p class="muted">启用群中用真实@或已开启的昵称唤起，或好友私聊发送当条单张新图/图片表情包时，可要求识图；也可明确引用同会话保留范围内的单图，或识别同一发送人在同会话保留范围内发的图。有多张候选且无法定位时保持静默，不猜图；不会扫描其它历史或跨会话。近期图片来源只留有界内存（容量与保留时间使用缓存/定位分区的已保存设置），关闭、断线或重启清空；原图不加入AI历史、不落盘。沿用当前Discovery做识图/OCR，单图发来后按缓存/定位分区的补充指令等待设置等候，紧接的同用户明确解题指令会合并；“解答这道题/解答它”等可关联原图。继续追问只使用同一用户同一张图的已确认文字，不混入别人的问号。支持PNG/JPEG/静态WebP；GIF等动图尽力提取静态封面/第一帧，无法解码会明确报错，不分析完整动画。最多5MB。识图不再因“截图、生日、内部、密码”等主题词单独拦截；会检查正文及结果中可识别的凭据值和具体个人标识，不能保证识别图片里的全部隐私。勿发送密钥截图。失败后文字可继续，撤回缓存独立。</p><button id="ai-test-vision" type="button">验证当前Discovery识图（合成图，不发QQ）</button>
+      <p id="ai-status" role="status">正在读取AI状态</p><p id="ai-trigger-status" class="muted" role="status"></p>
+      <p class="muted" id="ai-context-note">空 @ 会先核对明确引用，再结合已允许的同会话近期内容或本人近期图片；只有无法判断时才简短澄清。附近文字沿用当前缓存与外发设置，不跨群或私聊。健康、工资、生日、昵称、QQ号等话题词不会直接触发拦截；凭据值与具体电话、邮箱、证件号码仍需遮蔽。</p>
+      <div class="diagnostic-box"><h3>接口与回复诊断</h3><div id="ai-test-diagnostic" role="status">尚无已保存的接口测试结果。</div><div id="ai-generation-diagnostic" role="status"></div><p id="ai-error" role="alert"></p><p id="ai-queue-state" role="status"></p><details><summary>排队与最近请求记录（脱敏）</summary><p id="ai-input-stage-diagnostics" class="muted"></p><p id="ai-recent-request-diagnostics" class="muted"></p></details></div>
+      <label class="exemption-field">私聊黑名单（QQ号）<input id="ai-private_blacklist" placeholder="空格或逗号分隔；保存后生效"></label>
+      <p id="ai-private-review-status" role="status"></p><ul id="ai-private-reviews"></ul><button id="ai-clear-private" type="button">我已人工处理：跳过暂停内容并清空AI上下文</button>
+      <p id="ai-private-archive-status" role="status"></p><ul id="ai-private-archives"></ul>
+      <details><summary>普通私聊的适用范围和数据保护</summary><p>请由好友或另一个QQ发来新消息。自己发送、临时会话和历史事件不触发。已开启识图时可处理单张图片和图片表情包；内置QQ表情只有编号元数据时不会假装看到像素。文件、音视频及其它不支持的消息跳过，不锁住后续文字。真实 @ 元数据可移除；引用编号须能在本地核对为同一会话，未核对引用跳过，不补读引用正文。回复仍以当前QQ发到原会话，好友也会看到。</p><p>普通对话按已保存的 API 接收方发送。当前正文和拟用历史检查已识别的凭据及敏感内容，命中时不外发；规则不能保证识别所有隐私，请勿发送秘密。不再以固定句式决定普通问题能否聊天，不安装或调用本地审核模型。已确认的同会话模型回复可用于后续多轮。</p><p>敏感内容的待处理区不存或显示原文，仅有脱敏标记、原因、时间。清空只跳过旧内容，不回放；最多100个敏感暂停会话，满后停止普通API私聊外发。</p></details>
+      <div class="command-fields"><label>AI后端<select id="ai-backend"><option value="api">普通 API · 独立API计费</option><option value="chatgpt">Sign in with ChatGPT · 本人套餐</option></select></label></div>
+      <div class="config-states"><p><strong>编辑草稿</strong><span id="ai-draft-status">读取中</span></p><p><strong>已保存配置</strong><span id="ai-saved-status">读取中</span></p><p><strong>QQ 当前使用</strong><span id="ai-runtime-status">读取中</span></p></div>
+      <section id="ai-account-pool-settings" class="diagnostic-box" aria-labelledby="connections-title">
+  <h3 id="connections-title">API 连接与主备</h3>
+  <p id="pool-status" role="status">正在读取已保存连接</p>
+  <p id="pool-original-status"></p>
+  <div class="login-actions"><button id="pool-use-existing" type="button">把原已保存 API 加为主连接（无需重填 Key）</button><button id="pool-add-connection" type="button">添加独立连接</button></div>
+  <p>每个连接可分别填写名称、兼容接口、地址和模型。目前支持 Chat Completions 与 Responses；其他原生协议需要对应适配器。添加和保存均不测试接口、不启用路由。</p>
+  <div class="command-fields"><label>调度方式<select id="pool-mode"><option value="primary_backup">主备：先主连接，明确故障时使用备用</option><option value="round_robin">轮询：新请求按所选连接顺序分配</option></select></label><label>主连接<select id="pool-primary-choice"><option value="">请明确选择主连接</option></select></label></div>
+  <div id="pool-backup-choices" aria-label="备用连接及顺序"></div>
+  <p>备用顺序可调整。同一账户的多个连接使用相同记账代号和预算；额度不足、授权错误、429、未知结果或已经开始回答时，不换连接重放。</p>
+  <div id="pool-connections"></div>
+  <label class="permission-switch"><input id="pool-reference-consent" type="checkbox">我确认引用所选已保存凭据的句柄，只用于它原来绑定的地址和协议；不复制或显示密钥</label>
+  <button id="pool-save" type="button">保存连接与主备（保持账户池关闭）</button>
+  <hr>
+  <label class="permission-switch"><input id="pool-enabled" type="checkbox" disabled>账户池当前已启用（以服务器状态为准）</label>
+  <p id="pool-route-summary"></p>
+  <label class="permission-switch"><input id="pool-enable-consent" type="checkbox">我确认把后续文字请求及所需上下文发往上方保存的主备连接，并按各账户预算运行</label>
+  <div class="login-actions"><button id="pool-enable" type="button">启用账户池</button><button id="pool-disable" type="button">关闭账户池，沿用原连接</button></div>
+  <p id="pool-enable-help"></p>
+  <p>账户池开关与“AI 聊天总开关”独立。图片与原有草稿测试继续使用原连接；此处不会自动开启 AI、自动补发或发送测试。</p>
+  <p>主备账户池始终发送各连接的自定义输出 Token 预算，供账户额度预留使用。“由平台决定”仅适用于原连接、图片和原有草稿测试；加入主备时使用保留的自定义数值。各连接超时分别生效。</p>
+</section>
+
+
+
+
+<details id="ai-api-settings" open><summary>普通API · 模型与连接设置</summary>
+        <label class="exemption-field">平台组合<select id="ai-api_platform"><option value="custom">自定义 / 旧配置</option><option value="intern_discovery">书生 Discovery · OpenAI Chat</option><option value="cmecloud">移动云震泽 · OpenAI Chat</option><option value="openai">OpenAI API · 独立计费</option></select></label>
+        <p id="ai-platform-hint">选择平台会填写配套地址、协议和示例模型；不会携带上一平台的密钥。保存不代表认证成功。</p>
+        <div class="command-fields"><label>API格式<select id="ai-api_format"><option value="chat_completions">Chat Completions</option><option value="responses">Responses</option></select></label><label>API模型<input id="ai-api_model" list="ai-model-suggestions" autocomplete="off" placeholder="按平台准确模型标识填写"><datalist id="ai-model-suggestions"></datalist></label></div>
+        <label class="exemption-field">API基础地址<input id="ai-api_base_url" autocomplete="off"></label>
+        <label class="exemption-field">本次草稿的密钥来源<select id="ai-credential-source"><option value="new">使用本次输入的新密钥（未保存）</option><option value="saved" id="ai-saved-credential-option" disabled>使用已绑定当前目标的保存密钥</option></select></label>
+        <div class="command-fields" id="ai-new-key-fields"><label>本次输入的API密钥<input type="password" id="ai-key" autocomplete="new-password" spellcheck="false" placeholder="填写当前平台自己的密钥"></label><button id="ai-toggle-key" type="button" aria-controls="ai-key" aria-pressed="false">显示本次输入</button></div><p id="ai-key-state"></p>
+        <div class="login-actions"><button id="ai-test-api" type="button">测试当前草稿（不保存、不发QQ）</button><button id="ai-models" type="button">用当前草稿读取模型</button><button id="ai-clear-key" type="button">删除已保存密钥</button></div>
+        <p>OpenAI Chat 基础地址填写到 /v1，不重复填写 /chat/completions；Anthropic/SystemOne 协议当前未实现，请使用平台的 OpenAI Chat 组合。测试只发固定英文检查，不带QQ私聊或历史，不自动重试；使用当前草稿的模型、Token上限和超时。新密钥仅用于本次请求，点击保存前不会写入凭据文件。实际回复仅留在本页，刷新后清除；脱敏阶段和HTTP结果会保存。额度及费用以平台为准。</p>
+        <div class="diagnostic-box"><h3>本页草稿测试结果</h3><div id="ai-test-target">本页尚未测试当前草稿。</div><div id="ai-test-summary" role="status">保存 ≠ 认证成功。测试成功后仍需手动保存，再开启顶部QQ AI开关。</div><pre id="ai-test-reply" hidden></pre></div>
+      </details>
+
+      <details id="ai-group-settings"><summary id="ai-group-summary">群聊设置（可选；普通私聊无需填写）</summary>
+        <h3>触发方式</h3><p>群名单、触发方式和聊天口令可以单独保存。昵称可选开头或任意位置；引用旧@、@全体及机器人回声不会触发。</p><input id="ai-trigger" type="hidden" value="mention">
+        <h3>谁能使用</h3><p>普通 API 只在以下已授权群内处理，未拉黑群成员可用真实 @或已开启的昵称方式触发；黑名单留空表示不屏蔽群成员。口令管理者和撤回重发权限保持独立。ChatGPT 套餐仍仅本人使用。</p>
+        <div class="command-fields"><label>响应群名单（可编辑）<input id="ai-groups" placeholder="空白不启用AI群聊"></label><label>普通 API 群聊黑名单QQ号<input id="ai-group_blacklist" placeholder="留空不屏蔽；只约束群聊"></label></div>
+        <h3>机器人登录账号本人</h3><label class="permission-switch"><input type="checkbox" id="ai-allow_self">允许当前QQ本人按所选方式在这些群里触发</label><p>“本人”指运行脚本的QQ账号，需要NapCat上报自身消息。这个选项不会授权其他群友，普通API自发私聊仍不触发。本人示例：<code id="ai-own-example">@当前机器人QQ 你好</code>。</p>
+        <p id="ai-group-trigger-status" role="status"></p>
+        <div class="command-fields"><label>群聊触发方式<select id="ai-group_trigger_mode"><option value="mention_or_name">真实@或已开启的昵称</option><option value="mention">只用真实@</option><option value="name">只用昵称</option><option value="command">使用聊天口令</option></select></label><label>聊天口令<input id="ai-group-command-prefix" placeholder="/ai"></label></div><button id="ai-save-group-settings" type="button">保存群名单和触发设置（保持AI开关）</button><p id="ai-group-save-status" role="status"></p>
+        <h3>本地附近消息缓存</h3><p>仅缓存已授权群的新文字，不持续调用云模型。条数/时长可在下方限额中设置；只留内存，关闭、重配或重启清空，不补读旧消息。</p>
+        <label class="permission-switch"><input type="checkbox" id="ai-group_context_export">允许被@时向当前普通API发送同群附近文字（排除群聊黑名单成员）</label><input id="ai-group_context_target" type="hidden"><p>外发范围使用已保存的缓存条数、保留时间和群背景字符预算（可在高级设置修改）；只含原授权群内未拉黑成员的普通文字，本人另受上方开关限制。接收方改变后须重新选择开关确认；已识别敏感文字不外发；规则不能保证发现所有隐私。不跨群、不混私聊。引用资料不是指令。仅触发时产生模型用量，上下文可能增加Token费用。</p><p id="ai-group-context-status" role="status"></p>
+      </details>
+      <details id="ai-siwc-settings"><summary>ChatGPT套餐 · 独立本人范围</summary><p id="ai-oauth-stage" role="status"></p><p>需在网页完成授权并回到本机页面，出现已保存账户才算绑定完成。若失败，只反馈下方阶段和错误码，请勿粘贴回调完整链接。</p>
+        <p>仅当前验证QQ本人在指定会话明确触发，不扩展为多人套餐服务；身份登录不等于套餐推理授权，不自动换用API计费。</p>
+        <div class="command-fields"><label>ChatGPT账户<select id="ai-active_profile"><option value="">尚未授权</option></select></label><label>ChatGPT模型<input id="ai-siwc_model" autocomplete="off"></label></div>
+        <label class="exemption-field">套餐本人私聊会话名单<input id="ai-private_peers" placeholder="普通API私聊不使用此名单"></label>
+        <label class="permission-switch"><input type="checkbox" id="ai-plan_allow_self">允许当前QQ本人在上述套餐私聊会话用口令触发（仅本人）</label><label>套餐私聊口令<input id="ai-prefix"></label>
+        <div class="login-actions"><button id="ai-sign-in" type="button">Sign in with ChatGPT</button><button id="ai-reconsent" type="button">重新授权所选账户</button><button id="ai-sign-out" type="button">退出所选账户</button><button id="ai-cancel-sign-in" type="button">取消待完成登录</button><button id="ai-siwc-models" type="button">读取已保存套餐模型</button></div>
+      </details>
+      <details id="ai-persona-settings"><summary>AI人设、称呼与唤起昵称</summary><p>名字、对你的称呼、性格和表达方式均可自由修改；留空表示不指定。保存后用于后续对话，并清空AI对话上下文。这里的名字不修改QQ账号资料。</p><div class="command-fields"><label>AI名字<input id="ai-bot_name" ></label><label>对提问者的称呼<input id="ai-bot_address" ></label></div><label>性格与表达风格<textarea id="ai-bot_persona" rows="4" ></textarea></label><button type="button" id="ai-save-persona">保存人设与称呼（保持AI开关）</button><p id="ai-persona-save-status" role="status"></p><h3>成员称呼与群提醒</h3><p id="chat-display-policy">自动模式优先使用本条消息的群名片或昵称；主人专属称呼优先。固定模式继续使用上面的称呼。以下AI自定义称呼独立于撤回绑定，不修改原有绑定。</p><label>普通成员称呼<select id="ai-chat_address_mode"><option value="auto">自动名片／昵称</option><option value="fixed">固定称呼</option></select></label><label>真实群提醒<select id="ai-chat_mention_mode"><option value="when_needed">需要提醒时允许 @</option><option value="off">关闭真实 @</option></select></label><p>普通回复不强制提醒，只能提及本次已确认的同群对象，不按重名猜人。引用对象与提问者分别识别。</p><label>AI自定义称呼（JSON数组；私聊group_id留空）<textarea id="ai-chat_display_overrides" rows="3" placeholder='[{&quot;group_id&quot;:&quot;群号&quot;,&quot;user_id&quot;:&quot;成员QQ号&quot;,&quot;name&quot;:&quot;称呼&quot;}]'></textarea></label><h3>聊天认主</h3><p>绑定QQ号仅用于聊天个性化，不会授予启停或管理员权限。按本条消息真实作者匹配，昵称、自称和引用作者不参与认主；模型只接收是否主人和称呼，不接收绑定QQ号。留空可解除绑定。</p><div class="command-fields"><label>聊天主人QQ号<input id="ai-chat_owner_qq" inputmode="numeric" maxlength="12" autocomplete="off"></label><label>对主人的称呼<input id="ai-chat_owner_address" ></label></div><button type="button" id="ai-save-chat-identity">保存聊天认主（保持控制权限）</button><p id="ai-chat-identity-save-status" role="status"></p><h3>昵称唤醒</h3><p>昵称数量不固定；用逗号或换行分隔。</p><label>额外唤起昵称<textarea id="ai-bot_aliases" rows="2"></textarea></label><label class="permission-switch"><input id="ai-group_name_trigger" type="checkbox">开启昵称唤醒</label><label>昵称匹配位置<select id="ai-name_trigger_position"><option value="prefix">消息开头</option><option value="anywhere">消息任意位置</option></select></label><p>响应范围由下方群名单独立设置。机器人自身发出的昵称文字不触发，避免自答循环。</p><button type="button" id="ai-save-nicknames">保存昵称设置（保持AI开关）</button><p id="ai-nickname-save-status" role="status"></p></details>
+      <details id="ai-local-review-settings"><summary>可选的本机语义审查</summary><p>普通自由聊天不要求安装本地模型。此功能只用于已有 Ollama 与 qwen3:4b 的用户，默认关闭；仅连接127.0.0.1:11434，不自动安装或下载。主动启用后模型不可用时该条不外发，不使用远程审查回退。本地模型也可能误判或漏判。</p><label class="permission-switch"><input id="ai-private_local_review" type="checkbox">额外使用已安装的本机语义审查</label><p id="ai-local-review-status" role="status"></p></details>
+      <details id="ai-advanced-settings"><summary>额度、上下文及额外任务说明</summary><div class="command-fields" id="ai-limits"></div><button id="ai-save-output-budget" type="button">仅保存原连接输出预算与超时（保持AI开关）</button><p id="ai-output-budget-save-status" role="status"></p><label>群聊/套餐额外任务说明<textarea id="ai-instructions" rows="3"></textarea></label><p>普通API私聊使用已保存的通用说明、身份与性格，以及资料来源和工具能力边界；问答历史按账号、会话、用户、后端隔离，不上传撤回缓存。次数上限不等于金额上限；队列和正文不跨重启保留，未知QQ送达不盲重试。</p></details>
+      <div class="login-actions"><button class="action" id="ai-save" type="button">保存当前草稿（AI保持关闭）</button><button id="ai-discard" type="button">放弃草稿，载入已保存配置</button><button id="ai-reset" type="button">取消全部并清空AI上下文</button></div><p id="ai-save-status" role="status"></p><p id="ai-model-list"></p>
+    </section></section>
+  </main>
+  <script nonce="__SESSION_TOKEN__">
+    const session = '__SESSION_TOKEN__';
+    const element = (name) => document.getElementById(name);
+    function showFeature(name){for(const feature of ['recall','ai']){const active=feature===name;element(feature+'-workspace').hidden=!active;element('feature-'+feature).setAttribute('aria-pressed',String(active));element('feature-'+feature+'-card').classList.toggle('active',active);}}
+    element('feature-recall').onclick=()=>showFeature('recall');element('feature-ai').onclick=()=>showFeature('ai');showFeature('ai');
+    let friends = [], groups = [], viewType = null, selected = '';
+    let connected = false, current = null, busy = false, loaded = false;
+    const selections = { group: '', private: '' };
+    let lastRecallView = '';
+    let commandsDirty = false;
+    let exemptionsDirty = false;
+    let lastRecallNameView = '';
+    let recallNameEditingKey = null, recallNameEditorRevision = 0;
+    let speedDirty = false;
+    let cacheDirty = false;
+    let deliveryDirty = false;
+    let permissionDraft = [], permissionMembers = [], permissionGeneration = 0, membersLoading = false;
+    let lastPermissionView = '', permissionAccount = '';
+    async function api(path, body, signal) {
+      const response = await fetch(path, {
+        method: body === undefined ? 'GET' : 'POST',
+        headers: { 'X-QQ-Recall-Session': session, 'Content-Type': 'application/json' },
+        body: body === undefined ? undefined : JSON.stringify(body),
+        signal,
+      });
+      const value = await response.json();
+      if (!response.ok){const error=new Error(value.message||value.error||'操作失败，请重试。');error.code=value.error;error.field=value.field;throw error;}
+      return value;
+    }
+    function resetRecallNameEditor() {
+      for (const id of ['recall-name-group','recall-name-qq','recall-name-value']) element(id).value = '';
+      element('recall-name-group').readOnly = false; element('recall-name-qq').readOnly = false;
+      recallNameEditingKey = null; recallNameEditorRevision++;
+    }
+    async function saveRecallName(input, action = 'save') {
+      const message = element('recall-name-message');
+      if (busy) { message.textContent = '正在处理其他操作，当前输入已保留，请稍候再试。'; return; }
+      const revision = recallNameEditorRevision, deletedKey = String(input.group_id).trim() + ':' + String(input.qq_id).trim();
+      const deletingEditedRow = action === 'delete' && recallNameEditingKey === deletedKey;
+      busy = true;
+      try {
+        updateButtons(); message.textContent = action === 'delete' ? '正在删除，尚未确认结果…' : '正在保存，尚未确认结果…';
+        display(await api('/api/recall-name-binding', input, AbortSignal.timeout(15000)));
+        if (action === 'delete') {
+          if (deletingEditedRow && recallNameEditorRevision === revision) {
+            resetRecallNameEditor(); message.textContent = '已删除当前编辑的条目，并退出编辑。';
+          } else if (deletingEditedRow) {
+            recallNameEditingKey = null; element('recall-name-group').readOnly = false; element('recall-name-qq').readOnly = false;
+            message.textContent = '已删除原编辑条目；之后输入的内容已保留，可作为新绑定保存。';
+          } else message.textContent = '已删除该条目；上方未保存输入和编辑状态已保留。';
+        } else if (recallNameEditorRevision === revision) {
+          resetRecallNameEditor(); message.textContent = input.name.trim() ? '已保存：后续撤回立即使用该名称。已排队内容不改写。' : '已删除：后续撤回恢复原昵称回退。';
+        } else message.textContent = '已保存本次提交；之后输入的内容已保留，尚未保存。';
+      } catch (error) {
+        message.textContent = error.name === 'TimeoutError' || error.name === 'AbortError'
+          ? '等待结果超时，输入已保留。请先核对列表或刷新读取状态，再决定是否重试。'
+          : error instanceof TypeError ? '无法连接助手，输入已保留。请核对连接后再试。'
+          : error instanceof SyntaxError ? '助手返回的结果无法解析，输入已保留。请先核对列表状态。'
+          : '操作失败：' + error.message + '；输入已保留。';
+      }
+      finally { busy = false; updateButtons(); }
+    }
+    function renderRecallNames(value) {
+      const state = value || {bindings:[]}, rows = state.bindings || [];
+      element('recall-name-summary').textContent = '群内撤回显示名 · ' + rows.length + ' 条绑定';
+      if (state.error) element('recall-name-message').textContent = state.error;
+      const signature = JSON.stringify(rows); if (signature === lastRecallNameView) return; lastRecallNameView = signature;
+      const list = element('recall-name-list'); list.replaceChildren();
+      for (const entry of rows) {
+        const item = document.createElement('li'), label = document.createElement('span'), edit = document.createElement('button'), remove = document.createElement('button');
+        label.textContent = '群 ' + entry.group_id + ' · QQ ' + entry.qq_id + ' → ' + entry.name;
+        edit.type = remove.type = 'button'; edit.textContent = '编辑'; remove.textContent = '删除'; edit.className = remove.className = 'action secondary';
+        edit.addEventListener('click', () => {
+          recallNameEditingKey = entry.group_id + ':' + entry.qq_id; recallNameEditorRevision++;
+          element('recall-name-group').value = entry.group_id; element('recall-name-qq').value = entry.qq_id; element('recall-name-value').value = entry.name;
+          element('recall-name-group').readOnly = true; element('recall-name-qq').readOnly = true; element('recall-name-value').focus();
+        });
+        remove.addEventListener('click', () => saveRecallName({group_id:entry.group_id,qq_id:entry.qq_id,name:''}, 'delete'));
+        item.append(label, document.createTextNode(' '), edit, document.createTextNode(' '), remove); list.append(item);
+      }
+    }
+    function fillSelect(name, items, placeholder, selectedValue = '') {
+      const select = element(name);
+      select.replaceChildren(new Option(placeholder, ''));
+      for (const item of items) select.add(new Option(item.name + '（' + item.id + '）', item.id));
+      select.value = items.some(item => item.id === selectedValue) ? selectedValue : '';
+    }
+    function renderPermissions() {
+      const view = JSON.stringify(permissionDraft);
+      if (view === lastPermissionView) return;
+      lastPermissionView = view;
+      const root = element('permission-list'); root.replaceChildren();
+      if (!permissionDraft.length) {
+        const hint = document.createElement('span'); hint.className = 'muted'; hint.textContent = '尚未授权其他人。'; root.append(hint);
+      }
+      permissionDraft.forEach((rule, index) => {
+        const row = document.createElement('div'); row.className = 'permission-row';
+        const label = document.createElement('span');
+        label.textContent = rule.type === 'group'
+          ? '群 ' + rule.peer_name + '（' + rule.peer_id + '） → ' + rule.user_name + '（' + rule.user_id + '）'
+          : '私聊 ' + rule.user_name + '（' + rule.user_id + '）';
+        const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'action secondary';
+        remove.textContent = '移除'; remove.disabled = busy;
+        remove.addEventListener('click', () => {
+          permissionDraft.splice(index, 1); commandsDirty = true; renderPermissions();
+          element('permission-message').textContent = '名单已修改，点击保存后生效。';
+        });
+        row.append(label, remove); root.append(row);
+      });
+    }
+    async function loadPermissionMembers() {
+      const generation = ++permissionGeneration;
+      const groupMode = element('permission-type').value === 'group';
+      const groupId = element('permission-group').value;
+      element('permission-group-field').hidden = !groupMode;
+      membersLoading = false; permissionMembers = [];
+      fillSelect('permission-user', [], groupMode ? '先选择群聊' : '请选择好友');
+      if (!groupMode) {
+        permissionMembers = friends;
+        fillSelect('permission-user', friends, '请选择好友'); updateButtons(); return;
+      }
+      if (!connected || !groupId) { updateButtons(); return; }
+      membersLoading = true; updateButtons();
+      element('permission-message').textContent = '正在读取这个群的成员…';
+      try {
+        const members = await api('/api/command-members?group_id=' + encodeURIComponent(groupId));
+        if (generation !== permissionGeneration) return;
+        permissionMembers = members;
+        fillSelect('permission-user', members, '请选择成员');
+        element('permission-message').textContent = members.length ? '选择成员后加入名单；点击保存才生效。' : '暂未读取到其他成员。';
+      } catch (error) {
+        if (generation === permissionGeneration) element('permission-message').textContent = error.message;
+      } finally {
+        if (generation === permissionGeneration) { membersLoading = false; updateButtons(); }
+      }
+    }
+    function renderPermissionSources() {
+      const previous = element('permission-group').value || (current?.target?.type === 'group' ? current.target.id : '');
+      fillSelect('permission-group', groups, '请选择群聊', previous);
+      if (element('command-settings').open || element('permission-type').value === 'private') void loadPermissionMembers();
+    }
+    function renderFriends() {
+      const groupMode = viewType === 'group';
+      const targets = groupMode ? groups : friends;
+      element('friend-title').textContent = groupMode ? '选择群聊' : '选择好友';
+      element('search').placeholder = groupMode ? '搜索群名或群号' : '搜索昵称、备注或 QQ 号';
+      element('search').setAttribute('aria-label', groupMode ? '搜索群聊' : '搜索好友');
+      element('group-tab').setAttribute('aria-selected', String(groupMode));
+      element('friend-tab').setAttribute('aria-selected', String(!groupMode));
+      element('friends').setAttribute('aria-labelledby', groupMode ? 'group-tab' : 'friend-tab');
+      const query = element('search').value.trim().toLocaleLowerCase();
+      const matches = targets.filter((target) =>
+        (target.name + ' ' + (target.nickname || '') + ' ' + target.id).toLocaleLowerCase().includes(query));
+      const root = element('friends'); root.replaceChildren();
+      if (!matches.length) {
+        const hint = document.createElement('div'); hint.className = 'empty';
+        hint.textContent = connected ? (groupMode ? '没有找到匹配的群聊。' : '没有找到匹配的好友。') : '连接成功后会自动显示列表。';
+        root.append(hint);
+      }
+      for (const target of matches) {
+        const button = document.createElement('button');
+        button.type = 'button'; button.className = 'friend' + (selected === target.id ? ' selected' : '');
+        button.setAttribute('aria-pressed', String(selected === target.id));
+        const name = document.createElement('span'); name.textContent = target.name;
+        const qq = document.createElement('small'); qq.textContent = (groupMode ? '群号 ' : 'QQ ') + target.id;
+        button.append(name, qq);
+        button.addEventListener('click', () => { selected = target.id; selections[viewType] = selected; renderFriends(); updateButtons(); });
+        root.append(button);
+      }
+      const choice = targets.find((target) => target.id === selected);
+      element('selection').textContent = choice ? '已选择：' + choice.name + '（' + choice.id + '）' : '尚未选择会话';
+    }
+    function updateButtons() {
+      const sameTarget = current?.target?.type === viewType && current.target.id === selected;
+      element('start').disabled = busy || !connected || !selected ||
+        (current?.active && sameTarget);
+      element('start').textContent = current?.active && !sameTarget ? '切换并开始' : '开始监听';
+      element('stop').disabled = busy || !current?.active;
+      element('resend').disabled = busy;
+      element('save-resend-exemptions').disabled = busy;
+      element('save-recall-name').disabled = busy;
+      element('reset-recall-name').disabled = busy;
+      for (const button of element('recall-name-list').querySelectorAll('button')) button.disabled = busy;
+      element('resend-exempt-ids').disabled = busy;
+      element('self-resend').disabled = busy;
+      element('group-tab').disabled = busy;
+      element('friend-tab').disabled = busy;
+      element('quick-login').disabled = busy;
+      element('save-commands').disabled = busy;
+      element('save-interval').disabled = busy;
+      element('send-interval').disabled = busy;
+      element('save-cache').disabled = busy;
+      element('cache-limit').disabled = busy;
+      element('cache-ttl').disabled = busy;
+      for (const name of ['outbox-limit', 'outbox-ttl', 'match-seconds', 'save-delivery']) element(name).disabled = busy;
+      element('recovery').disabled = busy;
+      element('allow-others').disabled = busy;
+      element('permission-type').disabled = busy;
+      element('permission-group').disabled = busy || !connected;
+      element('permission-user').disabled = busy || !connected || membersLoading;
+      element('add-permission').disabled = busy || !connected || membersLoading || !element('permission-user').value;
+      for (const button of element('permission-list').querySelectorAll('button')) button.disabled = busy;
+    }
+    function renderRecalls(records) {
+      const view = JSON.stringify(records);
+      if (view === lastRecallView) return;
+      lastRecallView = view;
+      const root = element('recalls'); root.replaceChildren();
+      if (!records.length) {
+        const empty = document.createElement('div'); empty.className = 'empty';
+        empty.textContent = '开始监听后，撤回的内容会显示在这里。'; root.append(empty);
+      }
+      for (const record of records) {
+        const card = document.createElement('article'); card.className = 'recall-item';
+        const meta = document.createElement('div'); meta.className = 'recall-meta';
+        const attribution = record.conversation_type === 'group' ? record.recall_label : record.sender_name;
+        const time = document.createElement('time'); time.textContent = record.time +
+          (attribution ? ' · ' + attribution : '');
+        const status = document.createElement('span'); status.textContent = record.status;
+        meta.append(time, status);
+        const body = document.createElement('div'); body.className = 'recall-body';
+        for (const segment of record.segments) {
+          if (segment.type === 'image' && segment.url) {
+            const image = document.createElement('img'); image.className = 'recall-image';
+            image.src = segment.url; image.alt = segment.summary; image.loading = 'lazy';
+            image.addEventListener('error', () => {
+              const label = document.createElement('span'); label.className = 'recall-other';
+              label.textContent = '图片预览未缓存成功'; image.replaceWith(label);
+            });
+            body.append(image);
+          } else {
+            const label = document.createElement('span');
+            label.className = segment.type === 'text' ? 'recall-text' : 'recall-other';
+            label.textContent = segment.text || segment.summary || '图片预览未缓存成功';
+            body.append(label);
+          }
+        }
+        card.append(meta, body); root.append(card);
+      }
+    }
+    function display(state) {
+      applySettingSchema(state.ai);
+      current = state; connected = state.connected;
+      element('recall-overview').textContent=(state.active?'监听中':'未监听')+' · 待发 '+state.pending_resends+' · '+(state.auto_resend?'自动重发已开':'仅本机显示');
+      displayAI(state.ai);
+      if (state.self_id && permissionAccount !== state.self_id) {
+        if (permissionAccount) {
+          commandsDirty = false; loaded = false; permissionGeneration++; permissionMembers = [];
+          element('permission-group').value = ''; element('permission-user').value = '';
+        }
+        permissionAccount = state.self_id;
+      }
+      if (viewType === null) {
+        viewType = state.target?.type || state.target_type || 'group';
+        selected = state.target?.id || '';
+        selections[viewType] = selected;
+        renderFriends();
+      }
+      element('connection').textContent = connected ? 'NapCat 已自动连接' :
+        state.reconnect_in_seconds ? state.reconnect_in_seconds + ' 秒后重连' : '正在自动连接…';
+      element('connection').className = 'tag ' + (connected ? 'ok' : 'wait');
+      element('monitoring').textContent = state.active ? (connected ?
+        '正在监听' + (state.target?.type === 'group' ? '群聊' : '好友') +
+        (state.auto_resend ? ' · 自动重发已开启' : ' · 仅在本页显示') : '等待恢复连接') : '已停止 / 尚未开始';
+      element('resend').checked = state.auto_resend;
+      element('mode-status').textContent = state.auto_resend ? '已开启' : '已关闭';
+      const exemptIds = state.resend_exempt_qq_ids || [];
+      renderRecallNames(state.recall_name_bindings);
+      element('resend-exempt-summary').textContent = '撤回重发豁免白名单 · ' + exemptIds.length + ' 人';
+      if (!exemptionsDirty) element('resend-exempt-ids').value = exemptIds.join('\n');
+      if (state.resend_exempt_error) element('resend-exempt-message').textContent = state.resend_exempt_error;
+      element('self-resend').checked = state.resend_self === true;
+      element('self-resend-status').textContent = state.resend_self ? '已开启' : '已关闭';
+      element('mode-description').textContent = state.auto_resend
+        ? '自动重发已开启：之后检测到的撤回会发回当前监听的会话。此前已显示的内容不会补发。'
+        : '自动重发已关闭：撤回内容只显示在本地页面；仍按所设容量和时间保留当前会话消息。';
+      element('target').textContent = state.target?.name || '先选择群聊或好友';
+      element('target-id').textContent = state.target
+        ? (state.target.type === 'group' ? '群号 ' : 'QQ ') + state.target.id : '';
+      element('cached').textContent = state.cached + ' / ' + state.cache_messages_per_chat;
+      if (!cacheDirty) {
+        element('cache-limit').value = state.cache_messages_per_chat;
+        element('cache-ttl').value = state.cache_ttl_minutes;
+      }
+      const cache = state.cache_stats || {};
+      element('cache-status').textContent = '最多 ' + state.cache_messages_per_chat + ' 条、' + state.cache_ttl_minutes +
+        ' 分钟；等待匹配 ' + (state.pending_recall_matches || 0) + '/50 条，最多 ' + (state.recall_match_seconds || 15) + ' 秒。已补匹配 ' +
+        (cache.matched_early || 0) + ' 条，等待超时 ' + (cache.wait_timeouts || 0) + ' 条；容量淘汰 ' +
+        (cache.capacity_evictions || 0) + ' 条，过期 ' + (cache.expired || 0) + ' 条，资源超限 ' + (cache.resource_rejections || 0) + ' 条。';
+      if (!deliveryDirty) {
+        element('outbox-limit').value = state.outbox_limit;
+        element('outbox-ttl').value = state.outbox_ttl_minutes;
+        element('match-seconds').value = state.recall_match_seconds;
+      }
+      const delivery = state.delivery || {};
+      element('delivery-status').textContent = '留存 ' + (delivery.pending || 0) + '/' + state.outbox_limit +
+        ' 条，其中不确定 ' + (delivery.uncertain_count || 0) + ' 条；最多 ' + state.outbox_ttl_minutes + ' 分钟。累计舍弃最早 ' +
+        (delivery.dropped_oldest || 0) + ' 条，过期 ' + (delivery.expired || 0) + ' 条。';
+      element('sent').textContent = state.sent;
+      element('missing').textContent = state.missing;
+      element('pending').textContent = state.pending_resends || 0;
+      const seconds = state.send_interval_seconds ?? 3, jitter = state.send_jitter_seconds ?? 0.3;
+      if (!speedDirty) element('send-interval').value = seconds;
+      element('queue-status').textContent = '实际 ' + Number(Math.max(0, seconds - jitter).toFixed(3)) + '～' +
+        Number((seconds + jitter).toFixed(3)) + ' 秒，等待重发 ' + (state.pending_resends || 0) + ' 条';
+      if (state.recovery) {
+        element('recovery').checked = state.recovery.enabled;
+        element('recovery-status').textContent = state.recovery.paused ? '已暂停' : state.recovery.enabled ? '已开启' : '已关闭';
+        element('recovery-message').textContent = state.recovery.message +
+          (state.recovery.next_action_in_seconds ? '（约 ' + state.recovery.next_action_in_seconds + ' 秒后检查）' : '');
+      }
+      element('error').textContent = state.error || '';
+      if (state.commands) {
+        element('commands-summary').textContent = '启停口令与授权：' + state.commands.on + ' / ' + state.commands.off +
+          (state.commands.allow_others ? ' · 已启用 ' + state.commands.permissions.length + ' 项授权' : ' · 仅本人');
+        if (!commandsDirty) {
+          element('command-on').value = state.commands.on;
+          element('command-off').value = state.commands.off;
+          element('command-reply-on').value = state.commands.reply_on || '开了';
+          element('command-reply-off').value = state.commands.reply_off || '关了';
+          element('allow-others').checked = state.commands.allow_others === true;
+          permissionDraft = structuredClone(state.commands.permissions || []);
+          renderPermissions();
+        }
+      }
+      const logs = element('logs'); logs.replaceChildren();
+      for (const item of state.logs.slice().reverse()) {
+        const row = document.createElement('li'), time = document.createElement('time');
+        time.textContent = item.time; row.append(time, document.createTextNode(item.message)); logs.append(row);
+      }
+      if (!selected && state.target?.type === viewType) selected = state.target.id;
+      renderRecalls(state.recalls || []);
+      updateButtons();
+    }
+    async function refresh() {
+      try {
+        const state = await api('/api/state');
+        display(state);
+        if (state.connected && !loaded) {
+          [friends, groups] = await Promise.all([api('/api/friends'), api('/api/groups')]);
+          loaded = true; renderFriends(); renderPermissionSources();
+        }
+        if (!state.connected) loaded = false;
+      } catch {
+        element('connection').textContent = '页面与程序已断开';
+        element('connection').className = 'tag wait';
+        element('error').textContent = '请保持启动窗口开启；程序退出后，重新双击 start.cmd。';
+        connected = false; updateButtons();
+      }
+    }
+    element('search').addEventListener('input', renderFriends);
+    element('send-interval').addEventListener('input', () => { speedDirty = true; });
+    for (const name of ['cache-limit', 'cache-ttl']) element(name).addEventListener('input', () => { cacheDirty = true; });
+    element('save-cache').addEventListener('click', async () => {
+      if (!element('cache-limit').reportValidity() || !element('cache-ttl').reportValidity()) return;
+      busy = true; updateButtons();
+      try {
+        const state = await api('/api/cache-settings', { limit: Number(element('cache-limit').value), ttl_minutes: Number(element('cache-ttl').value) });
+        cacheDirty = false; display(state);
+      } catch (error) { element('error').textContent = error.message; }
+      finally { busy = false; updateButtons(); }
+    });
+    for (const name of ['outbox-limit', 'outbox-ttl', 'match-seconds']) element(name).addEventListener('input', () => { deliveryDirty = true; });
+    element('save-delivery').addEventListener('click', async () => {
+      if (!['outbox-limit', 'outbox-ttl', 'match-seconds'].every(name => element(name).reportValidity())) return;
+      busy = true; updateButtons();
+      try {
+        const state = await api('/api/delivery-settings', { limit: Number(element('outbox-limit').value),
+          ttl_minutes: Number(element('outbox-ttl').value), match_seconds: Number(element('match-seconds').value) });
+        deliveryDirty = false; display(state);
+      } catch (error) { element('error').textContent = error.message; }
+      finally { busy = false; updateButtons(); }
+    });
+    element('save-interval').addEventListener('click', async () => {
+      if (!element('send-interval').reportValidity()) return;
+      busy = true; updateButtons();
+      try {
+        const state = await api('/api/send-interval', { seconds: Number(element('send-interval').value) });
+        speedDirty = false; display(state);
+      } catch (error) { element('error').textContent = error.message; }
+      finally { busy = false; updateButtons(); }
+    });
+    element('recovery').addEventListener('change', async () => {
+      const enabled = element('recovery').checked;
+      busy = true; updateButtons();
+      try { display(await api('/api/recovery', { enabled })); }
+      catch (error) {
+        element('recovery').checked = current?.recovery?.enabled || false;
+        element('error').textContent = error.message;
+      } finally { busy = false; updateButtons(); }
+    });
+    for (const field of ['command-on', 'command-off']) {
+      element(field).addEventListener('input', () => { commandsDirty = true; });
+    }
+    element('allow-others').addEventListener('change', () => { commandsDirty = true; });
+    element('permission-type').addEventListener('change', loadPermissionMembers);
+    element('permission-group').addEventListener('change', loadPermissionMembers);
+    element('permission-user').addEventListener('change', updateButtons);
+    element('command-settings').addEventListener('toggle', () => {
+      if (element('command-settings').open) void loadPermissionMembers();
+    });
+    element('add-permission').addEventListener('click', () => {
+      const type = element('permission-type').value, userId = element('permission-user').value;
+      const member = permissionMembers.find(item => item.id === userId);
+      const group = groups.find(item => item.id === element('permission-group').value);
+      if (!member || (type === 'group' && !group)) return;
+      const rule = { type, peer_id: type === 'group' ? group.id : member.id, user_id: member.id,
+        peer_name: type === 'group' ? group.name : member.name, user_name: member.name };
+      if (permissionDraft.some(item => item.type === rule.type && item.peer_id === rule.peer_id && item.user_id === rule.user_id)) {
+        element('permission-message').textContent = '此人已在该来源的授权名单中。'; return;
+      }
+      if (permissionDraft.length >= 50) { element('permission-message').textContent = '名单最多 50 项，请先移除不需要的授权。'; return; }
+      permissionDraft.push(rule); commandsDirty = true; renderPermissions();
+      element('permission-message').textContent = '已加入名单，请勾选允许他人并点击保存后生效。';
+    });
+    for (const name of ['command-reply-on', 'command-reply-off']) {
+      element(name).addEventListener('input', () => { commandsDirty = true; });
+    }
+    element('resend-exempt-ids').addEventListener('input', () => { exemptionsDirty = true; });
+    element('save-recall-name').addEventListener('click', () => saveRecallName({group_id:element('recall-name-group').value,qq_id:element('recall-name-qq').value,name:element('recall-name-value').value}));
+    for (const id of ['recall-name-group','recall-name-qq','recall-name-value']) element(id).addEventListener('input', () => { recallNameEditorRevision++; });
+    element('reset-recall-name').addEventListener('click', resetRecallNameEditor);
+    element('save-resend-exemptions').addEventListener('click', async () => {
+      busy = true; updateButtons();
+      try {
+        const state = await api('/api/resend-exemptions', { qq_ids: element('resend-exempt-ids').value });
+        exemptionsDirty = false; display(state);
+        element('resend-exempt-message').textContent = '已保存，立即生效；对应作者尚未发送的队列已过滤。';
+      } catch (error) { element('resend-exempt-message').textContent = error.message; }
+      finally { busy = false; updateButtons(); }
+    });
+    element('save-commands').addEventListener('click', async () => {
+      busy = true; updateButtons();
+      try {
+        const state = await api('/api/commands', {
+          on: element('command-on').value, off: element('command-off').value,
+          reply_on: element('command-reply-on').value, reply_off: element('command-reply-off').value,
+          allow_others: element('allow-others').checked, permissions: permissionDraft,
+        });
+        commandsDirty = false; display(state);
+        element('permission-message').textContent = '口令、确认回复与授权已保存。有效命令只在原会话原样发送配置文本，不加前后缀。';
+      } catch (error) { element('error').textContent = error.message; }
+      finally { busy = false; updateButtons(); }
+    });
+    element('quick-login').addEventListener('click', async () => {
+      busy = true; updateButtons();
+      element('login-message').textContent = '正在检查本机登录状态…';
+      try {
+        const result = await api('/api/login', {});
+        element('login-message').textContent = result.message;
+        const safeURL = /^http:\/\/127\.0\.0\.1:\d+\/webui\/?$/.test(result.webui_url || '');
+        element('login-link').hidden = !result.requires_user_action || !safeURL;
+        if (safeURL) element('login-link').href = result.webui_url;
+      } catch (error) { element('login-message').textContent = error.message; }
+      finally { busy = false; updateButtons(); }
+    });
+    for (const [button, type] of [['group-tab', 'group'], ['friend-tab', 'private']]) {
+      element(button).addEventListener('click', () => {
+        if (viewType === type) return;
+        selections[viewType] = selected;
+        viewType = type; selected = selections[type];
+        element('search').value = '';
+        renderFriends(); updateButtons();
+      });
+    }
+    element('resend').addEventListener('change', async () => {
+      const enabled = element('resend').checked;
+      busy = true; updateButtons();
+      try { display(await api('/api/mode', { auto_resend: enabled })); }
+      catch (error) {
+        element('resend').checked = current?.auto_resend || false;
+        element('error').textContent = error.message;
+      } finally { busy = false; updateButtons(); }
+    });
+    element('self-resend').addEventListener('change', async () => {
+      const enabled = element('self-resend').checked;
+      busy = true; updateButtons();
+      try { display(await api('/api/self-resend', { enabled })); }
+      catch (error) {
+        element('self-resend').checked = current?.resend_self === true;
+        element('error').textContent = error.message;
+      } finally { busy = false; updateButtons(); }
+    });
+    for (const action of ['start', 'stop']) {
+      element(action).addEventListener('click', async () => {
+        busy = true; updateButtons();
+        try {
+          display(await api('/api/' + action, action === 'start'
+            ? { target_type: viewType, target_id: selected } : {}));
+        } catch (error) { element('error').textContent = error.message; }
+        finally { busy = false; updateButtons(); }
+      });
+    }
+    const aiLimits = {"vision_instruction_grace_ms":"单图后等候补充解题指令 / 毫秒","temporary_recovery_attempts":"临时限流自动恢复次数（不重发旧题）","temporary_recovery_min_seconds":"临时限流恢复最少等待 / 秒","temporary_recovery_max_retry_after_seconds":"允许自动恢复的上游Retry-After最大秒数","account_capacity_wait_seconds":"账户额度最多本地等待 / 秒（不会在等待中调用模型）","account_capacity_wait_rounds":"账户额度等待最多重新检查次数","private_review_limit":"私聊待审核会话容量（扩容不自动解除既有审核暂停）","private_archive_limit":"本地私聊审核归档容量（不自动删除已有归档）","vision_cache_limit": "图片定位缓存条数", "vision_cache_bytes": "图片定位缓存字节容量", "vision_overflow_limit": "图片来源歧义标记容量", "delivery_byte_limit": "等待发送正文总字节容量", "concurrency": "全局并发生成任务", "queue_limit": "等待输入容量", "queue_wait_seconds": "基础排队等待 / 秒", "timeout_seconds": "普通回复每路请求超时 / 秒", "cooldown_seconds": "普通回复同会话冷却 / 秒", "daily_requests": "全部功能每日生成任务上限（含测试、主动与被动；不是上游请求数）", "input_chars": "普通回复输入字符上限", "output_chars": "普通回复输出字符上限", "api_max_output_tokens": "普通回复输出 Token 预算", "context_turns": "每会话历史问答轮数", "context_chars": "单次历史与背景字符预算", "context_ttl_minutes": "会话及图片定位保留 / 分钟", "sessions_limit": "会话容量", "delivery_limit": "等待发送容量", "delivery_ttl_minutes": "回复等待发送 / 分钟", "group_cache_limit": "每群本机缓存消息容量", "group_cache_ttl_minutes": "群消息缓存保留 / 分钟", "group_context_chars": "单次群背景字符预算", "group_cache_total_messages": "所有群缓存总消息容量", "group_cache_total_bytes": "所有群缓存正文总字节容量", "group_cache_message_chars": "可缓存的单条群文字字符上限", "context_reference_hops": "引用链最多追溯层数", "context_empty_window_seconds": "空呼唤寻找公共话题窗口 / 秒", "context_empty_lookback": "空呼唤寻找公共话题最多消息数", "participation_cooldown_seconds": "主动参与同群冷却 / 秒", "participation_hourly_limit": "每群滚动1小时尝试上限", "participation_daily_limit": "全部群滚动24小时尝试上限", "participation_global_hourly_limit": "全部群滚动1小时尝试上限", "participation_group_daily_limit": "每群滚动24小时尝试上限", "participation_group_hourly_sent_limit": "每群滚动1小时实际发送上限", "participation_group_daily_sent_limit": "每群滚动24小时实际发送上限", "participation_global_hourly_sent_limit": "全部群滚动1小时实际发送上限", "participation_global_daily_sent_limit": "全部群滚动24小时实际发送上限", "participation_activity_min_messages": "活跃窗口最少不同文字条数", "participation_activity_window_seconds": "主动参与活跃窗口 / 秒", "participation_min_text_chars": "话题文字最少字符", "participation_min_speakers": "活跃窗口最少发言成员", "participation_topic_min_messages": "相关话题最少消息", "participation_topic_min_speakers": "相关话题最少成员", "participation_topic_seed_limit": "本地话题候选种子最多消息", "participation_topic_chars": "主动参与话题摘要最多字符", "participation_quiet_seconds": "最后发言后等待 / 秒", "participation_output_tokens": "主动参与每路输出 Token 预算（独立于普通回复）", "participation_output_chars": "主动参与输出字符上限（独立于普通回复）", "participation_timeout_seconds": "主动参与每路请求超时 / 秒（独立于普通回复）", "participation_stale_seconds": "最后消息后候选有效 / 秒", "participation_max_model_calls": "主动参与单次最多上游请求", "participation_hourly_model_calls": "全部群滚动1小时上游请求预算", "participation_daily_model_calls": "全部群滚动24小时上游请求预算"};
+    for(const[key,label,type]of [['participation_enabled','允许在启用群中主动参与','checkbox'],['participation_group_blacklist','主动参与排除的群号（留空不排除任何启用群）','text']]){const wrapper=document.createElement('label');wrapper.textContent=label;const input=document.createElement('input');input.id='ai-'+key;input.type=type;if(type==='checkbox')wrapper.className='permission-switch';else input.placeholder='群号用空格或逗号分隔';wrapper.append(input);element('ai-limits').append(wrapper);}
+    const budgetModeLabel=document.createElement('label');budgetModeLabel.textContent='原连接 API 输出预算模式';const budgetMode=document.createElement('select');budgetMode.id='ai-api_output_token_mode';budgetMode.add(new Option('自定义 Token 预算','custom'));budgetMode.add(new Option('由平台决定（请求不带输出预算）','platform_default'));budgetModeLabel.append(budgetMode);element('ai-limits').append(budgetModeLabel);
+    function updateBudgetMode(){const managed=element('ai-api_output_token_mode').value==='platform_default';element('ai-api_max_output_tokens').disabled=managed;}
+    function budgetDescription(mode,limit){return mode==='platform_default'?'由平台决定（请求未带输出预算）':mode==='chatgpt_managed'?'由套餐服务决定（请求未带输出预算）':'输出上限 '+limit;}
+    for (const [key,label] of Object.entries(aiLimits)) { const wrapper=document.createElement('label');wrapper.textContent=label;const input=document.createElement('input');input.type='number';input.id='ai-'+key;if(key==='api_max_output_tokens'){input.min='1';input.step='1';}input.step='1';wrapper.append(input);if(key==='api_max_output_tokens'){const help=document.createElement('small');help.id='ai-output-budget-help';help.textContent='“由平台决定”会省略输出预算参数，供应商默认值和上限仍生效，不代表无限；下方数值保留供切回自定义。推理可能与正文共用预算。此模式仅用于原连接、图片和草稿测试；主备账户池使用各连接的明确预算。请求超时与输出字符限制独立生效，保存不会重发旧题。';wrapper.append(help);}element('ai-limits').append(wrapper); }
+    const localLimitNote=document.createElement('p');localLimitNote.id='optional-local-limits-note';localLimitNote.textContent='本地请求预算、次数与冷却默认不限；0＝不限，填写正整数即自行启用该项。资源容量和网络超时独立生效。号码/邮箱过滤与本机语义审查默认关闭；凭据保护及群触发条件保留。';element('ai-limits').prepend(localLimitNote);
+    const recoveryNote=document.createElement('p');recoveryNote.id='temporary-recovery-policy-note';recoveryNote.textContent='临时429只恢复后续新消息，不补发旧题或积压，不在后台请求模型。遵守有效Retry-After；明确临时码缺少有效等待提示时采用1秒起的指数退避，并受当前最少等待、最大自动等待和恢复次数设置约束。未知429无有效等待、明确额度/认证/地区拒绝不会自动恢复；持续失败达到已设次数后显示手动暂停。';element('ai-limits').append(recoveryNote);
+    const extraControls=[['local_identity_filter','可选过滤实际电话、邮箱及证件号（默认关闭；凭据保护始终开启）','checkbox'],['vision_enabled','识图总开关（开启须当前模型已验证）','checkbox'],['vision_reference_enabled','允许同会话引用图片定位','checkbox'],['vision_recent_enabled','允许同用户近期图片定位','checkbox'],['temporary_recovery_enabled','允许临时限流按上游等待时间自动恢复（不重发旧题）','checkbox'],['bot_identity','角色身份 / 背景','textarea'],['daily_reset_timezone','每日生成任务重置时区（IANA，如Asia/Shanghai）','text'],['group_member_policy','群成员回复范围','groupSelect'],['group_allowed_users','允许回复的群成员QQ号（仅名单模式生效）','text'],['private_reply_mode','普通API私聊回复范围','privateSelect'],['participation_topic_required','要求本地识别到共同话题','checkbox'],['participation_filter_smalltalk','跳过寒暄、短笑声等本地判断的小闲聊','checkbox'],['participation_filter_commands','排除以 /、!、！开头的群文字','checkbox'],['participation_instructions','主动参与方式（可自行指定语气、句数及是否保持沉默）','textarea'],['participation_group_overrides','逐群频率覆盖（JSON；留空对象使用通用规则）','textarea']];
+    for(const[key,label,type]of extraControls){if(element('ai-'+key))continue;const wrapper=document.createElement('label');wrapper.textContent=label;const input=document.createElement(type==='textarea'?'textarea':type.endsWith('Select')?'select':'input');input.id='ai-'+key;if(type==='checkbox'){input.type='checkbox';wrapper.className='permission-switch';}else if(type==='text')input.type='text';if(type==='groupSelect')for(const[v,s]of [['blacklist','所有未拉黑成员'],['allowlist','仅允许名单成员（黑名单优先）']])input.add(new Option(s,v));if(type==='privateSelect')for(const[v,s]of [['all','所有未拉黑私聊'],['allowlist','仅私聊名单'],['disabled','关闭私聊回复']])input.add(new Option(s,v));if(type==='textarea')input.rows=4;wrapper.append(input);element('ai-limits').append(wrapper);}
+    function formatAIValue(key,value){if(key==='chat_display_overrides')return JSON.stringify(value,null,2);return Array.isArray(value)?value.join(key==='bot_aliases'?'，':' '):value&&typeof value==='object'?JSON.stringify(value,null,2):value;}
+    function parseGroupOverrides(value){try{return JSON.parse(value||'{}');}catch{return value;}}
+    function applySettingSchema(ai){if(!ai?.settings_schema)return;for(const[key,rule]of Object.entries(ai.settings_schema)){for(const id of ['ai-'+key,'quick-ai-'+key]){const input=element(id);if(!input)continue;input.min=String(rule.min);input.max=String(rule.max);input.step='1';}const input=element('ai-'+key);if(!input)continue;let help=element('ai-rule-'+key);if(!help){help=document.createElement('small');help.id='ai-rule-'+key;input.parentElement.append(help);}help.textContent='整数范围 '+rule.min+'～'+rule.max+(rule.zero?'；0='+rule.zero:'；不支持0')+'。保存后用于后续任务，无需重启。';}}
+    let aiDirty=false, aiLoaded=false, aiLast=null,aiToggleBusy=false,aiLocalError='',aiDraftRevision=0,aiTestRevision=-1,aiKeyBinding='',aiCredentialInitialized=false;
+    const aiNames=['api_output_token_mode','backend','api_platform','api_format','api_base_url','api_model','siwc_model','active_profile','groups','private_peers','private_blacklist','group_blacklist','allow_self','plan_allow_self','group_context_export','group_context_target','private_local_review','trigger','prefix','instructions','bot_name','bot_address','bot_identity','bot_persona','chat_owner_qq','chat_owner_address','chat_address_mode','chat_mention_mode','chat_display_overrides','bot_aliases','group_name_trigger','name_trigger_position','group_trigger_mode','participation_enabled','participation_group_blacklist',...extraControls.map(v=>v[0]),...Object.keys(aiLimits)];
+    const apiFields=['api_output_token_mode','api_platform','api_base_url','api_format','api_model','api_max_output_tokens','timeout_seconds'];
+    const apiPlatforms={custom:{name:'自定义 / 旧配置',models:[]},intern_discovery:{name:'书生 Discovery',base:'https://discovery-api.intern-ai.org.cn/v1',format:'chat_completions',model:'deepseek-v4-flash-0731',models:['deepseek-v4-flash-0731','glm-5.3','kimi-k2.6','minimax-m3','qwen3.8-27b']},cmecloud:{name:'移动云震泽',base:'https://zhenze-huhehaote.cmecloud.cn/v1',format:'chat_completions',model:'DeepSeek-V4-Flash',models:[]},openai:{name:'OpenAI API',base:'https://api.openai.com/v1',format:'responses',model:'',models:[]}};
+    function apiFormTarget(){return Object.fromEntries(apiFields.map(name=>[name,Object.hasOwn(aiLimits,name)?Number(element('ai-'+name).value):element('ai-'+name).value]));}
+    function targetIdentity(){const t=apiFormTarget();let base=t.api_base_url;try{base=new URL(base).href.replace(/\/+$/,'');}catch{}return JSON.stringify([t.api_platform,base,t.api_format]);}
+    function matchesSavedCredential(){const b=aiLast?.auth.api_binding;if(!b||!aiLast.auth.api_configured)return false;return targetIdentity()===JSON.stringify([b.platform,b.base_url,b.format]);}
+    function describeConnection(t){return (apiPlatforms[t.api_platform||t.platform]?.name||'自定义')+' · '+(t.api_base_url||t.base_url)+' · '+(t.api_format||t.format);}
+    function describeTarget(t){return describeConnection(t)+' · '+(t.api_model||t.model||'未填模型');}
+    function hideNewKey(){element('ai-key').type='password';element('ai-toggle-key').textContent='显示本次输入';element('ai-toggle-key').setAttribute('aria-pressed','false');}
+    function clearNewKey(){element('ai-key').value='';aiKeyBinding='';hideNewKey();}
+    function updateDraftState(){if(!aiLast||!aiLoaded)return;updateBudgetMode();const matching=matchesSavedCredential();element('ai-saved-credential-option').disabled=!matching;
+      if(!matching&&element('ai-credential-source').value==='saved')element('ai-credential-source').value='new';
+      const saved=aiLast.config;const summary=saved.backend==='api'?describeTarget(saved):'ChatGPT套餐 · '+(saved.siwc_model||'未填模型');
+      element('ai-saved-status').textContent=summary+' · '+budgetDescription(saved.backend==='chatgpt'?'chatgpt_managed':saved.api_output_token_mode,saved.api_max_output_tokens)+' · 超时 '+saved.timeout_seconds+' 秒。已保存不代表认证成功。';
+      element('ai-runtime-status').textContent=aiLast.enabled?'QQ AI已开启，使用上面的已保存配置；编辑草稿不会切换当前连接。':'QQ AI已关闭；测试和保存均不会自动开启。开启后使用上面的已保存配置。';
+      element('ai-draft-status').textContent=(aiDirty?'有未保存修改 · ':'与已保存设置一致 · ')+(element('ai-backend').value==='api'?describeTarget(apiFormTarget())+' · '+budgetDescription(element('ai-api_output_token_mode').value,element('ai-api_max_output_tokens').value):'ChatGPT套餐草稿');
+      const savedMode=element('ai-credential-source').value==='saved';element('ai-new-key-fields').hidden=savedMode;
+      element('ai-key-state').textContent=aiLast.auth.api_configured?(aiLast.auth.api_binding?'已有密钥仅绑定：'+describeConnection(aiLast.auth.api_binding)+'。'+(matching?'本草稿可明确选择该凭据。':'与当前草稿不匹配，请输入当前平台密钥。'):'旧版已保存密钥尚未绑定平台；不会自动用于新请求，请在本机重新输入后保存。'):'尚未保存密钥；本次输入默认仅用于草稿请求。';
+      if(aiTestRevision>=0&&aiTestRevision!==aiDraftRevision)element('ai-test-summary').textContent='当前草稿已更改；下方保留的是上次测试目标的回复，不能代表当前草稿。';
+    }
+    function markAiDraft(event){aiDirty=true;aiDraftRevision++;const id=event?.target?.id;if(id==='ai-vision_enabled'&&!event.target.checked){element('ai-vision_reference_enabled').checked=false;element('ai-vision_recent_enabled').checked=false;}if(id==='ai-group-command-prefix')element('ai-prefix').value=event.target.value;if(id==='ai-prefix')element('ai-group-command-prefix').value=event.target.value;
+      if(id==='ai-group_context_export')element('ai-group_context_target').value=element('ai-group_context_export').checked?aiLast.config.api_base_url:'';
+      if(['ai-api_base_url','ai-api_platform','ai-api_format'].includes(id)){element('ai-group_context_export').checked=false;element('ai-group_context_target').value='';}
+      if(['ai-api_base_url','ai-api_format'].includes(id)){const p=apiPlatforms[element('ai-api_platform').value];if(p?.base&&(element('ai-api_base_url').value.replace(/\/+$/,'')!==p.base||element('ai-api_format').value!==p.format)){element('ai-api_platform').value='custom';modelSuggestions();}}
+      if(id==='ai-key'){element('ai-credential-source').value='new';aiKeyBinding=targetIdentity();}
+      if(['ai-api_platform','ai-api_base_url','ai-api_format'].includes(id)){if(element('ai-key').value&&aiKeyBinding!==targetIdentity())clearNewKey();element('ai-credential-source').value='new';}
+      updateDraftState();}
+    element('ai-panel').addEventListener('input',markAiDraft);element('ai-panel').addEventListener('change',markAiDraft);
+    function modelSuggestions(){const preset=apiPlatforms[element('ai-api_platform').value];element('ai-model-suggestions').replaceChildren(...(preset?.models||[]).map(id=>new Option(id,id)));}
+    element('ai-api_platform').addEventListener('change',()=>{const preset=apiPlatforms[element('ai-api_platform').value];clearNewKey();element('ai-credential-source').value='new';if(preset?.base){element('ai-api_base_url').value=preset.base;element('ai-api_format').value=preset.format;element('ai-api_model').value=preset.model;}modelSuggestions();});
+    element('ai-credential-source').addEventListener('change',()=>{if(element('ai-credential-source').value==='saved')clearNewKey();});
+    element('ai-toggle-key').onclick=()=>{const showing=element('ai-key').type==='password';element('ai-key').type=showing?'text':'password';element('ai-toggle-key').textContent=showing?'隐藏本次输入':'显示本次输入';element('ai-toggle-key').setAttribute('aria-pressed',String(showing));};
+    function backendPanels(){element('ai-api-settings').hidden=false;element('ai-siwc-settings').hidden=false;}
+    element('ai-backend').addEventListener('change',backendPanels);
+    const diagnosticErrors={authorization_required:'接口认证未通过，请在平台核对密钥及权限',invalid_api_key:'平台拒绝密钥',access_denied:'平台拒绝访问，请核对权限',rate_limit_exceeded:'平台限流或额度限制',insufficient_quota:'平台报告额度不足',model_not_found:'模型名称或可用权限不匹配',generation_incomplete:'模型未完整结束',stream_interrupted:'流式返回中断',stream_required:'平台没有返回要求的事件流',empty_response:'完成后没有正文',cancelled_or_timeout:'已取消或超过保存的超时时间',network_timeout:'网络连接或读取超时，不能据此判断密钥无效',network_connection_lost:'网络连接中途断开',network_dns_error:'域名解析失败',network_connection_refused:'连接被拒绝',tls_verification_failed:'HTTPS证书验证失败，未绕过验证',network_or_provider_error:'网络或平台请求失败',api_key_required:'本机尚未保存API密钥',model_required:'尚未保存模型名称',unexpected_test_reply:'接口完成，但未匹配固定测试回复',daily_request_limit:'达到本机每日次数上限',secure_storage_invalid:'本机凭据存储无法解析，请在本机重新保存',secure_storage_unavailable:'本机加密存储暂不可用',interrupted_by_restart:'上次操作被助手重载中断，结果未确认'};
+    Object.assign(diagnosticErrors,{authorization_required:'HTTP认证被拒绝；需核对当前平台的凭据、权限或网关，不能只据此断言密钥无效',api_key_required:'请在本机输入当前平台密钥，或明确选择已绑定此目标的凭据',model_required:'请填写当前草稿的模型ID',cancelled_or_timeout:'已取消或超过本次草稿的超时时间',api_credential_target_mismatch:'已保存凭据与草稿的平台、地址或协议不匹配；请重新输入当前平台密钥',api_credential_selection_required:'请明确选择本次草稿的密钥来源',api_credential_target_required:'保存密钥时必须同时绑定平台、地址和协议',api_draft_required:'请刷新页面，使用完整草稿发起请求',invalid_ai_settings:'草稿设置无效，请检查地址、协议和各项范围',configuration_busy:'正在保存配置，请稍后再操作'});
+    Object.assign(diagnosticErrors,{ai_safety_blocked:'AI仍处于安全暂停，口令不会清除此暂停；联合开启未成功',qq_verification_required:'尚未确认QQ在线，联合开启未成功',local_review_unavailable:'本机语义审查模型未就绪，本条不会外发；不会使用云端审查代替',context_recipient_changed:'当前API接收方已改变，请重新确认附近消息外发范围'});
+    Object.assign(diagnosticErrors,{request_timeout:'请求达到本次配置的总时限，已释放生成队列；未自动重试'});
+    Object.assign(diagnosticErrors,{vision_model_unsupported:'当前接收方、协议或模型不在已批准的识图范围',vision_not_verified:'当前Discovery模型尚未通过合成图验证，未发送用户图片',vision_probe_mismatch:'合成图返回未通过识别校验，识图保持关闭',vision_image_too_large:'图片超过5MB或为空',vision_image_format_unsupported:'图片格式或尺寸不支持',vision_image_source_unsupported:'图片不是允许的QQ图片来源，不读取本地文件或其它地址',vision_image_download_failed:'图片下载失败',vision_download_timeout:'图片下载超过10秒，已释放队列',vision_sensitive_result:'旧版本地拦截记录，未保存命中类别；不能据此判断上游拒绝',vision_current_image_only:'只处理当条新消息中的单张图片，不使用历史或引用图片'});
+    Object.assign(diagnosticErrors,{vision_reference_scope_unknown:'引用图的同一会话无法核对，未读取图片',vision_image_ambiguous:'有多张候选图片，请明确引用单图',vision_no_recent_image:'同一人同一会话最近2分钟没有可识别单图',vision_reference_unavailable:'被引用图片无法获取或超时，已释放队列',vision_reference_no_image:'引用消息没有单张图片'});
+    Object.assign(diagnosticErrors,{configuration_busy:'当前正在生成、待发或保存，请等完成后再保存人设',vision_animation_unsupported:'动图无法提取静态帧，请改发静态图片；本次未识别动画',vision_animation_timeout:'动图静态帧提取超时，已释放队列'});
+    for(const stage of ['input','output'])for(const reason of ['credentials','identity','format','length'])diagnosticErrors['vision_'+stage+'_'+reason]=(stage==='input'?'识图要求':'识图结果')+'在本地检查到'+({credentials:'具体密码或API/登录凭据值',identity:'电话、邮箱或证件号码',format:'异常控制字符',length:'空白或长度超限'}[reason])+(stage==='input'?'；图片未下载、未请求模型':'，原文未展示或保存');
+    Object.assign(diagnosticErrors,{ai_queue_full:'队列已满，本条未入队、未调用模型；稍后可重新提问',ai_queue_expired:'本条已超过含前序任务预算的等待上限，未调用模型',ai_backend_paused:'AI已暂停，本条未入队',ai_transport_unavailable:'QQ连接未确认，本条未入队',ai_sessions_full:'所有会话槽都在使用，本条未入队',queued_discarded_by_restart:'重载前排队请求已取消，不会自动回放'});
+    Object.assign(diagnosticErrors,{private_hold_migration_pending:'升级前待处理私聊记录身份未能核对，已原样保留；请先人工处理，再手动恢复AI',image_instruction_merged:'裸图等待期间收到了同用户解题指令，已合并到后续请求，未调用模型'});
+    Object.assign(diagnosticErrors,{group_input_rejected:'本条被本机内容检查拦下，未发送给模型',empty_input:'没有读到本条自己的问题正文，请在@后补充文字',input_too_long:'本条问题正文超过当前输入上限，请缩短后重新发送'});
+    const inputPrivacyLabels={credentials:'凭据信息',health:'健康信息',finance:'财务信息',identity:'身份信息',contact_location:'联系方式或位置',personal_sensitive:'个人敏感信息',confidential:'保密信息',unreviewed:'内容或格式无法可靠判断'};
+    function inputLengthSummary(r){const n=v=>Number.isSafeInteger(v)&&v>=0?String(v):'未知';return r.inputLimit==null&&r.bodyChars==null?'':'；长度：正文 '+n(r.bodyChars)+'，处理后输入 '+n(r.inputChars)+' / 上限 '+n(r.inputLimit)+'，引用缓存 '+n(r.cachedQuoteChars)+'，内嵌引用 '+n(r.embeddedQuoteChars)+'（仅字符数；未知不表示为空）';}
+    function inputReasonLabel(code){return code?.startsWith('group_review_')?'本地检查拦截：'+(inputPrivacyLabels[code.slice(13)]||'待核对'):code;}
+    function renderOAuthDiagnostic(oauth){
+      if(!oauth||oauth.version!==4||!Object.hasOwn(oauth,'primary'))return renderOAuthRecord(oauth);
+      let text=oauth.primary?'本次首次结果：'+renderOAuthRecord(oauth.primary):'本次首次结果：未记录；无法从刷新错误推断首次失败原因。';
+      if(oauth.last&&(!oauth.primary||oauth.last.at!==oauth.primary.at||oauth.last.eventKind!==oauth.primary.eventKind))text+='\n最近后续事件：'+renderOAuthRecord(oauth.last);
+      const attempts=(oauth.attempts||[]).slice(-5).filter(v=>v.firstResult&&v.id!==oauth.currentAttemptId);
+      if(attempts.length)text+='\n先前授权首次结果：'+attempts.map(v=>renderOAuthRecord(v.firstResult)).join('\n');
+      if(oauth.persistenceOK===false)text+='\n本机诊断保存失败；结果可能无法在重启后保留。';
+      return text;
+    }
+    function renderOAuthRecord(oauth){
+      if(!oauth)return '尚无本机授权完成记录；Codex已登录不代表此机器人已绑定。';
+      const sources={provider_json:'服务端JSON代码',provider_callback:'已验证回调中的服务端代码',http_status_mapping:'按HTTP状态在本地映射',local_validation:'本地检查',transport:'传输错误',unknown:'旧记录来源未知',none:'完成'};
+      let text=(Number.isSafeInteger(oauth.at)?new Date(oauth.at).toLocaleString()+' · ':'')+oauth.stage+' · '+oauth.status+(oauth.httpStatus?' · HTTP '+oauth.httpStatus:'');
+      if(oauth.status==='failed')text+='；本地归类：'+(oauth.errorCode||'未知')+'；归类来源：'+(sources[oauth.classificationSource]||sources.unknown)+'；服务端代码：'+(oauth.providerErrorCode||'未记录');
+      const codeStates={recognized:'已识别白名单代码',safe_identifier:'已捕获通过安全格式检查的新错误标识',redacted:'标识含敏感特征或格式不安全，原值未保存',unrecognized:'旧记录存在未识别代码，原值未保存',malformed:'代码字段为空或类型不符',absent_in_supported_paths:'支持的字段中未见代码',non_json:'响应不是可解析JSON',empty:'响应为空',unavailable:'响应未能完整解析',unknown:'旧记录未区分缺失或过滤'};
+      const requestStates={captured:'已安全记录',present_rejected:'头部存在，格式未获安全记录',absent_in_supported_headers:'支持的头部中未见编号',unknown:'旧记录未区分缺失或过滤'};
+      if(oauth.status==='failed')text+='；代码解析：'+(codeStates[oauth.providerCodeStatus]||codeStates.unknown)+(oauth.providerErrorField?'（'+oauth.providerErrorField+'）':'')+'；请求ID解析：'+(requestStates[oauth.requestIdStatus]||requestStates.unknown);
+      if(oauth.requestId)text+='；请求ID：'+oauth.requestId;
+      if(oauth.clientReference)text+='；客户端引用：'+oauth.clientReference;
+      if(oauth.registrationKind)text+='；注册路径：'+(oauth.registrationKind==='new_dynamic'?'动态首次注册':'沿用已发行客户端');
+      const checks=[['callbackTargetMatches','回调目标'],['redirectUriMatches','授权/交换回调一致'],['pkceConsistent','PKCE一致']].filter(([key])=>typeof oauth[key]==='boolean').map(([key,label])=>label+'：'+(oauth[key]?'通过':'不一致'));if(checks.length)text+='；'+checks.join('，');
+      if(oauth.bodyShape)text+='；响应形态：'+oauth.bodyShape;
+      text+='；响应Content-Type：'+(oauth.responseContentType||'旧记录未保存');
+      text+='；服务端错误类型：'+(oauth.providerErrorType||'未记录')+(oauth.providerErrorTypeField?'（'+oauth.providerErrorTypeField+'）':'')+'；类型解析：'+(codeStates[oauth.providerTypeStatus]||codeStates.unknown);
+      const reasons={no_pending:'本次运行没有待处理授权',expired:'授权等待已过期',already_claimed:'回调已在处理中',state_mismatch:'与当前待处理授权不匹配',duplicate_parameter:'回调参数重复',target_mismatch:'回调目标不匹配'};
+      if(oauth.callbackRejectionReason)text+='；回调原因：'+(reasons[oauth.callbackRejectionReason]||'未知');
+      return text;
+    }
+    function renderDiagnostic(record,kind){if(!record)return kind==='test'?'尚无已保存的接口测试结果；旧版失败不会被推测为某种平台错误。':'尚无模型回复记录。';const phase={input:'输入检查（未调用模型）',queue:'排队等待（未调用模型）',preparing:'本机准备',privacy:'本地隐私检查',budget:'本机次数与额度检查',credentials:'本机凭据读取/授权',request_ready:'请求已准备',http_request:'已尝试发起HTTPS请求',http_response:'收到HTTP响应',streaming:'解析流式返回',image_reference:'核对被引图片',image_download:'下载当次图片',reasoning:'模型推理阶段（不显示内容）',response_incomplete:'返回未完整完成',completed:'模型返回已完成'}[record.phase]||record.phase;const status={queued:'排队中',rejected:'未接纳',expired:'排队过期',running:'进行中',completed:'完成',failed:'失败',cancelled:'取消',unexpected_reply:'回复不匹配'}[record.status]||record.status;let result=(kind==='test'?'最近接口测试':'最近模型回复')+'：'+status+' · '+phase+(record.httpStatus?' · HTTP '+record.httpStatus:'')+(record.finishReason?' · finish_reason='+record.finishReason:'')+' · '+budgetDescription(record.outputTokenMode,record.outputTokenLimit)+' · '+new Date(record.startedAt).toLocaleTimeString();if(record.rateLimitKind)result+='；429分类：'+({temporary:'上游明确短期限流',quota:'上游明确额度限制',unclassified:'未提供可判定的限流/额度分类'}[record.rateLimitKind]||'待核对')+(record.retryAfterSeconds!==null?'，Retry-After '+record.retryAfterSeconds+' 秒':'');if(record.imageHTTPStatus)result+=' · 图片下载HTTP '+record.imageHTTPStatus;if(record.imageMime)result+=' · '+record.imageMime+' / '+record.imageBytes+' bytes'+(record.imageStaticFrame?'（动图静态封面/第一帧）':'');if(record.errorCode)result+='；'+(diagnosticErrors[record.errorCode]||record.errorCode);if(record.finishReason==='content_filter')result+='；上游模型内容过滤终止，不能当作本地隐私拦截或图片能力失败。';if(record.finishReason==='length'&&record.outputTokenMode==='platform_default')result+='；平台以长度限制结束；本次请求未带输出预算，默认预算、上下文或平台上限仍可能生效。'+(record.outputChars===0&&record.reasoningChars>0?'仅返回推理、没有最终答案。':'最终回答不完整。')+'HTTP 200不代表回答完整，未自动重试。推理字符数不是Token数。';else if(record.finishReason==='length')result+=record.outputChars===0&&record.reasoningChars>0?'；达到生成Token上限，仅返回推理、没有最终答案。请适当提高API输出预算或简化任务；HTTP 200不代表回答完整，未自动重试。推理字符数不是Token数。':'；达到生成Token上限，最终回答不完整，未发送半截结果；可适当调整预算或缩短要求，未自动重试。';result+=' / '+(record.timeoutSeconds||0)+'s / body '+(record.outputChars||0)+' chars / deltas '+(record.textDeltaEvents||0)+' / reasoning '+(record.reasoningChars||0)+' chars';if(record.privacyReason)result+='；本地分类：'+(inputPrivacyLabels[record.privacyReason]||record.privacyReason);if(Number.isSafeInteger(record.localReservationTokens))result+='；本机预留 '+record.localReservationTokens+' tokens'+(record.localBudgetReason&&record.localBudgetReason!=='checking'?'，限制项 '+record.localBudgetReason:'')+(record.localBudgetLimit?'，已占用 '+record.localBudgetUsed+' / '+record.localBudgetLimit:'')+(record.localCapacityWaitMs?'，本机等待记录 '+Math.ceil(record.localCapacityWaitMs/1000)+' 秒（尚未提交时等待，不重试已发送请求）':'');result+=inputLengthSummary(record);if(record.localAdmissionState==='waiting')result+='；本机额度等待中，尚未提交上游；本次计划等待 '+Math.ceil((record.localCapacityWaitPlannedMs||0)/1000)+' 秒';if(record.localAdmissionState==='rejected')result+='；本机额度未满足，本条未提交上游并已结束；聊天不发报错，不自动补发，可在额度恢复后重新提问。';if(record.localAdmissionState==='cancelled')result+='；提交前等待已取消，未调用上游。';if(record.delivery)result+='；QQ送达：'+record.delivery;if(record.deliverySubmission==='uncertain')result+='（可能已提交，未重复发送；不能声称已撤回）';if(record.deliverySubmission==='not_submitted')result+='（本次未提交，失败后不自动补发）';if(record.delivery==='confirmed_late')result+='（原请求迟到回执已确认；没有重发或追加入后来会话）';return result;}
+    function displayAI(ai) {
+      if(!ai) return;aiLast=ai;const inputObservation=ai.input_diagnostics,inputChecks=ai.trigger_checks||{},inputReasons={accepted:'触发检查通过',empty_input:'本条问题正文为空',input_too_long:'本条问题正文过长',group_trigger_required:'未满足群唤醒方式',wrong_mention:'@对象不匹配',unsupported_message:'消息类型不支持',private_not_new:'非本次连接后的新私信',private_inbound_only:'本人自发或非入站私信',conversation_not_allowed:'不在群名单',bot_echo_ignored:'机器人回声跳过'};if(element('ai-input-stage-diagnostics'))element('ai-input-stage-diagnostics').textContent='本次运行：原始私信 '+(inputChecks.private_raw_received||0)+'，正常群消息 '+(inputChecks.group_received||0)+'，已接受 '+(inputChecks.accepted||0)+'。群跳过原因：'+JSON.stringify(inputChecks.group_rejections||{})+'。最近输入阶段（不含正文/账号）：'+(inputObservation?.recent||[]).slice(-8).map(r=>new Date(r.at).toLocaleTimeString()+' '+r.conversation+' ['+r.segmentTypes.join(',')+'] '+(inputReasons[r.result]||inputReasonLabel(r.result))+inputLengthSummary(r)).join('；');showPool(ai.account_pool);const oauth=ai.auth?.oauth_diagnostic;element('ai-oauth-stage').textContent=renderOAuthDiagnostic(oauth);element('ai-image-support').textContent=ai.capabilities?.image?'单图/图片表情包已开启；动图仅分析静态封面/第一帧，内置QQ表情只提供编号元数据。':'单图识别未开启；需先验证当前Discovery模型的图像请求格式。';
+      if(!aiToggleBusy)element('ai-enabled').checked=ai.enabled;element('ai-live-mode').textContent=aiToggleBusy?'保存中':ai.enabled?'已开启':'已关闭';
+      element('ai-overview').textContent=(ai.backend==='api'?'普通API':'ChatGPT套餐')+' · 生成 '+ai.generating+' / 待发 '+ai.delivery.pending;
+      element('ai-status').textContent=(ai.enabled?'AI已开启':'AI已关闭')+' · '+(ai.backend==='chatgpt'?'ChatGPT套餐':'普通API')+' · 生成中 '+ai.generating+' / 等候 '+ai.queued+' / 待发 '+ai.delivery.pending+' / 结果未知 '+ai.delivery.uncertain_count+' / 今日请求 '+ai.usage_today+(ai.paused?' · 已暂停，检查错误后重新保存':'');
+      element('ai-private-example').textContent=ai.backend==='api'?'请解释快速排序的思路':ai.config.prefix+' 你好';element('ai-own-example').textContent=ai.config.group_name_trigger&&ai.config.bot_name?ai.config.bot_name+'，你好（或真实@）':'@当前机器人QQ 你好';
+      element('ai-group-trigger-status').textContent='已授权群收到 '+(ai.trigger_checks?.group_received||0)+' 条消息；最近群触发检查：'+(ai.trigger_checks?.group_last_result||'尚无记录')+'。';
+      element('ai-group-context-status').textContent='当前仅本机缓存 '+(ai.group_context?.messages||0)+' 条 / '+(ai.group_context?.groups||0)+' 个群；附近文字外发'+(ai.group_context?.exportEnabled?'已明确开启':'关闭')+'。';
+      element('ai-local-review-status').textContent=ai.local_review?.enabled?'本机语义审查状态：'+ai.local_review.status+'；不可用时本条不外发，也不回退到云端。':'普通自由文字模式：保留已识别敏感内容检查，未启用本地审核模型。';
+      const checks=ai.trigger_checks||{},reasons={none:'尚无检查记录',accepted:'触发检查通过',ai_disabled:'AI已关闭',qq_account_not_bound:'QQ绑定不匹配',conversation_not_allowed:'会话未授权',plan_owner_only:'套餐模式仅本人可调用',self_not_allowed:'本人触发未允许',group_blacklisted:'发言人在群聊黑名单中',sender_not_allowed:'发言人QQ未授权',private_command_required:'私聊需口令加空格和问题',group_trigger_required:'未满足群聊触发方式',wrong_mention:'@的对象不是当前登录QQ',unsupported_message:'本条格式不支持，已跳过',reply_not_in_conversation:'引用未能核对为同一会话，已跳过',text_only_required:'只接收正文文字',empty_or_long_input:'旧版记录：问题为空或过长，无法还原',empty_input:'本条问题正文为空',input_too_long:'本条问题正文超过输入上限'};
+      element('ai-trigger-status').textContent='NapCat上报自身消息：'+(ai.self_messages_reported===true?'已开启':ai.self_messages_reported===false?'未开启，本人发言可能收不到':'连接后显示')+' · 已收授权会话事件 '+(checks.received||0)+'（本人 '+(checks.own_received||0)+'） · 最近检查：'+(reasons[checks.last_result]||checks.last_result||'无');
+      const privacyReasons={credentials:'凭据或密钥',health:'健康信息',finance:'财务信息',identity:'身份信息',contact_location:'联系方式或位置',personal_sensitive:'个人敏感信息',confidential:'保密信息',unreviewed:'无法可靠判断',format:'非纯文字或附件',length:'空白或过长内容',pending:'会话待人工处理',capacity:'待处理容量已满'};
+      const explainPrivacy=code=>(code.startsWith('context_')?'历史问答：':'')+(privacyReasons[code.replace(/^context_/,'')]||'需人工判断');
+      if(checks.last_result?.startsWith('private_review_'))element('ai-trigger-status').textContent+=' · 已在本地暂停：'+explainPrivacy(checks.last_result.slice(15));
+      element('ai-private-review-status').textContent='本地待人工处理 '+(ai.private_review_count||0)+' 个会话'+(ai.private_review_full?'；容量已满，普通API私聊全部暂停':'')+'。暂停内容不会自动补发。';
+      if(ai.unresolved_private_review_count)element('ai-private-review-status').textContent+=' 其中 '+ai.unresolved_private_review_count+' 条为升级前原样保留的记录；身份未能核对，所有私聊继续暂停，不猜QQ号；群聊按独立接口状态处理。';
+      if(ai.private_all_paused)element('ai-status').textContent+='；所有私聊保留待人工处理保护';
+      element('ai-private-reviews').replaceChildren(...(ai.private_reviews||[]).map(record=>{const row=document.createElement('li');row.textContent=record.peer+' · '+explainPrivacy(record.reason)+' · '+record.count+' 条 · '+new Date(record.last_at).toLocaleTimeString();return row;}));
+      element('ai-private-archive-status').textContent=ai.private_archived_count?'本机已封存 '+ai.private_archived_count+' 条旧记录；不外发、不补发，新的私聊使用空白上下文。':'';
+      element('ai-private-archives').replaceChildren(...(ai.archived_private_reviews||[]).map(record=>{const row=document.createElement('li');row.textContent=record.peer+' · '+explainPrivacy(record.reason)+' · 原计数 '+record.count+' · 封存于 '+new Date(record.archived_at).toLocaleTimeString();return row;}));
+      element('ai-test-diagnostic').textContent='最近一次脱敏记录（不代表当前草稿验证）：'+renderDiagnostic(ai.diagnostics?.test,'test');element('ai-generation-diagnostic').textContent=renderDiagnostic(ai.diagnostics?.generation,'generation');
+      if(ai.rate_limit_recovery?.mode==='manual'&&ai.error==='rate_limit_exceeded')element('ai-status').textContent+='；限流未自动恢复或已达当前恢复次数设置，请先检查平台状态；旧题不会补发';
+      if(ai.rate_limit_recovery?.mode==='temporary_cooldown')element('ai-status').textContent+='；上游短期限流冷却剩余 '+ai.rate_limit_recovery.remainingSeconds+' 秒，不重试已失败请求（自动恢复 '+ai.rate_limit_recovery.recoveries+'/'+(ai.rate_limit_recovery.limit||'不限次数')+'）';
+      const qs=ai.queue_state,head=qs?.waiting?.[0];element('ai-queue-state').textContent=qs?'等候 '+ai.queued+'/'+qs.limit+'；基础宽限 '+qs.baseWaitSeconds+' 秒，入队时另计已有前序任务预算，后来消息不会续期。'+(head?' 首项已等 '+head.waitedSeconds+' 秒，等待上限剩余 '+head.expiresInSeconds+' 秒。':'')+' 本轮队列满未入队 '+qs.fullRejected+' 条 / 等待过期 '+qs.expired+' 条；具体记录见下方。':'';
+      element('ai-recent-request-diagnostics').textContent='进行中及最近20项已结束请求（独立编号，不含正文）：'+(ai.diagnostics?.recent_generation||[]).slice(-80).map(r=>r.id.slice(0,8)+' '+new Date(r.startedAt).toLocaleTimeString()+' '+({queued:'排队中（未调用模型）',rejected:'本地拒绝',expired:'等待过期（未调用模型）',running:'进行中',completed:'完成',failed:'失败',cancelled:'取消'}[r.status]||r.status)+(r.errorCode?' / '+(diagnosticErrors[r.errorCode]||r.errorCode):'')+(r.privacyReason?' / '+(inputPrivacyLabels[r.privacyReason]||r.privacyReason):'')+inputLengthSummary(r)+(r.delivery?' / QQ '+r.delivery:'')).join('；');
+      const code=aiLocalError||ai.error||ai.combined_control_error;element('ai-error').textContent=[diagnosticErrors[code]||code,ai.auth.notice].filter(Boolean).join('；');
+      element('ai-group-summary').textContent=ai.config.groups.length?'群聊设置 · 已授权 '+ai.config.groups.length+' 个群（普通私聊不使用）':'群聊设置 · 未启用（普通私聊无需填写）';
+      updateDraftState();if(aiDirty&&aiLoaded)return;
+      const select=element('ai-active_profile');select.replaceChildren(new Option('选择已授权账户',''));
+      for(const p of ai.auth.profiles)select.add(new Option(p.label+(p.needs_sign_in?'（需登录）':p.plan_authorized?'（套餐已授权）':'（仅身份）'),p.id));
+      for(const name of aiNames){const input=element('ai-'+name),value=ai.config[name];if(input.type==='checkbox')input.checked=value;else input.value=formatAIValue(name,value);}
+      element('ai-group-command-prefix').value=ai.config.prefix;backendPanels();modelSuggestions();aiLoaded=true;
+      if(!aiCredentialInitialized){element('ai-credential-source').value=matchesSavedCredential()?'saved':'new';aiCredentialInitialized=true;}
+      updateDraftState();
+    }
+    function aiDraft(){const value={...aiLast.config};for(const name of aiNames){const input=element('ai-'+name);value[name]=input.type==='checkbox'?input.checked:Object.hasOwn(aiLimits,name)?(input.value.trim()===''?null:Number(input.value)):name==='chat_display_overrides'?(()=>{try{return JSON.parse(input.value);}catch{return input.value;}})():name==='participation_group_overrides'?parseGroupOverrides(input.value):input.value;}if(['api_base_url','api_model','api_format','backend'].some(k=>value[k]!==aiLast.config[k]))Object.assign(value,{vision_enabled:false,vision_target:'',vision_model:'',vision_verified_at:0,vision_reference_enabled:false,vision_recent_enabled:false});return value;}
+    async function aiAction(path,body={},resetDraft=false){aiLocalError='';element('ai-error').textContent='';try{const result=await api('/api/ai/'+path,body);if(resetDraft)aiDirty=false;await refresh();return result;}catch(error){aiLocalError=error.message;element('ai-error').textContent=diagnosticErrors[aiLocalError]||aiLocalError;return null;}}
+    element('ai-enabled').addEventListener('change',async()=>{const input=element('ai-enabled');const enabled=input.checked;if(enabled&&aiDirty){input.checked=aiLast?.enabled||false;aiLocalError='请先保存或放弃草稿，再开启QQ AI。开关只使用已保存配置。';element('ai-error').textContent=aiLocalError;return;}aiToggleBusy=true;input.disabled=true;try{display(await api('/api/ai/enabled',{enabled}));}catch(error){aiLocalError=error.message;input.checked=aiLast?.enabled||false;element('ai-error').textContent=diagnosticErrors[aiLocalError]||aiLocalError;}finally{aiToggleBusy=false;input.disabled=false;await refresh();}});
+    function apiDraftRequest(){const source=element('ai-credential-source').value;const credential={source};if(source==='new'){credential.key=element('ai-key').value;if(!credential.key.trim())throw new Error('api_key_required');if(aiKeyBinding!==targetIdentity())throw new Error('api_credential_target_mismatch');}else if(!matchesSavedCredential())throw new Error('api_credential_target_mismatch');return {target:apiFormTarget(),credential};}
+    function sameDraftField(key,value,saved){if(key==='chat_display_overrides'){try{return JSON.stringify(typeof value==='string'?JSON.parse(value):value)===JSON.stringify(saved);}catch{return false;}}if(saved&&typeof saved==='object'&&!Array.isArray(saved)){const parsed=typeof value==='string'?parseGroupOverrides(value):value;return JSON.stringify(parsed)===JSON.stringify(saved);}if(Array.isArray(saved)){const parts=String(value).split(key==='bot_aliases'?/[\n,，;；]+/u:/[\s,，;；]+/u).map(v=>key==='bot_aliases'?v.normalize('NFKC').trim():v.trim()).filter(Boolean);return JSON.stringify([...new Set(parts)])===JSON.stringify(saved);}return value===saved;}
+    const personaFields=['bot_name','bot_address','bot_identity','bot_persona','instructions'];
+    const chatIdentityFields=['chat_owner_qq','chat_owner_address','chat_address_mode','chat_mention_mode','chat_display_overrides'];
+    const nicknameFields=['bot_aliases','group_name_trigger','name_trigger_position'];
+    const groupSectionFields=['groups','group_blacklist','allow_self','group_trigger_mode','prefix','group_member_policy','group_allowed_users'];
+    function sectionValue(key){if(key==='chat_display_overrides'){try{return JSON.parse(element('ai-'+key).value);}catch{throw Object.assign(new Error('AI称呼绑定不是有效JSON；输入已保留。'),{field:key});}}const input=key==='prefix'?element('ai-group-command-prefix'):element('ai-'+key);if(key==='participation_group_overrides'){const parsed=parseGroupOverrides(input.value);if(typeof parsed==='string')throw Object.assign(new Error('逐群规则不是有效JSON；输入已保留。'),{field:key});return parsed;}return input.type==='checkbox'?input.checked:Object.hasOwn(aiLimits,key)?(input.value.trim()===''?null:Number(input.value)):input.value;}
+    async function saveAISection(path,fields,buttonId,statusId){
+      const button=element(buttonId),status=element(statusId);button.disabled=true;status.textContent='正在保存，尚未确认结果…';
+      let request;
+      for(const k of fields)element('ai-'+k)?.removeAttribute('aria-invalid');
+      try{
+        request=Object.fromEntries(fields.map(k=>[k,sectionValue(k)]));await api('/api/ai/'+path,request);
+        const state=await api('/api/state'),saved=state.ai.config;
+        for(const key of fields)if(!sameDraftField(key,request[key],saved[key]))throw new Error('保存已提交，但读回不一致；输入已保留，请核对运行状态。');
+        for(const key of fields){const input=element('ai-'+key);if(input){if(input.type==='checkbox')input.checked=saved[key];else input.value=formatAIValue(key,saved[key]);}}
+        if(fields.includes('prefix'))element('ai-group-command-prefix').value=saved.prefix;
+        if(fields.includes('group_trigger_mode'))element('ai-group_name_trigger').checked=saved.group_name_trigger;
+        aiLocalError='';const currentDraft=aiDraft();
+        aiDirty=aiNames.some(k=>!sameDraftField(k,currentDraft[k],saved[k]))||!!element('ai-key').value;
+        aiDraftRevision++;display(state);status.textContent='已保存并读回确认；AI保持'+(saved.enabled?'开启':'关闭')+'。'+(aiDirty?'其他分区草稿保留。':'');
+      }catch(error){
+        aiDirty=true;status.textContent=error.field?error.message:(diagnosticErrors[error.message]||error.message)+'；输入已保留。';
+        if(error.field){const input=error.field==='prefix'&&fields.includes('prefix')?element('ai-group-command-prefix'):element('ai-'+error.field);input?.setAttribute('aria-invalid','true');input?.focus();}
+      }finally{button.disabled=false;}
+    }
+    element('ai-save-output-budget').onclick=()=>saveAISection('output-budget',['api_output_token_mode','api_max_output_tokens','timeout_seconds'],'ai-save-output-budget','ai-output-budget-save-status');
+    element('ai-save-chat-identity').onclick=()=>saveAISection('chat-identity',chatIdentityFields,'ai-save-chat-identity','ai-chat-identity-save-status');
+    element('ai-save-persona').onclick=()=>saveAISection('persona',personaFields,'ai-save-persona','ai-persona-save-status');
+    element('ai-save-nicknames').onclick=()=>saveAISection('persona',nicknameFields,'ai-save-nicknames','ai-nickname-save-status');
+    element('ai-save-group-settings').onclick=()=>saveAISection('group-settings',groupSectionFields,'ai-save-group-settings','ai-group-save-status');
+    element('ai-save').onclick=async()=>{const button=element('ai-save');button.disabled=true;let request;try{const settings={...aiDraft(),enabled:false};request=settings.backend==='api'?{settings,credential:apiDraftRequest().credential}:settings;const result=await aiAction(settings.backend==='api'?'api-save':'settings',request,true);if(result){clearNewKey();aiCredentialInitialized=false;await refresh();element('ai-save-status').textContent='草稿已保存，QQ AI保持关闭。需要自动回复时，再打开顶部AI开关；保存不代表认证成功。';}}catch(error){aiLocalError=error.message;element('ai-error').textContent=diagnosticErrors[aiLocalError]||aiLocalError;}finally{if(request?.credential)request.credential.key='';button.disabled=false;}};
+    element('ai-discard').onclick=async()=>{clearNewKey();aiDirty=false;aiCredentialInitialized=false;aiDraftRevision++;await refresh();element('ai-save-status').textContent='已放弃本页草稿并载入已保存配置；QQ开关未改变。';};
+    element('ai-clear-key').onclick=()=>aiAction('key',{key:''});
+    element('ai-test-api').onclick=async()=>{const button=element('ai-test-api');button.disabled=true;let request;const revision=aiDraftRevision;try{request=apiDraftRequest();element('ai-test-target').textContent='测试发起时的草稿：'+describeTarget(request.target)+' · '+(request.credential.source==='new'?'本次输入的新密钥（未保存）':'明确选择的同平台已保存密钥');element('ai-test-summary').textContent='正在测试；不保存配置、不发QQ。';element('ai-test-reply').hidden=true;const result=await aiAction('test-api',request);if(result){aiTestRevision=revision;element('ai-test-summary').textContent=(result.ok?'请求和完整回复成功':'测试失败')+' · '+result.elapsed_ms+' ms · '+(result.http_status?'HTTP '+result.http_status:'未取得HTTP响应')+' · 阶段 '+result.phase+(result.finish_reason?' · finish_reason='+result.finish_reason:'')+(result.error_code?' · '+(diagnosticErrors[result.error_code]||result.error_code):result.expected_reply_matched?' · 收到预期 OK':' · 回复未匹配固定 OK，请看实际回复')+'。未保存、未发送QQ。'+(revision!==aiDraftRevision?' 当前草稿已更改，此结果不能代表新草稿。':result.ok?'可点击保存，再手动开启QQ AI。':'');element('ai-test-reply').textContent=(result.reply_complete?'实际回复：\n':'未完整的回复（仅供诊断）：\n')+(result.reply||'（没有收到正文）');element('ai-test-reply').hidden=false;}}catch(error){aiLocalError=error.message;element('ai-error').textContent=diagnosticErrors[aiLocalError]||aiLocalError;}finally{if(request?.credential)request.credential.key='';button.disabled=false;}};
+    element('ai-reset').onclick=()=>aiAction('reset');
+    element('ai-clear-private').onclick=()=>aiAction('private-clear');
+    element('ai-test-vision').onclick=()=>aiAction('test-vision');
+    element('ai-cancel-sign-in').onclick=()=>aiAction('cancel-sign-in');
+    element('ai-sign-out').onclick=()=>aiAction('sign-out',{profile_id:element('ai-active_profile').value});
+    async function aiLogin(consent){const profile=consent?element('ai-active_profile').value:'';if(consent&&!profile){element('ai-error').textContent='请先选择账户。';return;}const popup=window.open('about:blank','_blank');if(popup)popup.opener=null;const result=await aiAction('sign-in',{profile_id:profile,consent});if(result?.url){if(popup)popup.location.href=result.url;else element('ai-error').textContent='浏览器拦截了登录窗口，请允许弹出窗口后重试。';}else popup?.close();}
+    element('ai-sign-in').onclick=()=>aiLogin(false);element('ai-reconsent').onclick=()=>aiLogin(true);
+    async function showModels(request,backend){const result=await aiAction('models',request);if(result){const list=element('ai-model-list');list.replaceChildren();for(const model of result.models){const button=document.createElement('button');button.type='button';button.textContent=model.name;button.onclick=()=>{element(backend==='chatgpt'?'ai-siwc_model':'ai-api_model').value=model.id;markAiDraft();};list.append(button);}}}
+    element('ai-models').onclick=async()=>{let request;try{request=apiDraftRequest();await showModels(request,'api');}catch(error){aiLocalError=error.message;element('ai-error').textContent=diagnosticErrors[aiLocalError]||aiLocalError;}finally{if(request?.credential)request.credential.key='';}};
+    element('ai-siwc-models').onclick=()=>showModels({},'chatgpt');
+    let poolDirty=false,poolLast=null,poolMessage='',poolDraft=null,poolRenderKey='';
+    const poolFields=['concurrency','rpm','tpm','tokens5h','tokens7d'];
+    const poolErrorText={pool_ledger_locked:'账本被其他实例占用，未发送请求',pool_disable_before_edit:'请先关闭账户池，再编辑连接或密钥',pool_ledger_missing:'原账本丢失，已停止；请恢复原账本，不按零用量重建',pool_ledger_invalid:'账本无效，已停止',pool_ledger_unavailable:'账本不可用，未发送请求',pool_ledger_write_failed:'账本保存失败，未继续请求',pool_limit_review_required:'额度或未知限流待人工核对，请先关闭账户池',pool_clock_rollback:'系统时间早于账本时间，已停止',pool_no_available_account:'所选连接受预算、并发、冷却或暂停限制，本次未重试',pool_duplicate_request:'此消息已处理或结果不确定，未重复生成',pool_review_required:'请先确认已核对额度和权限',pool_route_invalid:'连接及记账代号需为1到64位字母、数字、下划线或短横线，请勿填写密钥',pool_limits_required:'请检查各账户预算和并发范围',pool_account_limits_conflict:'同一账户代号的预算必须相同',configuration_busy:'请等待当前生成与发送完成，再修改连接',connection_configuration_invalid:'连接设置无效，请检查连接列表',connection_name_invalid:'每个连接需要1到64字的名称，不能含控制字符',connection_target_invalid:'请检查各连接的地址、协议和模型；使用HTTPS或本机HTTP，地址不能带账号、密码或查询参数',connection_limits_invalid:'请检查输出上限和超时：输出1到1000000 Token，超时1到3600秒',connection_credential_invalid:'凭据来源无效；独立凭据需先保存连接，再在该连接中自行填写',connection_primary_required:'请明确选择一个已填写的主连接',connection_backup_invalid:'备用连接不能重复，也不能与主连接相同',connection_account_identity_conflict:'同一个已保存凭据的多个连接必须使用相同的额度记账代号',connection_reference_confirmation_required:'请勾选确认引用已保存凭据；保存只建立句柄引用，不启用',connection_reference_unavailable:'引用的原凭据已变更，或地址/协议不匹配；请重新选择已保存连接',connection_credentials_required:'所选主连接或备用连接尚未就绪，请核对每个连接的凭据状态',connection_enable_confirmation_required:'请先确认后续文字请求的接收连接',connection_stale_confirmation:'连接已变化，请刷新确认最新主备后再启用',connection_use_manager:'请使用连接管理中的保存、启用和关闭按钮',invalid_api_key:'密钥格式无效，请仅在本机密码框中填写'};
+    const poolNode=(tag,text)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;return e;};
+    const cleanPoolConnection=c=>Object.fromEntries(['id','name','accountId','target','credential','limits','maxOutputTokens','timeoutSeconds'].map(k=>[k,structuredClone(c[k])]));
+    function poolEdited(){poolDirty=true;poolMessage='有尚未保存的连接更改；账户池状态保持原样。';poolUpdateStatus();}
+    function poolInput(parent,labelText,value,onChange,options={}){
+      const label=poolNode('label',labelText),input=poolNode(options.tag||'input');
+      if(options.choices){for(const [v,t]of options.choices){const o=poolNode('option',t);o.value=v;input.append(o);}}
+      else input.type=options.type||'text';
+      input.value=value??'';if(options.id)input.id=options.id;if(options.min!==undefined)input.min=options.min;if(options.max!==undefined)input.max=options.max;
+      if(options.disabled)input.disabled=true;input.autocomplete=options.type==='password'?'new-password':'off';
+      input.addEventListener(options.tag==='select'?'change':'input',()=>{onChange(input.value);if(options.type!=='password')poolEdited();});
+      label.append(input);parent.append(label);return input;
+    }
+    function poolRenderChoices(){
+      const select=element('pool-primary-choice');select.replaceChildren();const empty=poolNode('option','请明确选择主连接');empty.value='';select.append(empty);
+      for(const c of poolDraft.connections){const o=poolNode('option',c.name||'未命名连接');o.value=c.id;select.append(o);}select.value=poolDraft.primaryId;
+      const container=element('pool-backup-choices');container.replaceChildren(poolNode('p','备用连接（勾选加入，按编号依次尝试）：'));
+      for(const c of poolDraft.connections.filter(c=>c.id!==poolDraft.primaryId)){
+        const row=poolNode('div'),label=poolNode('label'),check=poolNode('input');check.type='checkbox';check.checked=poolDraft.backupIds.includes(c.id);check.dataset.backupId=c.id;
+        label.append(check,document.createTextNode(c.name||'未命名连接'));row.append(label);
+        check.onchange=()=>{poolDraft.backupIds=check.checked?[...poolDraft.backupIds,c.id]:poolDraft.backupIds.filter(id=>id!==c.id);poolEdited();poolRenderChoices();};
+        const index=poolDraft.backupIds.indexOf(c.id);if(index>=0){row.append(poolNode('span',' 第'+(index+1)+'备用 '));for(const [label,offset]of[['提前',-1],['后移',1]]){const b=poolNode('button',label);b.type='button';b.disabled=index+offset<0||index+offset>=poolDraft.backupIds.length;b.onclick=()=>{const next=index+offset;[poolDraft.backupIds[index],poolDraft.backupIds[next]]=[poolDraft.backupIds[next],poolDraft.backupIds[index]];poolEdited();poolRenderChoices();};row.append(b);}}
+        container.append(row);
+      }
+    }
+    function poolRenderConnections(){
+      const container=element('pool-connections');container.replaceChildren();
+      if(!poolDraft.connections.length){container.append(poolNode('p','尚无新连接。可直接引用上方原已保存 API，无需重新输入其 Key。'));return;}
+      const manager=poolLast.connectionManager;
+      for(const c of poolDraft.connections){
+        const box=poolNode('fieldset');box.dataset.connectionId=c.id;box.append(poolNode('legend',c.name||'新连接'));
+        poolInput(box,'连接名称',c.name,v=>{c.name=v;box.querySelector('legend').textContent=v||'新连接';poolRenderChoices();},{id:'connection-'+c.id+'-name'});
+        const sourceChoices=[['managed','独立保存本连接的密钥']];if(manager.existingConnection?.configured)sourceChoices.push(['existing','引用原已保存API（无需重填Key）']);
+        for(const old of manager.legacyCredentials||[])sourceChoices.push(['legacy_pool:'+old.handle,'引用旧池凭据：'+old.handle]);
+        const sourceValue=c.credential.kind==='legacy_pool'?'legacy_pool:'+c.credential.handle:c.credential.kind;
+        poolInput(box,'凭据来源',sourceValue,v=>{
+          if(v==='existing'){c.credential=structuredClone(manager.existingConnection.credential);c.target=structuredClone(manager.existingConnection.target);c.accountId='saved-original-account';}
+          else if(v.startsWith('legacy_pool:')){const handle=v.slice(12),old=manager.legacyCredentials.find(x=>x.handle===handle);c.credential={kind:'legacy_pool',handle};c.target=structuredClone(old.target);c.accountId=handle;}
+          else c.credential={kind:'managed',handle:c.id};poolEdited();poolRenderConnections();
+        },{tag:'select',choices:sourceChoices,id:'connection-'+c.id+'-source'});
+        const locked=c.credential.kind!=='managed',target=poolNode('div');target.className='command-fields';box.append(target);
+        const platforms=[['custom','自定义 OpenAI 兼容接口'],['openai','OpenAI 官方']];if(!platforms.some(([id])=>id===c.target.platform))platforms.push([c.target.platform,'原连接类型（保留绑定）']);
+        poolInput(target,'接口类型',c.target.format,v=>c.target.format=v,{tag:'select',choices:[['chat_completions','Chat Completions'],['responses','Responses']],disabled:locked,id:'connection-'+c.id+'-format'});
+        poolInput(target,'兼容方式',c.target.platform,v=>c.target.platform=v,{tag:'select',choices:platforms,disabled:locked,id:'connection-'+c.id+'-platform'});
+        poolInput(box,'Base URL',c.target.base_url,v=>{try{c.target.base_url=new URL(v).href.replace(/\/+$/,'');}catch{c.target.base_url=v;}},{disabled:locked,id:'connection-'+c.id+'-url'});
+        poolInput(box,'模型名称',c.target.model,v=>c.target.model=v,{id:'connection-'+c.id+'-model'});
+        if(locked)box.append(poolNode('p','该凭据只引用原句柄，地址和协议保持绑定；模型可按此服务的能力填写。换地址请选择独立凭据。'));
+        const saved=manager.connections.find(x=>x.id===c.id),account=manager.accounts.find(x=>x.accountId===c.accountId);
+        box.append(poolNode('p',(saved?.credentialConfigured?'已保存且凭据就绪':'尚未保存或凭据待配置')+(account?'；账户暂停：'+(account.held||'无')+'；本机7天已记账 '+account.usage.tokens7d+' Token':'')));
+        const details=poolNode('details');details.append(poolNode('summary','输出、超时与账户预算（可修改）'));box.append(details);
+        poolInput(details,'额度记账代号：同一账户请填相同代号',c.accountId,v=>c.accountId=v,{id:'connection-'+c.id+'-account'});
+        poolInput(details,'最大输出 Token',c.maxOutputTokens,v=>c.maxOutputTokens=Number(v),{type:'number',min:1,max:1000000,id:'connection-'+c.id+'-output'});
+        poolInput(details,'超时秒数',c.timeoutSeconds,v=>c.timeoutSeconds=Number(v),{type:'number',min:1,max:3600,id:'connection-'+c.id+'-timeout'});
+        const labels={concurrency:'账户并发',rpm:'每分钟请求预算',tpm:'每分钟Token预算',tokens5h:'5小时Token预算',tokens7d:'7天Token预算'};
+        details.append(poolNode('p','本地RPM、TPM、5小时和7天预算均可选：0＝不限，正整数启用。默认不限制；不会改变供应商额度或限流。账户并发仍是资源设置。'));
+         for(const k of poolFields)poolInput(details,labels[k]+(k==='concurrency'?'':'（0＝不限）'),c.limits[k],v=>c.limits[k]=Number(v),{type:'number',min:k==='concurrency'?1:0,max:k==='concurrency'?3:Number.MAX_SAFE_INTEGER,id:'connection-'+c.id+'-'+k});
+        if(c.credential.kind==='managed'){
+          const key=poolInput(box,'此连接的新密钥（只在本机填写）','',()=>{},{type:'password',id:'connection-'+c.id+'-key'}),save=poolNode('button','保存本连接密钥（不测试、不启用）'),clear=poolNode('button','删除本连接密钥');save.type=clear.type='button';
+          save.onclick=async()=>{if(poolDirty||!saved){poolMessage='请先保存连接和主备，再输入此连接的密钥。';poolUpdateStatus();return;}let value=key.value;try{await connectionAction('key',{connectionId:c.id,key:value});}finally{value='';key.value='';}};
+          clear.onclick=()=>connectionAction('key',{connectionId:c.id,key:''});box.append(save,clear);
+        }
+        if(account?.held){const label=poolNode('label'),review=poolNode('input');review.type='checkbox';label.append(review,document.createTextNode('我已核对该账户额度和权限'));const b=poolNode('button','解除账户暂停（保留用量和冷却）');b.type='button';b.onclick=()=>connectionAction('review',{accountId:c.accountId,acknowledged:review.checked});box.append(label,b);}
+        const remove=poolNode('button','从连接列表移除');remove.type='button';remove.onclick=()=>{poolDraft.connections=poolDraft.connections.filter(x=>x.id!==c.id);poolDraft.backupIds=poolDraft.backupIds.filter(id=>id!==c.id);if(poolDraft.primaryId===c.id)poolDraft.primaryId='';poolEdited();poolRenderChoices();poolRenderConnections();};box.append(remove);container.append(box);
+      }
+    }
+    function poolUpdateStatus(){
+      if(!poolLast?.connectionManager)return;const m=poolLast.connectionManager;
+      const actual=m.enabled?'已启用':m.legacyPoolEnabled?'旧账户池仍在运行':m.connections.length?'已配置，账户池关闭':'尚未配置，账户池关闭';
+      element('pool-status').textContent=poolMessage||('状态：'+actual+'。'+(m.error?(poolErrorText[m.error]||m.error):'保存不会自动启用。'));
+      element('pool-enabled').checked=poolLast.enabled;
+      const byId=id=>m.connections.find(c=>c.id===id)?.name||'未选择';element('pool-route-summary').textContent='已保存主连接：'+byId(m.primaryId)+'；备用顺序：'+(m.backupIds.map(byId).join(' → ')||'无')+'；AI总开关：'+(aiLast?.enabled?'开启':'关闭')+'。';
+      element('pool-enable').disabled=poolDirty||!m.canEnable||m.enabled||aiLast?.config.backend!=='api';element('pool-disable').disabled=!poolLast.enabled;
+      element('pool-enable-help').textContent=aiLast?.config.backend!=='api'?'当前后端为ChatGPT套餐；请先切换并保存普通API后，再启用账户池。':poolDirty?'先保存连接与主备，再确认启用。':m.enabled?'账户池已开启；修改前先关闭。':!m.canEnable?'先选择并保存主连接，确保每个所选备用也有可用凭据；新引用需勾选确认。':'连接已就绪。勾选接收方确认后，点击“启用账户池”；AI总开关仍由你单独控制。';
+      element('pool-use-existing').disabled=!m.existingConnection?.configured||(poolDraft?.connections.length||0)>=10||poolDraft?.connections.some(c=>c.credential.kind==='existing'&&c.credential.handle===m.existingConnection.credential.handle);
+      element('pool-add-connection').disabled=(poolDraft?.connections.length||0)>=10;
+    }
+    function showPool(value){
+      if(!value?.connectionManager)return;poolLast=value;const m=value.connectionManager,e=m.existingConnection;
+      element('pool-original-status').textContent=e?(e.configured?'原API凭据仍已保存，可直接引用；无需重填Key。':'原API凭据已保存，但与当前普通API接收方不匹配。')+' '+e.target.base_url+' · '+e.target.model:'当前没有可引用的已保存普通API连接。';
+      const key=JSON.stringify([m.revision,e?.credential?.handle,e?.configured]);
+      if(!poolDirty&&key!==poolRenderKey){poolDraft={connections:m.connections.map(cleanPoolConnection),mode:m.mode,primaryId:m.primaryId,backupIds:[...m.backupIds]};poolRenderKey=key;element('pool-mode').value=m.mode;poolRenderChoices();poolRenderConnections();}
+      poolUpdateStatus();
+    }
+    async function connectionAction(path,body){
+      try{await api('/api/ai/connections/'+path,body);poolDirty=false;poolRenderKey='';poolMessage=path==='enabled'?(body.enabled?'账户池已明确启用；AI总开关保持原状态。':'账户池已关闭；沿用原连接。'):'已保存；未发送接口测试或QQ消息，未自动启用账户池。';element('pool-reference-consent').checked=false;element('pool-enable-consent').checked=false;await refresh();return true;}
+      catch(error){poolMessage=poolErrorText[error.message]||('未完成：'+error.message);poolUpdateStatus();return false;}
+    }
+    element('pool-use-existing').onclick=()=>{
+      const e=poolLast.connectionManager.existingConnection;if(!e?.configured)return;const id='saved-'+crypto.randomUUID().slice(0,8);
+      poolDraft.connections.push({id,name:e.name,accountId:'saved-original-account',target:structuredClone(e.target),credential:structuredClone(e.credential),limits:{concurrency:1,rpm:0,tpm:0,tokens5h:0,tokens7d:0},maxOutputTokens:e.maxOutputTokens,timeoutSeconds:e.timeoutSeconds});poolDraft.primaryId=id;poolEdited();poolRenderChoices();poolRenderConnections();poolUpdateStatus();
+    };
+    element('pool-add-connection').onclick=()=>{
+      const id='conn-'+crypto.randomUUID().slice(0,8);poolDraft.connections.push({id,name:'新连接 '+(poolDraft.connections.length+1),accountId:'account-'+id,target:{platform:'custom',base_url:'',format:'chat_completions',model:''},credential:{kind:'managed',handle:id},limits:{concurrency:1,rpm:0,tpm:0,tokens5h:0,tokens7d:0},maxOutputTokens:2048,timeoutSeconds:90});poolEdited();poolRenderChoices();poolRenderConnections();poolUpdateStatus();
+    };
+    element('pool-mode').onchange=()=>{poolDraft.mode=element('pool-mode').value;poolEdited();};
+    element('pool-primary-choice').onchange=()=>{poolDraft.primaryId=element('pool-primary-choice').value;poolDraft.backupIds=poolDraft.backupIds.filter(id=>id!==poolDraft.primaryId);poolEdited();poolRenderChoices();};
+    element('pool-save').onclick=()=>connectionAction('config',{...structuredClone(poolDraft),acknowledgeExisting:element('pool-reference-consent').checked});
+    element('pool-enable').onclick=()=>connectionAction('enabled',{enabled:true,acknowledged:element('pool-enable-consent').checked,revision:poolLast.connectionManager.revision});
+    element('pool-disable').onclick=async()=>{
+      if(poolLast.connectionManager.legacyPoolEnabled){try{await api('/api/ai/pool/config',{enabled:false,mode:poolLast.mode,routes:poolLast.routes.map(({id,accountId,limits})=>({id,accountId,limits}))});poolMessage='旧账户池已关闭；凭据仍保留，未自动迁移。';await refresh();}catch(error){poolMessage=poolErrorText[error.message]||error.message;poolUpdateStatus();}}
+      else await connectionAction('enabled',{enabled:false,acknowledged:false,revision:poolLast.connectionManager.revision});
+    };
+    Object.assign(diagnosticErrors,poolErrorText);
+    for(const eventName of ['input','change'])element('ai-account-pool-settings').addEventListener(eventName,event=>event.stopPropagation());
+
+
+
+
+// Candidate navigation moves existing controls; their IDs and event handlers remain intact.
+function installWorkbenchCandidate(){
+  document.body.dataset.workbenchVersion='ui-redesign-candidate-20261019';
+  const refs=new Map([...document.querySelectorAll('[id]')].map(node=>[node.id,node]));
+  const get=id=>refs.get(id)||document.getElementById(id),node=(tag,className,text)=>{const e=document.createElement(tag);if(className)e.className=className;if(text!==undefined)e.textContent=text;return e;};
+  const originalAI=[...get('ai-panel').children],originalRecall=[...get('recall-workspace').children];
+  const direct=(root,child)=>{while(child&&child.parentNode!==root)child=child.parentNode;return child;};
+  const aiTop=new Map([...refs].map(([id,e])=>[id,direct(get('ai-panel'),e)])),recallTop=new Map([...refs].map(([id,e])=>[id,direct(get('recall-workspace'),e)]));
+  const layouts={},usedAI=new Set(),usedRecall=new Set();
+  const titles={ai:[['daily','日常设置','◉'],['accounts','模型与 API','◇'],['people','人物与昵称','♧'],['access','名单与范围','☷'],['advanced','诊断与高级','⌘']],recall:[['daily','日常设置','◉'],['bindings','显示名绑定','♧'],['rules','豁免与口令','☷'],['advanced','高级与记录','⌘']]};
+  const descriptions={daily:'常用设置就近保存，切换分区会保留未保存输入。',accounts:'多个 API 集中管理；查看账户不会切换当前运行连接。',people:'名字、聊天称呼、主人绑定和唤起昵称分别保存。',access:'私聊黑名单与群聊范围独立设置，不扩大原有响应权限。',bindings:'按群号与 QQ 号绑定。删除其他条目时，上方草稿会保留。',rules:'设置不重发名单，以及谁可以在指定来源使用口令。',advanced:'不常用的额度、上下文、恢复和运行诊断。'};
+  function layout(root,feature){const nav=node('nav','workbench-nav');nav.setAttribute('aria-label',feature==='ai'?'聊天设置分区':'撤回设置分区');nav.setAttribute('role','tablist');nav.append(node('small','',feature==='ai'?'CHAT WORKSPACE':'RECALL WORKSPACE'));const content=node('div','workbench-content'),panes={};root.classList.add('workbench-grid');root.replaceChildren(nav,content);
+    for(const[key,label,symbol]of titles[feature]){const button=node('button','');button.type='button';button.dataset.workbenchTab=feature+'/'+key;button.setAttribute('role','tab');button.setAttribute('aria-controls','pane-'+feature+'-'+key);button.append(node('span','nav-symbol',symbol),document.createTextNode(label));const pane=node('section','ui-pane');pane.id='pane-'+feature+'-'+key;pane.dataset.workbenchPane=feature+'/'+key;pane.setAttribute('role','tabpanel');pane.hidden=true;const heading=node('header','pane-header'),copy=node('div','');copy.append(node('div','eyebrow',feature==='ai'?'聊天 / '+label:'撤回 / '+label),node('h2','',label),node('p','',descriptions[key]));heading.append(copy);pane.append(heading);panes[key]=pane;content.append(pane);nav.append(button);button.onclick=()=>navigate(feature,key);}
+    nav.addEventListener('keydown',event=>{if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key))return;const buttons=[...nav.querySelectorAll('[role=tab]')],index=buttons.indexOf(event.target);if(index<0)return;event.preventDefault();const next=buttons[(index+(['ArrowLeft','ArrowUp'].includes(event.key)?-1:1)+buttons.length)%buttons.length];next.click();next.focus();});layouts[feature]={root,nav,content,panes};return panes;}
+  const ai=layout(get('ai-panel'),'ai'),recall=layout(get('recall-workspace'),'recall');
+  function move(topMap,used,id,target){const e=topMap.get(id);if(e&&!used.has(e)){target.append(e);used.add(e);}return e;}
+  const moveAI=(id,target)=>move(aiTop,usedAI,id,target),moveRecall=(id,target)=>move(recallTop,usedRecall,id,target);
+  const storageAlert=node('p','workbench-alert','');storageAlert.id='ai-diagnostic-storage';storageAlert.setAttribute('role','alert');storageAlert.hidden=true;layouts.ai.content.prepend(storageAlert);
+  const aiAlert=get('ai-error');aiAlert.classList.add('workbench-alert');aiAlert.setAttribute('role','alert');layouts.ai.content.prepend(aiAlert);
+  const metrics=node('div','summary-grid');for(const[id,label,sub]of [['quick-runtime','运行状态','仅显示当前已保存配置'],['quick-model','当前模型','具体连接可在账户页管理'],['quick-connections','API 连接','主连接与备用分别设置']]){const e=node('div','summary-metric');e.append(node('small','',label));const value=node('strong','','正在读取');value.id=id;e.append(value,node('span','',sub));metrics.append(e);}ai.daily.append(metrics);
+  const dailyGrid=node('div','daily-main-grid');ai.daily.append(dailyGrid);
+  const card=(title,text)=>{const e=node('section','quick-card');e.append(node('h3','',title));if(text)e.append(node('p','',text));return e;};
+  const quickBindings=[];
+  function mirror(originalID,labelText,parent){const source=get(originalID),label=node('label','',labelText),input=source.cloneNode(true);input.id='quick-'+originalID;input.removeAttribute('aria-invalid');label.append(input);parent.append(label);quickBindings.push({source,input});for(const type of ['input','change'])input.addEventListener(type,()=>{if(source.type==='checkbox')source.checked=input.checked;else source.value=input.value;source.dispatchEvent(new Event(type,{bubbles:true}));sync();});source.addEventListener('input',()=>{if(document.activeElement!==input){if(source.type==='checkbox')input.checked=source.checked;else input.value=source.value;}});return input;}
+  function quickSave(parent,label,id,path,fields,statusID){const actions=node('div','quick-actions'),button=node('button','action primary',label);button.id=id;button.type='button';const status=node('p','quick-status');status.id=statusID;status.setAttribute('role','status');button.onclick=()=>saveAISection(path,fields,id,statusID);actions.append(button);parent.append(actions,status);return actions;}
+  const names=card('最常改的称呼','只保存这两个称呼，其他分区草稿和 AI 开关保持原样。'),nameFields=node('div','quick-fields');mirror('ai-bot_name','AI 名字',nameFields);mirror('ai-bot_address','对提问者的称呼',nameFields);names.append(nameFields);const nameActions=quickSave(names,'保存称呼','quick-save-names','persona',['bot_name','bot_address'],'quick-names-status'),peopleLink=node('button','mini-link','人物设定与更多昵称 →');peopleLink.type='button';peopleLink.onclick=()=>navigate('ai','people');nameActions.append(peopleLink);dailyGrid.append(names);
+  const budget=card('原连接的等待与输出','适用于原 API 连接；多 API 的每连接参数在账户页设置。'),budgetFields=node('div','quick-fields');mirror('ai-timeout_seconds','等待超时 / 秒',budgetFields);mirror('ai-api_output_token_mode','输出预算',budgetFields);mirror('ai-api_max_output_tokens','自定义输出 Token',budgetFields);budget.append(budgetFields);quickSave(budget,'保存等待与输出','quick-save-budget','output-budget',['timeout_seconds','api_output_token_mode','api_max_output_tokens'],'quick-budget-status');dailyGrid.append(budget);
+  const participationFields=["participation_enabled", "participation_cooldown_seconds", "participation_hourly_limit", "participation_daily_limit", "participation_activity_min_messages", "participation_activity_window_seconds", "participation_group_blacklist", "participation_min_text_chars", "participation_min_speakers", "participation_topic_min_messages", "participation_topic_min_speakers", "participation_quiet_seconds", "participation_output_tokens", "participation_output_chars", "participation_timeout_seconds", "participation_stale_seconds", "participation_max_model_calls", "participation_hourly_model_calls", "participation_global_hourly_limit", "participation_group_daily_limit", "participation_group_hourly_sent_limit", "participation_group_daily_sent_limit", "participation_global_hourly_sent_limit", "participation_global_daily_sent_limit", "participation_topic_seed_limit", "participation_topic_chars", "participation_daily_model_calls", "participation_topic_required", "participation_filter_smalltalk", "participation_filter_commands", "participation_instructions", "participation_group_overrides"];
+  const participationCard=card('群聊主动参与','只在现有启用群中参与普通 API 讨论，排除指定群和已拉黑成员；不会联系其他人。需已允许同群背景文字发送到当前接收方。按下方活跃度、话题和发言间隙设置决定是否插话；明确提问始终优先。');participationCard.id='group-participation-card';
+  const participationAdvanced=node('details',''),participationControls=node('div','quick-fields');participationAdvanced.id='participation-advanced';participationAdvanced.append(node('summary','','频率、话题与费用参数（均可修改）'),participationControls);for(const name of participationFields){const label=get('ai-'+name).parentElement;if(['participation_enabled','participation_group_blacklist'].includes(name))participationCard.append(label);else participationControls.append(label);}participationCard.append(participationAdvanced);
+  const effectivePolicy=node('pre','');effectivePolicy.id='participation-effective-policy';effectivePolicy.style.whiteSpace='pre-wrap';effectivePolicy.style.overflowWrap='anywhere';participationCard.append(node('h3','','当前生效条件（已保存值）'),effectivePolicy);
+  quickSave(participationCard,'保存主动参与','save-participation','participation',participationFields,'participation-save-status');
+  participationCard.append(node('p','','所有频率和话题阈值均使用下方已保存配置。尝试=开始一次判断任务（失败、沉默也计）；模型提交=HTTP客户端已实际调用，不等于供应商接收或计费；提交前取消不计提交，崩溃后无法判定的记录单列并保守占用预算；实际发送=QQ返回成功回执。小时/日为滚动1小时/24小时。模型预算在任务结束时释放未使用预留；发送回执不确定时保留额度并单列显示，不自动重发。普通回复与主动参与的长度、超时分别设置；已启用账户池的每连接预算、上游配额和全部功能每日任务预算仍独立生效。每条新消息至多触发一个候选；自己和已知机器人的消息不触发，防止自答循环。'));
+  participationCard.append(node('p','','逐群JSON示例：{"50001":{"cooldown_seconds":0,"hourly_attempts":30,"daily_attempts":0,"hourly_sent":20,"daily_sent":0}}。逐群已填值优先于通用的同群默认值；未填项继承。0只取消该项本地限制；全部群总预算、每日生成任务、每连接预算与上游限流仍生效，不会被逐群规则解除。关闭共同话题筛选、寒暄筛选或把最少消息/成员数设0，可取消对应业务门槛；凭据检查和可信来源边界继续适用。'));
+  const participationStatus=node('p','quick-status','正在读取参与状态');participationStatus.id='participation-runtime-status';participationStatus.setAttribute('role','status');participationCard.append(participationStatus);ai.daily.append(participationCard);
+  const shortcuts=node('div','scope-shortcuts');for(const[title,copy,target]of [['谁可以使用','私聊黑名单与群聊名单分开管理。','access'],['模型与多 API','添加、编辑主连接与备用，维护模型和凭据。','accounts']]){const e=node('div','scope-shortcut'),b=node('button','mini-link','前往设置 →');b.type='button';b.onclick=()=>navigate('ai',target);e.append(node('strong','',title),node('p','',copy),b);shortcuts.append(e);}ai.daily.append(shortcuts);
+  const runtime=node('details','surface');runtime.append(node('summary','','更多运行状态'));moveAI('ai-status',runtime);moveAI('ai-trigger-status',runtime);ai.daily.append(runtime);
+  moveAI('ai-backend',ai.accounts);moveAI('ai-draft-status',ai.accounts);moveAI('ai-account-pool-settings',ai.accounts);moveAI('ai-api-settings',ai.accounts);moveAI('ai-siwc-settings',ai.accounts);get('ai-api-settings').open=true;
+  get('connections-title').textContent='多个 API 连接';get('pool-add-connection').textContent='添加 API 连接';get('pool-use-existing').textContent='引用当前已保存连接';
+  const accountTabs=node('div','account-tabs');accountTabs.setAttribute('role','tablist');accountTabs.setAttribute('aria-label','账户类型');const accountViews=[];
+  for(const[id,label,key]of [['ai-account-pool-settings','多个 API','multiple'],['ai-api-settings','单个 API','single'],['ai-siwc-settings','ChatGPT 套餐','chatgpt']]){const original=get(id),wrapper=node('section','account-view'),button=node('button','',label);wrapper.dataset.accountView=key;wrapper.id='account-view-'+key;original.before(wrapper);wrapper.append(original);button.type='button';button.setAttribute('role','tab');button.dataset.accountTab=key;button.setAttribute('aria-controls',wrapper.id);button.onclick=()=>showAccountView(key);accountTabs.append(button);accountViews.push({key,wrapper,button});}ai.accounts.insertBefore(accountTabs,get('account-view-multiple'));
+  function showAccountView(key){for(const view of accountViews){view.wrapper.hidden=view.key!==key;view.button.setAttribute('aria-selected',String(view.key===key));}get('ai-api-settings').hidden=false;get('ai-siwc-settings').hidden=false;}
+  showAccountView('single');
+  const footer=node('section','settings-footer');footer.append(node('h3','','应用完整 AI 草稿'),node('p','','此操作会应用所有未保存的 AI 字段并暂停自动回复。人物、昵称和名单可用各区的独立保存。'));moveAI('ai-save',footer);moveAI('ai-save-status',footer);moveAI('ai-model-list',footer);get('ai-save').textContent='应用完整草稿并暂停 AI';get('ai-discard').textContent='放弃 AI 草稿';ai.accounts.append(footer);
+  moveAI('ai-persona-settings',ai.people);get('ai-persona-settings').open=true;for(const id of ['ai-bot_identity','ai-instructions'])get('ai-persona-settings').append(get(id).parentElement);
+  const personaSuggestion=node('details','surface');personaSuggestion.id='persona-style-suggestion';personaSuggestion.append(node('summary','','风格建议：有锋芒、有判断、机智吐槽'),node('p','','建议只影响人物表达；当前已保存的名字、别名和身份字段优先。可把建议放入草稿后自由编辑，再用人物区的保存按钮保存。现有自定义人物文字不会自动改写。'));
+  const suggestionText=node('pre','');suggestionText.id='persona-suggestion-text';suggestionText.style.whiteSpace='pre-wrap';suggestionText.style.wordBreak='break-word';suggestionText.style.fontFamily='inherit';personaSuggestion.append(suggestionText);
+  const suggestionActions=node('div','quick-actions'),loadSuggestion=node('button','action','放入人物草稿'),undoSuggestion=node('button','action','恢复载入前草稿');loadSuggestion.id='load-persona-suggestion';undoSuggestion.id='undo-persona-suggestion';loadSuggestion.type=undoSuggestion.type='button';undoSuggestion.disabled=true;let previousPersonaDraft=null;
+  loadSuggestion.onclick=()=>{if(typeof aiLast?.persona_suggestion!=='string')return;previousPersonaDraft=get('ai-bot_persona').value;get('ai-bot_persona').value=aiLast.persona_suggestion;get('ai-bot_persona').dispatchEvent(new Event('input',{bubbles:true}));undoSuggestion.disabled=false;};undoSuggestion.onclick=()=>{if(previousPersonaDraft===null)return;get('ai-bot_persona').value=previousPersonaDraft;get('ai-bot_persona').dispatchEvent(new Event('input',{bubbles:true}));previousPersonaDraft=null;undoSuggestion.disabled=true;};suggestionActions.append(loadSuggestion,undoSuggestion);personaSuggestion.append(suggestionActions);ai.people.append(personaSuggestion);
+  const privateCard=card('私聊黑名单','只保存这份名单，AI 开关和其他分区输入保持不变。');moveAI('ai-private_blacklist',privateCard);for(const id of ['ai-private_reply_mode','ai-private_peers'])privateCard.append(get(id).parentElement);quickSave(privateCard,'保存私聊回复范围','ui-save-private','private-settings',['private_blacklist','private_reply_mode','private_peers'],'ui-private-save-status');ai.access.append(privateCard);for(const id of ['ai-group_member_policy','ai-group_allowed_users'])get('ai-group-settings').append(get(id).parentElement);const contextActions=node('div','quick-actions'),contextButton=node('button','action','保存背景文字发送授权'),contextStatus=node('p','quick-status');contextButton.id='save-context-permission';contextButton.type='button';contextStatus.id='context-permission-status';contextActions.append(contextButton);get('ai-group-settings').append(contextActions,contextStatus);contextButton.onclick=async()=>{contextButton.disabled=true;contextStatus.textContent='正在保存当前已保存API接收方的授权…';try{const enabled=get('ai-group_context_export').checked,expected_base=aiLast.config.api_base_url;await api('/api/ai/context-permission',{enabled,expected_base});const state=await api('/api/state');if(state.ai.config.group_context_export!==enabled||enabled&&state.ai.config.group_context_target!==expected_base)throw new Error('保存后读回不一致');get('ai-group_context_target').value=state.ai.config.group_context_target;const draft=aiDraft();aiDirty=aiNames.some(k=>!sameDraftField(k,draft[k],state.ai.config[k]))||!!get('ai-key').value;display(state);contextStatus.textContent='已保存并读回确认；接收方 '+expected_base+'；旧上下文已清空，无需重启。';}catch(error){contextStatus.textContent=(diagnosticErrors[error.message]||error.message)+'；输入已保留。';}finally{contextButton.disabled=false;}};moveAI('ai-group-settings',ai.access);get('ai-group-settings').open=true;
+  const privateHistory=node('details','');privateHistory.append(node('summary','','待处理与私聊记录'));for(const id of ['ai-private-review-status','ai-private-reviews','ai-clear-private','ai-private-archive-status','ai-private-archives'])moveAI(id,privateHistory);ai.access.append(privateHistory);
+  const contextFields=['vision_instruction_grace_ms','vision_cache_limit','vision_cache_bytes','vision_overflow_limit','group_cache_limit','group_cache_ttl_minutes','group_context_chars','context_turns','context_chars','context_ttl_minutes','sessions_limit','group_cache_total_messages','group_cache_total_bytes','group_cache_message_chars','context_reference_hops','context_empty_window_seconds','context_empty_lookback'],runtimeFields=['local_identity_filter','temporary_recovery_enabled','temporary_recovery_attempts','temporary_recovery_min_seconds','temporary_recovery_max_retry_after_seconds','account_capacity_wait_seconds','account_capacity_wait_rounds','private_review_limit','private_archive_limit','delivery_byte_limit','concurrency','queue_limit','queue_wait_seconds','cooldown_seconds','daily_requests','daily_reset_timezone','input_chars','output_chars','delivery_limit','delivery_ttl_minutes'];
+  const memoryCard=card('缓存、历史与消息定位','设置保存在程序目录的ai-settings.json，原子保存后立即用于后续任务，无需重启；重启和升级保留已保存设置。聊天正文、问答历史与图片来源仅在内存，关闭、清空、改人物或重启会清除；0不限时不等于永久落盘。每会话、每群、总容量与单次外发预算分别生效，均可在此调整。旧图片链接可能在QQ端失效。'),memoryFields=node('div','quick-fields');for(const name of contextFields)mirror('ai-'+name,aiLimits[name],memoryFields);memoryCard.append(memoryFields);quickSave(memoryCard,'保存缓存与定位','quick-save-retention','context-settings',contextFields,'quick-retention-status');ai.advanced.append(memoryCard);const visionCard=card('识图与图片定位权限','总开关、引用和近期定位可分别修改；关闭总开关会一并关闭两种定位。启用仍须当前模型已通过本机合成图验证，保存开关不调用模型。修改权限会取消已有任务并清空旧上下文，AI总开关保持原样。'),visionFields=node('div','quick-fields');for(const [name,label]of [['vision_enabled','识图总开关'],['vision_reference_enabled','引用图片定位'],['vision_recent_enabled','同用户近期图片定位']])mirror('ai-'+name,label,visionFields);visionCard.append(visionFields);quickSave(visionCard,'保存识图范围','quick-save-vision','vision-settings',['vision_enabled','vision_reference_enabled','vision_recent_enabled'],'quick-vision-status');ai.advanced.append(visionCard);
+  const runtimeCard=card('普通回复、排队与每日任务','这里只修改本分区，保持AI开关、角色、连接和其他草稿。每日预算计生成任务，重置时区可修改；主动参与仍计入此总预算。发送节奏另由撤回/发送队列设置。'),runtimeControls=node('div','quick-fields');for(const name of runtimeFields)mirror('ai-'+name,aiLimits[name]||(name==='local_identity_filter'?'可选号码和邮箱过滤（默认关闭）':name==='temporary_recovery_enabled'?'允许临时限流自动恢复（不重发旧题）':'每日任务重置时区'),runtimeControls);runtimeCard.append(runtimeControls);quickSave(runtimeCard,'保存运行参数','quick-save-runtime','runtime-settings',runtimeFields,'quick-runtime-status');ai.advanced.append(runtimeCard);
+  const boundaries=card('当前实现与上游边界','人物、触发、频率和缓存是可编辑业务设置。数字必须是JavaScript安全整数；定时器秒/分钟范围受Node单次定时器2147483647毫秒限制，整份本机配置最多1048576字符。这些不是推荐频率。上游模型的上下文、Token、限流、套餐资格与计费不能由本机设置解除；多API当前实现最多10个连接，每个连接的超时和输出预算在账户页独立设置。图片当前只支持已验证的Discovery模型，单图最大5MiB、获取/解码前处理最多10秒属于当前识图实现边界，模型请求另用已保存超时；不支持音频和视频。聊天角色不会获得文件、命令、凭据或QQ管理权限。ChatGPT接入当前只实现本人测试范围，尚不支持开放给其他成员。');ai.advanced.append(boundaries);
+  moveAI('ai-test-diagnostic',ai.advanced);moveAI('ai-advanced-settings',ai.advanced);moveAI('ai-local-review-settings',ai.advanced);
+  const usage=node('details','');usage.append(node('summary','','识图与使用范围说明'));for(const e of originalAI)if(!usedAI.has(e)){usage.append(e);usedAI.add(e);}ai.advanced.append(usage);
+  moveRecall('mode-help',recall.daily);moveRecall('mode-description',recall.daily);moveRecall('self-resend',recall.daily);moveRecall('send-interval',recall.daily);moveRecall('start',recall.daily);
+  moveRecall('recall-name-settings',recall.bindings);get('recall-name-settings').open=true;const editorBadge=node('span','editor-badge','新增绑定');editorBadge.id='binding-editor-state';get('recall-name-settings').insertBefore(editorBadge,get('recall-name-settings').children[1]);get('reset-recall-name').textContent='新增 / 取消编辑';
+  moveRecall('resend-exempt-settings',recall.rules);get('resend-exempt-settings').open=true;moveRecall('command-settings',recall.rules);
+  for(const id of ['cache-settings','delivery-settings','recovery','recovery-message','quick-login','recalls'])moveRecall(id,recall.advanced);
+  const recallHelp=node('details','');recallHelp.append(node('summary','','撤回处理说明'));for(const e of originalRecall)if(!usedRecall.has(e))recallHelp.append(e);recall.advanced.append(recallHelp);
+  document.querySelector('.header h1').textContent='QQ 助手工作台';document.querySelector('.header p').textContent='聊天与撤回，各自设置，同时运行。';
+  document.querySelector('#feature-ai strong').textContent='AI 聊天';document.querySelector('#feature-recall strong').textContent='撤回重发';
+  const foldedConnections=new Map();
+  function wrapConnections(){for(const box of get('pool-connections').querySelectorAll('fieldset[data-connection-id]')){let wrapper=box.parentElement;if(!wrapper.classList.contains('connection-card')){wrapper=node('details','connection-card');wrapper.dataset.connectionCard=box.dataset.connectionId;wrapper.open=foldedConnections.get(box.dataset.connectionId)??!poolLast?.connectionManager?.connections.some(c=>c.id===box.dataset.connectionId);const summary=node('summary','');summary.append(node('span','',box.querySelector('legend')?.textContent||'API 连接'),node('small','','展开编辑'));wrapper.append(summary);box.before(wrapper);wrapper.append(box);wrapper.addEventListener('toggle',()=>foldedConnections.set(box.dataset.connectionId,wrapper.open));const advanced=box.querySelector('details');if(advanced?.querySelector('summary'))advanced.querySelector('summary').textContent='预算、并发与超时';}const summary=wrapper.querySelector('summary');summary.querySelector('span').textContent=box.querySelector('legend')?.textContent||'API 连接';summary.querySelector('small').textContent=poolDraft?.primaryId===box.dataset.connectionId?'主连接':poolDraft?.backupIds?.includes(box.dataset.connectionId)?'备用连接':'未选用';}}
+  function sync(){for(const{source,input}of quickBindings){if(document.activeElement!==input){if(source.type==='checkbox')input.checked=source.checked;else input.value=source.value;}input.disabled=!aiLoaded||source.disabled;}if(aiLast){const storageFailed=aiLast.diagnostics?.persistence?.status==='failed';storageAlert.hidden=!storageFailed;storageAlert.textContent=storageFailed?'诊断未能写入磁盘，当前仅在内存保留；重启可能丢失。请检查本地磁盘空间或写权限。':'';get('quick-runtime').textContent=aiLast.enabled?(aiLast.paused?'已暂停':'已开启'):'已关闭';get('quick-model').textContent=aiLast.config.backend==='api'?(aiLast.config.api_model||'尚未设置'):(aiLast.config.siwc_model||'套餐未选择');const manager=aiLast.account_pool?.connectionManager;get('quick-connections').textContent=(manager?.connections?.length||0)+' 个'+(manager?.enabled?' · 主备已启用':' · 原连接');}editorBadge.textContent=get('recall-name-group').readOnly?'编辑现有绑定':'新增绑定';if(get('candidate-preview-banner')){get('connection').textContent='模拟预览';get('connection').className='tag wait';}wrapConnections();}
+  const understandingCard=card('群聊上下文选择','当前问题优先，再核对最多4跳引用、同一人的相关任务历史及相关群背景。未核对的来源不会猜补；别人的问号或插话不替换本人任务。不限时指缓存不按年龄过期，容量和本次输入预算仍分别生效。'),understandingStatus=node('p','quick-status','尚无上下文组装记录');understandingStatus.id='group-understanding-status';understandingCard.append(understandingStatus);ai.advanced.prepend(understandingCard);
+  function syncParticipation(){if(!aiLast)return;suggestionText.textContent=aiLast.persona_suggestion||'';const p=aiLast.group_participation;const policy=p?.effective;if(policy){const describe=n=>n===0?'不设此项本地上限':String(n),lines=[policy.precedence,'全部群：每小时尝试 '+describe(policy.global.hourlyAttempts)+'；24小时尝试 '+describe(policy.global.dailyAttempts)+'；每小时确认发送 '+describe(policy.global.hourlySent)+'；24小时确认发送 '+describe(policy.global.dailySent),'单次模型提交：设置最多 '+policy.requestedCallsPerAttempt+'，按当前可用独立账户最多预留 '+policy.effectiveCallsPerAttempt+'（同一账户不重复重试）','模型：每小时HTTP调用 '+describe(policy.global.hourlyHTTPCalls)+'；24小时HTTP调用 '+describe(policy.global.dailyHTTPCalls)+'；全部功能每日生成任务 '+describe(policy.global.dailyGenerationTasks)+'（'+policy.global.dailyTaskTimezone+'）',...policy.groups.map(v=>'群 '+v.group+(v.excluded?'【已排除】':v.hasOverrides?'【使用逐群覆盖】':'【使用通用默认】')+'：冷却 '+v.cooldown+'秒；小时/24小时尝试 '+describe(v.hourly)+' / '+describe(v.daily)+'；小时/24小时发送 '+describe(v.hourlySent)+' / '+describe(v.dailySent)),...policy.connections.map(v=>'连接 '+v.name+'：主动输出最多 '+v.outputTokens+'Token，每路 '+v.timeoutSeconds+'秒；账户额度 '+JSON.stringify(v.limits)),'当前开关与范围：AI '+policy.scope.aiEnabled+'；主动 '+policy.scope.participationEnabled+'；后端可用 '+policy.scope.backendSupported+'；背景文字接收方已授权 '+policy.scope.nearbyConsent+'；QQ在线且绑定一致 '+policy.scope.qqReady+'；共享队列空闲 '+policy.scope.sharedQueueIdle,policy.fixedImplementation];get('participation-effective-policy').textContent=lines.join('\n');}const labels={global_hourly_limit:'已达全部群每小时尝试上限',group_daily_limit:'已达同群24小时尝试上限',daily_model_calls:'已达全部群24小时模型预算',group_hourly_sent_limit:'已达同群每小时发送上限',group_daily_sent_limit:'已达同群24小时发送上限',global_hourly_sent_limit:'已达全部群每小时发送上限',global_daily_sent_limit:'已达全部群24小时发送上限',waiting_for_activity:'等待多人讨论',disabled_or_scope:'当前开关或会话范围未满足',not_human_text:'跳过机器人或非文字输入',waiting_for_gap:'等待发言间隙',activity_expired:'讨论已不活跃',not_enough_activity:'活跃度不足',no_suitable_topic:'没有适合插话的共同话题',topic_changed:'话题已切换',already_attempted:'本轮讨论已尝试，等待新消息',cooldown:'处于同群冷却',hourly_model_calls:'小时模型预算不足以覆盖本次预留；可调整单次请求上限或小时预算',hourly_limit:'已达同群每小时上限',daily_limit:'已达全部群24小时上限',ledger_unavailable:'主动参与计数不可用，已暂停此能力',candidate:'发现可参与话题',model_declined:'模型选择保持沉默',sent:'已自然参与一次',local_check_failed:'本地参与检查未完成'};participationStatus.textContent=!aiLast.config.participation_enabled?'主动参与已关闭；明确提问照常处理。':p?'主动参与已开启 · '+(labels[p.lastReason]||'等待合适讨论')+' · 24小时尝试 '+p.attempts24h+' 次 · 本小时HTTP客户端调用 '+p.modelRequestsHour+' / 待提交或状态不确定 '+p.unconfirmedModelSubmissionsHour+' / 待用预留 '+p.pendingModelReservationsHour+' / 旧版保守预留 '+p.legacyModelReservationsHour+' · 本小时确认发送 '+p.sentHour+' / 待回执或不确定 '+p.pendingOrUncertainSendsHour+(p.error?' · 计数不可用，当前不会主动发言。':''):'尚未读取到参与状态';const s=aiLast.group_understanding?.last;understandingStatus.textContent=s?'最近一次：引用 '+s.replyChain+' 段，本人历史 '+s.ownTurns+' 轮，相关背景 '+s.background+' 条；省略 '+s.omitted+' 条（引用缺口 '+s.reasons.missing_reference+'、预算 '+s.reasons.budget+'）。这些是本地选择记录，真实模型回答质量需另外验证。':'尚无上下文组装记录；不会额外调用模型分析每条消息。';}
+  const oldDisplay=display;display=function(state){oldDisplay(state);sync();syncParticipation();};
+  get('ai-account-pool-settings').addEventListener('input',()=>queueMicrotask(sync));
+  new MutationObserver(sync).observe(get('recall-name-group'),{attributes:true,attributeFilter:['readonly']});
+  const active={ai:'daily',recall:'daily'};
+  function navigate(feature,key,record=true){if(!layouts[feature]||!layouts[feature].panes[key])return;showFeature(feature);active[feature]=key;for(const[k,pane]of Object.entries(layouts[feature].panes))pane.hidden=k!==key;for(const b of layouts[feature].nav.querySelectorAll('[role=tab]')){const selected=b.dataset.workbenchTab===feature+'/'+key;b.setAttribute('aria-selected',String(selected));b.tabIndex=selected?0:-1;}if(record&&location.hash!=='#'+feature+'/'+key)history.pushState({feature,key},'','#'+feature+'/'+key);sync();}
+  get('feature-ai').onclick=()=>navigate('ai',active.ai);get('feature-recall').onclick=()=>navigate('recall',active.recall);
+  const readRoute=()=>{const match=location.hash.match(/^#(ai|recall)\/(daily|accounts|people|access|bindings|rules|advanced)$/);if(match&&layouts[match[1]].panes[match[2]])navigate(match[1],match[2],false);else navigate('ai','daily',false);};window.addEventListener('popstate',readRoute);window.addEventListener('hashchange',readRoute);readRoute();
+  if(get('candidate-preview-banner'))for(const id of ['ai-sign-in','ai-reconsent','ai-sign-out','ai-test-api','ai-models','ai-siwc-models','ai-test-vision','quick-login']){get(id).disabled=true;get(id).title='模拟预览中不授权、不调用外部服务';}
+}
+
+    installWorkbenchCandidate();
+    refresh(); setInterval(refresh, 1000);
+  </script>
+</body>
+</html>

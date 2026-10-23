@@ -1,0 +1,6 @@
+import{AIError}from'./ai-auth.mjs';
+export class SettingsFieldError extends AIError {
+ constructor(field,detail){super('invalid_ai_settings');this.field=field;this.userMessage=(FIELD_LABELS[field]||'设置')+'：'+detail;}
+}
+export const FIELD_LABELS={bot_identity:'角色身份',instructions:'角色通用说明',participation_group_overrides:'逐群主动参与规则',participation_instructions:'主动参与方式',daily_reset_timezone:'每日任务重置时区',group_member_policy:'群成员回复范围',group_allowed_users:'群成员允许名单',private_reply_mode:'私聊回复范围',bot_name:'AI名字',bot_address:'对提问者的称呼',bot_persona:'性格与表达风格',bot_aliases:'额外昵称',group_name_trigger:'昵称唤醒开关',name_trigger_position:'昵称匹配位置',groups:'响应群名单',group_blacklist:'群聊黑名单',allow_self:'本人群聊开关',group_trigger_mode:'群聊触发方式',prefix:'聊天口令',api_base_url:'API基础地址',api_model:'API模型',api_format:'API协议',timeout_seconds:'请求超时',concurrency:'并发',queue_limit:'输入队列',queue_wait_seconds:'排队等待',cooldown_seconds:'会话冷却',daily_requests:'每日请求上限',input_chars:'输入字符',output_chars:'输出字符',api_max_output_tokens:'最大输出Token',context_turns:'历史轮数',context_chars:'历史字符',context_ttl_minutes:'上下文保留时间',sessions_limit:'会话容量',delivery_limit:'发送队列',delivery_ttl_minutes:'发送保留时间',group_cache_limit:'群附近消息条数',group_cache_ttl_minutes:'群附近消息保留时间',group_context_chars:'群附近消息字符'};
+

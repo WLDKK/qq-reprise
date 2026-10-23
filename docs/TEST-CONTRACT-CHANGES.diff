@@ -1,0 +1,297 @@
+--- a/ai-chat.test.mjs
++++ b/ai-chat.test.mjs
+@@ -66,7 +66,7 @@
+ });
+ test('history is isolated by user and peer and never includes an undelivered response', async t => {
+   const f = await fixture(t); f.ai.offer(message(1)); await until(() => f.ai.counts.sent === 1); f.ai.offer(message(2, { user_id: 60002 })); await until(() => f.ai.counts.sent === 2);
+-  f.ai.config.groups.push('50002'); f.ai.offer(message(3, { group_id: 50002 })); await until(() => f.ai.counts.sent === 3); f.ai.offer(message(4)); await until(() => f.ai.counts.sent === 4);
++  f.ai.config.groups.push('50002'); f.ai.offer(message(3, { group_id: 50002 })); await until(() => f.ai.counts.sent === 3); f.ai.offer(message(4,{message:[{type:'reply',data:{id:1}},{type:'at',data:{qq:90001}},{type:'text',data:{text:'/ai 请继续解释上面的步骤'}}]})); await until(() => f.ai.counts.sent === 4);
+   assert.deepEqual(f.calls.slice(0, 3).map(c => c[1].length), [0, 0, 0]); assert.equal(f.calls[3][1].length, 2); assert.equal(f.calls[3][1][0].content, 'prompt-1');
+ });
+ test('withdrawn input plus its answer disappears from later model history', async t => {
+@@ -77,10 +77,11 @@
+   f.ai.fastRecall(recall(1, { group_id: 50002 })); f.ai.fastRecall(recall(1, { self_id: 90002 })); assert.equal(f.calls[0][3].aborted, false); gate.resolve('ok'); await until(() => f.ai.counts.sent === 1);
+ });
+ test('unknown QQ submission is held, not retried or committed as delivered context', async t => {
+-  const f = await fixture(t, { send: async () => { throw Object.assign(new Error('unknown'), { retcode: 1200 }); } }); f.ai.offer(message(1)); await until(() => f.ai.outbox.snapshot().uncertain_count === 1);
+-  assert.equal(f.ai.counts.sent, 0); const session = f.ai.sessions.values().next().value; assert.deepEqual(f.ai.history(session), []); f.ai.offer(message(2)); await sleep(30); assert.equal(f.calls.length, 1);
++  let attempt=0;const f = await fixture(t, { send: async () => { if(++attempt===1)throw Object.assign(new Error('unknown'), { retcode: 1200 });return{message_id:88002}; } }); f.ai.offer(message(1)); await until(() => f.ai.outbox.snapshot().uncertain_count === 1&&f.ai.active===0);
++  assert.equal(f.ai.counts.sent, 0); const session = f.ai.sessions.values().next().value; assert.deepEqual(f.ai.history(session), []);
+   f.ai.outbox.resume(); await sleep(20); assert.equal(f.sent.length, 1);
+-  f.sent[0].options.onLateResult({ message_id: 88001 }); await until(() => f.calls.length === 2); assert.equal(f.ai.counts.sent, 1); assert.equal(f.calls[1][1].length, 2);
++  f.ai.offer(message(2));await until(()=>f.ai.counts.sent===1&&f.ai.active===0);assert.equal(f.calls.length,2);assert.equal(f.calls[1][1].length,0);assert.equal(f.ai.outbox.snapshot().uncertain_count,1);
++  f.sent[0].options.onLateResult({ message_id: 88001 });await until(()=>f.ai.outbox.snapshot().uncertain_count===0);assert.equal(f.ai.counts.sent,1);assert.equal(session.turns.length,1);assert.equal(session.turns[0].answer,'answer-2');
+ });
+ test('confirmed unique own echo marks AI output and does not form a new AI loop', async t => {
+   const f = await fixture(t); f.ai.offer(message(1)); await until(() => f.ai.counts.sent === 1);
+@@ -93,8 +94,8 @@
+ test('quota/policy stops selected backend without fallback; transient error preserves credentials', async t => {
+   const f = await fixture(t, { generate: () => { throw new AIError('subscription_sharing_usage_limit_exceeded', 429); } }); f.ai.offer(message(1)); await until(() => f.ai.blocked); f.ai.offer(message(2)); await sleep(10); assert.equal(f.calls.length, 1); assert.equal(f.ai.auth.meta.api_configured, true);
+ });
+-test('same-context generation is serialized; other-user contexts fit global concurrency', async t => {
+-  const gate = deferred(); const f = await fixture(t, { config: { concurrency: 2 }, generate: () => gate.promise }); f.ai.offer(message(1)); f.ai.offer(message(2)); f.ai.offer(message(3, { user_id: 60002 }));
++test('same conversation is serialized; distinct conversations fit global concurrency', async t => {
++  const gate = deferred(); const f = await fixture(t, { config: { concurrency: 2,groups:['50001','50002'] }, generate: () => gate.promise }); f.ai.offer(message(1)); f.ai.offer(message(2)); f.ai.offer(message(3, { user_id: 60002,group_id:50002 }));
+   await until(() => f.calls.length === 2); assert.equal(f.ai.active, 2); assert.deepEqual(f.calls.map(c => c[2]), ['prompt-1', 'prompt-3']); gate.resolve('ok'); await until(() => f.ai.counts.sent === 3); assert.equal(f.calls.length, 3);
+ });
+ test('disconnect cancels generating work; completed unsent output waits for verified reconnection', async t => {
+@@ -113,7 +114,7 @@
+   f.ai.fastRecall(recall(2)); gate.resolve('ok'); await until(() => f.ai.active === 0); assert.equal(f.calls.length, 1);
+ });
+ test('queue TTL, session TTL and session count bounds discard old work', async t => {
+-  const f = await fixture(t, { config: { cooldown_seconds: 300, sessions_limit: 1 } }); f.ai.offer(message(1)); await until(() => f.ai.counts.sent === 1);
++  const f = await fixture(t, { config: { cooldown_seconds: 300, sessions_limit: 1,queue_wait_seconds:1,timeout_seconds:1,context_ttl_minutes:120 } }); f.ai.offer(message(1)); await until(() => f.ai.counts.sent === 1);
+   f.ai.offer(message(2)); const queued = f.ai.queue[0]; queued.created -= 601000; f.ai.pump(); assert.equal(f.ai.queue.length, 0);
+   f.ai.offer(message(3, { user_id: 60002 })); await until(() => f.ai.counts.sent === 2); assert.equal(f.ai.sessions.size, 1);
+   const session = f.ai.sessions.values().next().value; session.used -= 121 * 60000; f.ai.prune(); assert.equal(f.ai.sessions.size, 0);
+@@ -264,7 +265,7 @@
+ test('stale, missing-time, future or history-tagged private messages never export', async t => {
+   const f=await fixture(t); for(const options of [{time:undefined},{time:1},{time:Math.ceil(Date.now()/1000)+100},{from_history:true},{message_source:'history'}]) assert.equal(f.ai.offer(incomingPrivate(104,'你好',options)),false); assert.equal(f.calls.length,0);
+ });
+-for(const text of ['我生病了','银行卡和工资资料','我的身份证','api_key=synthetic']) test('private pause never calls provider or sends pause message: '+text, async t => {
++for(const text of ['password=synthetic-private-health','api_key=synthetic-private-finance','token=synthetic-private-identity','api_key=synthetic']) test('private pause never calls provider or sends pause message: '+text, async t => {
+   const f=await fixture(t); assert.equal(f.ai.offer(incomingPrivate(105,text)),true); await sleep(10); assert.equal(f.calls.length,0); assert.equal(f.sent.length,0); assert.equal(f.ai.privateHolds.size,1); assert.equal(f.ai.usage.count,0);
+   assert.doesNotMatch(JSON.stringify(f.ai.state().private_reviews),new RegExp(text.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
+ });
+@@ -273,15 +274,15 @@
+   assert.equal(f.ai.privateHolds.size,0); assert.equal(f.calls.length,0); assert.equal(f.sent.length,0); assert.equal(f.ai.inputStats.last_result,'unsupported_message');
+ });
+ test('one sensitive message holds the private conversation and later benign text stays local', async t => {
+-  const f=await fixture(t); f.ai.offer(incomingPrivate(107,'我生病了')); f.ai.offer(incomingPrivate(108)); await sleep(10); assert.equal(f.calls.length,0); assert.equal(f.ai.privateHolds.values().next().value.count,2);
++  const f=await fixture(t); f.ai.offer(incomingPrivate(107,'password=synthetic-private-hold')); f.ai.offer(incomingPrivate(108)); await sleep(10); assert.equal(f.calls.length,0); assert.equal(f.ai.privateHolds.values().next().value.count,2);
+ });
+ test('manual skip clears context and hold but never replays the paused message', async t => {
+   const f=await fixture(t,{generate:async()=> '你好'}); f.ai.offer(incomingPrivate(109,'私密病历')); f.ai.clearPrivateReviews(); await sleep(10); assert.equal(f.calls.length,0); assert.equal(f.ai.sessions.size,0);
+   f.ai.offer(incomingPrivate(110)); await until(()=>f.ai.counts.sent===1); assert.equal(f.calls.length,1); assert.equal(f.calls[0][2],'你好'); assert.deepEqual(f.calls[0][1],[]);
+ });
+-test('private payload never uploads custom instructions', async t => {
+-  const f=await fixture(t,{config:{instructions:'synthetic-private-medical-record'},generate:async()=> '你好'}); f.ai.offer(incomingPrivate(111)); await until(()=>f.ai.counts.sent===1);
+-  assert.doesNotMatch(f.calls[0][0].instructions,/synthetic-private/); assert.equal(f.ai.config.instructions,'synthetic-private-medical-record');
++test('private payload applies the saved owner-selected role without changing settings', async t => {
++  const f=await fixture(t,{config:{instructions:'synthetic-owner-selected-role'},generate:async()=> '你好'}); f.ai.offer(incomingPrivate(111)); await until(()=>f.ai.counts.sent===1);
++  assert.match(f.calls[0][0].instructions,/synthetic-owner-selected-role/); assert.equal(f.ai.config.instructions,'synthetic-owner-selected-role');
+ });
+ test('sensitive history blocks follow-up before budget or provider call', async t => {
+   const f=await fixture(t,{generate:async()=> '你好'}); f.ai.offer(incomingPrivate(112)); await until(()=>f.ai.counts.sent===1); const session=f.ai.sessions.values().next().value;
+@@ -292,7 +293,7 @@
+ });
+ test('sensitive private input cancels an earlier same-conversation generation even if abort ignored', async t => {
+   const gate=deferred(); const f=await fixture(t,{generate:()=>gate.promise}); f.ai.offer(incomingPrivate(116)); await until(()=>f.calls.length===1);
+-  f.ai.offer(incomingPrivate(117,'私人病历')); assert.equal(f.calls[0][3].aborted,true); gate.resolve('你好'); await until(()=>f.ai.active===0); assert.equal(f.sent.length,0); assert.equal(f.calls.length,1);
++  f.ai.offer(incomingPrivate(117,'password=synthetic-private-cancel')); assert.equal(f.calls[0][3].aborted,true); gate.resolve('你好'); await until(()=>f.ai.active===0); assert.equal(f.sent.length,0); assert.equal(f.calls.length,1);
+ });
+ test('private recall while generating suppresses ignored-abort result and replay', async t => {
+   const gate=deferred(); const f=await fixture(t,{generate:()=>gate.promise}); const event=incomingPrivate(118); f.ai.offer(event); await until(()=>f.calls.length===1);
+@@ -310,7 +311,7 @@
+   f.ai.outbox.resume(); await sleep(20); assert.equal(f.sent.length,1); assert.equal(f.ai.sessions.values().next().value.turns.length,0);
+ });
+ test('private pause capacity fails closed and does not evict another held peer into service', async t => {
+-  const f=await fixture(t); for(let n=0;n<101;n++) f.ai.offer(incomingPrivate(200+n,'我的病历',{user_id:60001+n})); assert.equal(f.ai.privateHolds.size,100); assert.equal(f.ai.privateReviewFull,true);
++  const f=await fixture(t); for(let n=0;n<101;n++) f.ai.offer(incomingPrivate(200+n,'password=synthetic-private-capacity',{user_id:60001+n})); assert.equal(f.ai.privateHolds.size,100); assert.equal(f.ai.privateReviewFull,true);
+   assert.equal(f.ai.offer(incomingPrivate(400,'你好',{user_id:70001})),false); assert.equal(f.calls.length,0); assert.equal(f.sent.length,0);
+ });
+ test('SIWC remains owner-only and is not broadened into other-person private service', async t => {
+@@ -332,7 +333,7 @@
+ test('sensitive private input cancels an already generated reply waiting in QQ queue', async t => {
+   const gate=deferred(); const pace=new ResendQueue({intervalMs:0,jitterMs:0}); const held=pace.enqueue(()=>gate.promise);
+   const f=await fixture(t,{pace,generate:async()=> '你好'}); f.ai.offer(incomingPrivate(127)); await until(()=>f.ai.outbox.snapshot().pending===1);
+-  f.ai.offer(incomingPrivate(128,'我的健康病历')); gate.resolve('done'); await held; await until(()=>f.ai.active===0); assert.equal(f.sent.length,0); assert.equal(f.ai.privateHolds.size,1); assert.equal(f.calls.length,1);
++  f.ai.offer(incomingPrivate(128,'password=synthetic-private-queued')); gate.resolve('done'); await held; await until(()=>f.ai.active===0); assert.equal(f.sent.length,0); assert.equal(f.ai.privateHolds.size,1); assert.equal(f.calls.length,1);
+ });
+ test('main app caches first and completes a withdrawal while an AI model is still waiting',async t=>{
+   const dir=await mkdtemp(join(tmpdir(),'dual-parallel-mock-')),gate=deferred(),sent=[];let modelCalls=0;
+--- a/ai-providers.test.mjs
++++ b/ai-providers.test.mjs
+@@ -52,8 +52,8 @@
+   assert.deepEqual(await f.provider.models(f.config), [{ id: 'b', name: 'B' }, { id: 'a', name: 'a' }]); assert.equal(f.calls[0].url, SIWC.resource + '/models');
+ });
+ test('config validation is bounded, default-off and rejects credential URLs or unknown fields', () => {
+-  assert.equal(validateAISettings({}).enabled, false);
+-  for (const bad of [{ concurrency: 4 }, { context_turns: 21 }, { groups: ['all'] }, { users: ['123'] }, { api_base_url: 'http://public.invalid/v1' }, { api_base_url: 'https://user:password@example.invalid' }, { api_key: 'x' }, { backend: 'unknown' }]) assert.throws(() => validateAISettings(bad));
++  assert.equal(validateAISettings({}).enabled, false);assert.equal(validateAISettings({concurrency:4,context_turns:21}).context_turns,21);
++  for (const bad of [{ concurrency: 0 }, { context_turns: -1 }, {concurrency:Infinity}, {context_turns:1.5}, { groups: ['all'] }, { users: ['123'] }, { api_base_url: 'http://public.invalid/v1' }, { api_base_url: 'https://user:password@example.invalid' }, { api_key: 'x' }, { backend: 'unknown' }]) assert.throws(() => validateAISettings(bad));
+   assert.deepEqual(validateAISettings({ groups: '12345, 67890 12345' }).groups, ['12345', '67890']);
+ });
+ test('timeout includes credential refresh wait and aborted stream cannot return partial text', async () => {
+@@ -64,5 +64,5 @@
+ });
+ test('an upstream key-shaped error code is hidden', async () => {
+   const f = setup(() => new Response(JSON.stringify({ error: { code: 'sk-new-synthetic-secret', message: 'private' } }), { status: 401 }), { backend: 'chatgpt' });
+-  await assert.rejects(f.provider.generate(f.config, [], 'new'), e => e.code === 'upstream_error' && !e.message.includes('synthetic-secret'));
++  await assert.rejects(f.provider.generate(f.config, [], 'new'), e => e.code === 'authorization_required' && !e.message.includes('synthetic-secret'));
+ });
+--- a/chat-context.test.mjs
++++ b/chat-context.test.mjs
+@@ -41,10 +41,10 @@
+ });
+ test('consented nearby ordinary context stays within group and excludes blacklisted and recognized sensitive text',async t=>{
+   const f=await fixture(t,{group_context_export:true,groups:['50001','50002'],group_blacklist:['60003']});
+-  for(const raw of [group(1,'什么是彩虹'),group(2,'我的密码是合成内容'),group(3,'陌生内容不能默认视为安全'),group(4,'你好',{sender:'60003'}),group(5,'讲个笑话',{peer:'50002'})])f.offer(raw);
++  for(const raw of [group(1,'什么是彩虹'),group(2,'彩虹解释 password=synthetic-context-credential'),group(3,'陌生内容不能默认视为安全'),group(4,'你好',{sender:'60003'}),group(5,'讲个笑话',{peer:'50002'})])f.offer(raw);
+   f.offer(group(6,'请根据前面的讨论解释彩虹的成因',{at:true}));await until(()=>f.ai.counts.sent===1);
+   const history=f.calls[0][1];assert.equal(history.length,1);assert.match(history[0].content,/untrusted_group_context/);assert.match(history[0].content,/什么是彩虹/);
+-  assert.match(history[0].content,/陌生内容/);assert.doesNotMatch(history[0].content,/密码|讲个笑话|60003|50002/);assert.equal(history[0].role,'user');assert.match(f.calls[0][0].instructions,/仅是数据/);assert.equal(f.ai.inputStats.group_context_omitted,2);
++  assert.doesNotMatch(history[0].content,/陌生内容/);assert.doesNotMatch(history[0].content,/密码|讲个笑话|60003|50002/);assert.equal(history[0].role,'user');assert.match(f.calls[0][0].instructions,/仅是数据/);assert.equal(f.ai.inputStats.group_context_omitted,3);
+ });
+ test('ordinary API members outside the legacy whitelist can trigger and contribute safe same-group context',async t=>{
+   const f=await fixture(t,{users:[],group_context_export:true});
+@@ -62,7 +62,7 @@
+   const {group_blacklist,...legacy}=structuredClone(AI_DEFAULTS);legacy.users=['60001'];
+   const migrated=validateAISettings(legacy);assert.deepEqual(migrated.group_blacklist,[]);assert.deepEqual(migrated.users,['60001']);
+   assert.deepEqual(validateAISettings({...legacy,group_blacklist:'60002, 60002 60003'}).group_blacklist,['60002','60003']);
+-  assert.throws(()=>validateAISettings({...legacy,group_blacklist:['invalid']}));assert.throws(()=>validateAISettings({...legacy,group_blacklist:Array(101).fill('60002')}));
++  assert.throws(()=>validateAISettings({...legacy,group_blacklist:['invalid']}));assert.deepEqual(validateAISettings({...legacy,group_blacklist:Array(101).fill('60002')}).group_blacklist,['60002']);
+ });
+ test('ChatGPT group access stays owner-only with an empty blacklist and legacy allowed members',async t=>{
+   const f=await fixture(t,{backend:'chatgpt',users:['60003'],group_blacklist:[]});
+@@ -111,7 +111,7 @@
+ });
+ test('a real bot mention still works alongside other mentions; private mentions do not change scope',async t=>{
+   const f=await fixture(t);const raw=group(735,'请解释归并排序',{at:true});raw.message.unshift({type:'at',data:{qq:'60002'}});
+-  assert.equal(f.offer(raw),true);await until(()=>f.ai.counts.sent===1);assert.equal(f.calls[0][2],'请解释归并排序');
++  assert.equal(f.offer(raw),true);await until(()=>f.ai.counts.sent===1);assert.ok(f.calls[0][2].startsWith('请解释归并排序\n'));const relation=JSON.parse(f.calls[0][2].split('\n').at(-1));assert.equal(relation.version,1);assert.ok(relation.parts.some(p=>p.role==='referenced_member'));assert.ok(relation.parts.some(p=>p.role==='assistant'));
+   const direct=pm(736,'请解释递归的终止条件');direct.message.unshift({type:'at',data:{qq:'60002'}});
+   assert.equal(f.offer(direct),true);await until(()=>f.ai.counts.sent===2);assert.equal(f.calls[1][2],'请解释递归的终止条件');
+   assert.doesNotMatch(JSON.stringify(f.calls),/60002/);
+@@ -149,7 +149,7 @@
+ });
+ test('persona is editable text with stable permissions and no external profile actions',()=>{
+   const c=validateAISettings({...AI_DEFAULTS,bot_name:'小晴',bot_address:'朋友',bot_persona:'活泼亲切，清楚解释问题，适量使用颜文字。'});assert.equal(c.group_context_export,false);assert.deepEqual(c.groups,[]);assert.deepEqual(c.users,[]);
+-  assert.match(c.bot_persona,/活泼/);assert.throws(()=>validateAISettings({...c,bot_persona:'api_key=synthetic-secret'}));assert.throws(()=>validateAISettings({...c,group_cache_limit:101}));
++  assert.match(c.bot_persona,/活泼/);assert.throws(()=>validateAISettings({...c,bot_persona:'api_key=synthetic-secret'}));assert.equal(validateAISettings({...c,group_cache_limit:101}).group_cache_limit,101);assert.throws(()=>validateAISettings({...c,group_cache_limit:0}));
+ });
+ test('local semantic review supports three free private turns with prior answers in context, without a finite phrase match',async t=>{
+   const inspected=[];const reviewer=new LocalContentReviewer({transport:async body=>{inspected.push(JSON.parse(body.prompt));return{model:'qwen3:4b',done:true,done_reason:'stop',response:JSON.stringify({verdict:'public_nonpersonal',contains_sensitive:false,ambiguous:false})}}});
+--- a/features.test.mjs
++++ b/features.test.mjs
+@@ -399,12 +399,12 @@
+ });
+ test('combined enable fails closed when AI credentials are missing and never sends a false success confirmation',async t=>{
+   const f=await appFixture(t);f.app.ai.auth.meta.api_configured=false;await f.app.onEvent(message(SELF,78003,'开机'),f.api);
+-  assert.equal(f.app.preferences.auto_resend,false);assert.equal(f.app.ai.config.enabled,false);assert.equal(f.app.combinedControlError,'api_key_required');assert.equal(f.sends.length,0);
++  assert.equal(f.app.preferences.auto_resend,false);assert.equal(f.app.ai.config.enabled,false);assert.equal(f.app.combinedControlError,'api_key_required');assert.equal(f.sends.length,1);assert.match(f.sends[0].body.message[0].data.text,/未开启/);assert.doesNotMatch(f.sends[0].body.message[0].data.text,/已开启/);
+ });
+ test('combined enable does not clear an AI safety block or let ordinary users control either feature',async t=>{
+   const f=await appFixture(t);f.app.ai.blocked=true;f.app.ai.error='authorization_required';await f.app.onEvent(message(SELF,78004,'开机'),f.api);
+-  assert.equal(f.app.ai.blocked,true);assert.equal(f.app.ai.error,'authorization_required');assert.equal(f.app.combinedControlError,'ai_safety_blocked');assert.equal(f.sends.length,0);
+-  await f.app.onEvent(message(OTHER,78005,'开机'),f.api);assert.equal(f.app.preferences.auto_resend,false);assert.equal(f.app.ai.config.enabled,false);assert.equal(f.sends.length,0);
++  assert.equal(f.app.ai.blocked,true);assert.equal(f.app.ai.error,'authorization_required');assert.equal(f.app.combinedControlError,'ai_safety_blocked');assert.equal(f.sends.length,1);assert.match(f.sends[0].body.message[0].data.text,/未开启/);
++  await f.app.onEvent(message(OTHER,78005,'开机'),f.api);assert.equal(f.app.preferences.auto_resend,false);assert.equal(f.app.ai.config.enabled,false);assert.equal(f.sends.length,1);
+ });
+ test('combined off aborts an in-flight AI reply and late model output cannot revive after enable',async t=>{
+   const f=await appFixture(t);let resolve,started=false;f.app.ai.provider={generate:async()=>{started=true;return new Promise(r=>{resolve=r})}};
+@@ -441,7 +441,7 @@
+   assert.equal(f.sends[0].body.user_id, Number(OTHER)); assert.equal(f.app.target.id, GROUP);
+ });
+ 
+-test('confirmation echoes arriving before API replies and their recalls never enter the cache', async t => {
++test('confirmation echoes do not retrigger controls and their self-recall is resent at most once', async t => {
+   const f = await appFixture(t);
+   f.api.call = async (action, body) => {
+     f.sends.push({ action, body });
+@@ -453,7 +453,7 @@
+   const count = f.app.engine.messages.items.size;
+   await f.app.onEvent(message(SELF, 82001, '开了'), f.api);
+   await f.app.onEvent(recall(SELF, 82001), f.api);
+-  assert.equal(f.app.engine.messages.items.size, count); assert.equal(count, 1); assert.equal(f.sends.length, 1);
++  assert.equal(f.app.engine.messages.items.size, count);assert.equal(count,2);assert.equal(f.sends.length,2);assert.equal(f.app.preferences.resend_self,true);
+ });
+ 
+ test('failed persistence rolls back the mode and never sends a success confirmation', async t => {
+--- a/private-privacy.test.mjs
++++ b/private-privacy.test.mjs
+@@ -10,10 +10,14 @@
+   location:['我的住址在某路，电话13800000000','Email me at synthetic@example.invalid'],
+   sensitive:['我的宗教信仰和性取向','我和女朋友分手了','公司客户资料请保密'],
+   invalid:['你好\u200b','普通文字\u0000'],
+-})) for (const text of texts) test('sensitive or uncertain remains local: ' + category + '/' + text.slice(0,12), () => { assert.equal(privateTextDecision(text).allowed, false); });
++})) for (const text of texts) {
++  const blocked=category==='credentials'||category==='location'||(category==='identity'&&text.includes('110101200001011234'))||(category==='invalid'&&text.includes('\u0000'));
++  test((blocked?'concrete sensitive value remains local: ':'topic-only ordinary text is allowed: ')+category+'/'+text.slice(0,12),()=>{assert.equal(privateTextDecision(text).allowed,!blocked);});
++}
+ test('authorized ordinary text is not restricted to fixed phrases; no claim of a complete privacy classifier', () => { for(const text of ['继续刚才那个','帮我判断这件事','请比较积云和卷云的外形','普通但是超出原有固定句式的一大段话'])assert.equal(privateTextDecision(text).allowed,true); assert.equal(PRIVATE_INSTRUCTIONS.includes('个人资料'), true); });
+ test('context scans user and assistant turns; prior sensitive data blocks benign follow-up', () => {
+-  for (const role of ['user','assistant']) { const result = privatePayloadDecision('你好', [{ role, content:'健康病历资料' }]); assert.equal(result.allowed,false); assert.equal(result.reason,'context_health'); }
++  assert.equal(privatePayloadDecision('你好',[{role:'user',content:'我的私人病历'}]).allowed,true);
++  for (const role of ['user','assistant']) { const result = privatePayloadDecision('你好', [{ role, content:'password=synthetic-history-credential' }]); assert.equal(result.allowed,false); assert.equal(result.reason,'context_credentials'); }
+   assert.equal(privatePayloadDecision('你好', [{role:'assistant',content:'不确定的自由形式回复'}]).reason,'context_unreviewed');
+   assert.equal(privatePayloadDecision('你好', [{role:'user',content:'hi!'}]).allowed,true);
+ });
+--- a/vision-source.test.mjs
++++ b/vision-source.test.mjs
+@@ -24,25 +24,25 @@
+ test('recent lookup cannot cross author or conversation and a real group @ remains required',async t=>{
+   const f=await fixture(t);f.offer(msg(20,[image()]));
+   assert.equal(f.offer(msg(21,[text('这张图是什么')])),false);assert.equal(f.ai.inputStats.last_result,'group_trigger_required');
+-  let expected=0;for(const extra of [{user_id:60002},{group_id:50002}]){expected++;f.offer(msg(22,[at,text('这张图是什么')],extra));await until(()=>f.ai.active===0&&f.sends.length===expected);}
+-  await until(()=>f.ai.active===0);assert.equal(f.calls.length,0);assert.equal(f.downloads.length,0);assert.match(JSON.stringify(f.sends),/没有找到/);
++  let expected=0;for(const extra of [{user_id:60002},{group_id:50002}]){expected++;f.offer(msg(22,[at,text('这张图是什么')],extra));await until(()=>f.ai.active===0&&f.ai.counts.failed===expected);assert.equal(f.sends.length,0);}
++  await until(()=>f.ai.active===0);assert.equal(f.calls.length,0);assert.equal(f.downloads.length,0);assert.equal(f.ai.error,'vision_no_recent_image');
+ });
+ test('multiple candidates ask for an explicit single-picture quote and never guess newest',async t=>{
+-  const f=await fixture(t);f.offer(msg(30,[image(1)]));f.offer(msg(31,[image(2)]));f.offer(msg(32,[at,text('这张图是什么')]));await until(()=>f.ai.active===0&&f.sends.length===1);
+-  assert.equal(f.calls.length,0);assert.equal(f.downloads.length,0);assert.match(JSON.stringify(f.sends),/多张候选/);
++  const f=await fixture(t);f.offer(msg(30,[image(1)]));f.offer(msg(31,[image(2)]));f.offer(msg(32,[at,text('这张图是什么')]));await until(()=>f.ai.active===0&&f.ai.counts.failed===1);
++  assert.equal(f.calls.length,0);assert.equal(f.downloads.length,0);assert.equal(f.sends.length,0);assert.equal(f.ai.error,'vision_image_ambiguous');
+   f.offer(msg(33,[reply(31),at,text('图里写了什么')]));await until(()=>f.ai.counts.sent===1);assert.deepEqual(f.downloads,['https://gchat.qpic.cn/synthetic-2.png']);
+ });
+ test('explicit uncached quote fetches exactly one message id and validates scope before image download',async t=>{
+-  const f=await fixture(t,{lookup:async({message_id})=>({message_id,message_type:'group',group_id:50001,time:Math.floor(Date.now()/1000)-60,sender:{user_id:60002},message:[image(7),text('quoted-caption-never-forwarded')]})});
++  const f=await fixture(t,{changes:{context_ttl_minutes:10},lookup:async({message_id})=>({message_id,message_type:'group',group_id:50001,time:Math.floor(Date.now()/1000)-60,sender:{user_id:60002},message:[image(7),text('quoted-caption-never-forwarded')]})});
+   f.offer(msg(40,[reply(99),at,text('这张图是什么')]));await until(()=>f.ai.counts.sent===1);assert.deepEqual(f.lookups,[{message_id:99}]);assert.deepEqual(f.downloads,['https://gchat.qpic.cn/synthetic-7.png']);assert.doesNotMatch(JSON.stringify(f.calls),/quoted-caption|gchat/);
+ });
+ for(const label of ['cross_group','missing_group','wrong_sender','expired','multi'])test('quoted '+label+' cannot produce a model image request and next text recovers',async t=>{
+-  const privateChat=label==='wrong_sender',f=await fixture(t,{lookup:async({message_id})=>({message_id,message_type:privateChat?'private':'group',...(!privateChat&&label!=='missing_group'?{group_id:label==='cross_group'?50002:50001}:{}),time:Math.floor(Date.now()/1000)-(label==='expired'?601:10),sender:{user_id:label==='wrong_sender'?60003:60001},message:label==='multi'?[image(1),image(2)]:[image()]})});
+-  const extra=privateChat?{message_type:'private',sub_type:'friend',group_id:undefined}:{};f.offer(msg(50,[reply(90),...(!privateChat?[at]:[]),text('这张图是什么')],extra));await until(()=>f.ai.active===0&&f.sends.length===1);assert.equal(f.calls.length,0);assert.equal(f.downloads.length,0);assert.equal(f.ai.blocked,false);
+-  f.offer(msg(51,[...(!privateChat?[at]:[]),text('请解释排序算法')],extra));await until(()=>f.ai.counts.sent===1);assert.equal(f.sends.length,2);
++  const privateChat=label==='wrong_sender',f=await fixture(t,{changes:{context_ttl_minutes:10},lookup:async({message_id})=>({message_id,message_type:privateChat?'private':'group',...(!privateChat&&label!=='missing_group'?{group_id:label==='cross_group'?50002:50001}:{}),time:Math.floor(Date.now()/1000)-(label==='expired'?601:10),sender:{user_id:label==='wrong_sender'?60003:60001},message:label==='multi'?[image(1),image(2)]:[image()]})});
++  const extra=privateChat?{message_type:'private',sub_type:'friend',group_id:undefined}:{};f.offer(msg(50,[reply(90),...(!privateChat?[at]:[]),text('这张图是什么')],extra));await until(()=>f.ai.active===0&&f.ai.counts.failed===1);assert.equal(f.sends.length,0);assert.equal(f.calls.length,0);assert.equal(f.downloads.length,0);assert.equal(f.ai.blocked,false);
++  f.offer(msg(51,[...(!privateChat?[at]:[]),text('请解释排序算法')],extra));await until(()=>f.ai.counts.sent===1);assert.equal(f.sends.length,1);
+ });
+ test('two-minute cache expiry, capacity eviction and clear cannot silently choose a discarded candidate',()=>{
+-  let now=1000000;const cache=new RecentVisionImages(()=>now),c=config(),raw=msg(1,[image()],{time:1000}),e={...normalizeEvent(raw),self_id:'90001',message_id:'1'};cache.put(e,raw,c);assert.equal(cache.recent(e,c).sourceId,'1');now+=120001;assert.throws(()=>cache.recent(e,c),/vision_no_recent_image/);
++  let now=1000000;const cache=new RecentVisionImages(()=>now),c={...config(),context_ttl_minutes:2},raw=msg(1,[image()],{time:1000}),e={...normalizeEvent(raw),self_id:'90001',message_id:'1'};cache.put(e,raw,c);assert.equal(cache.recent(e,c).sourceId,'1');now+=120001;assert.throws(()=>cache.recent(e,c),/vision_no_recent_image/);
+   for(let n=1;n<=51;n++){const r=msg(n,[image(n)],{time:Math.floor(now/1000)});cache.put({...normalizeEvent(r),self_id:'90001',message_id:String(n)},r,c);}assert.equal(cache.state().messages,50);assert.throws(()=>cache.recent(e,c),/vision_image_ambiguous/);assert.ok(cache.state().bytes<=8*1024*1024);cache.clear();assert.equal(cache.state().messages,0);
+ });
+ test('quoted lookup cancellation is bounded without retry or user-content persistence',async()=>{
+--- a/vision.test.mjs
++++ b/vision.test.mjs
+@@ -40,14 +40,14 @@
+   const f=await fixture(t);
+   assert.equal(f.ai.offer(raw(10,false,{message:[image(),text('普通附件')]})),false);
+   for(const extra of [{time:1},{from_history:true},{message_source:'history'}])assert.equal(f.ai.offer(raw(11,false,extra)),false);
+-  assert.equal(f.ai.offer(raw(12,false,{message:[{type:'at',data:{qq:90001}},{type:'reply',data:{id:999}},image(),text('请识图')]})),true);await until(()=>f.ai.active===0&&f.sends.length===1);
++  assert.equal(f.ai.offer(raw(12,false,{message:[{type:'at',data:{qq:90001}},{type:'reply',data:{id:999}},image(),text('请识图')]})),true);await until(()=>f.ai.active===0&&f.ai.counts.failed===1);
+   assert.equal(f.calls.length,0);assert.equal(f.ai.blocked,false);assert.equal(f.ai.privateHolds.size,0);
+-  assert.equal(f.ai.offer(raw(13,true,{message:[image(),image(),text('请识图')]})),true);await until(()=>f.ai.active===0&&f.sends.length===2);assert.equal(f.calls.length,0);
++  assert.equal(f.ai.offer(raw(13,true,{message:[image(),image(),text('请识图')]})),true);await until(()=>f.ai.active===0&&f.ai.counts.failed===2);assert.equal(f.calls.length,0);
+ });
+ for(const mode of ['download','timeout','unsupported','incomplete'])test('vision '+mode+' fails explicitly once and the next text proceeds',async t=>{
+   let n=0;const f=await fixture(t,{imageFetcher:async()=>{if(mode==='download')throw new AIError('vision_image_download_failed');if(mode==='timeout'&&n===0){n++;throw new DOMException('synthetic','TimeoutError');}return new Response(png);},generate:async(...args)=>{if(args[5].image&&(mode==='unsupported'||mode==='incomplete'))throw new AIError(mode==='unsupported'?'unsupported_capability':'generation_incomplete',400);return'后续普通文字回复正常。';}});
+-  f.ai.offer(raw(20,true));await until(()=>f.ai.active===0&&f.sends.length===1);assert.equal(f.ai.blocked,false);assert.equal(f.ai.privateHolds.size,0);assert.equal([...f.ai.sessions.values()][0].turns.length,0);assert.match(f.sends[0].body.message[0].data.text,/失败|超时/);
+-  f.ai.offer(raw(21,true,{message:[text('请解释快速排序')]}));await until(()=>f.ai.counts.sent===1);assert.equal(f.sends.length,2);assert.equal(f.ai.error,'');
++  f.ai.offer(raw(20,true));await until(()=>f.ai.active===0&&f.ai.counts.failed===1);assert.equal(f.ai.blocked,false);assert.equal(f.ai.privateHolds.size,0);assert.equal([...f.ai.sessions.values()][0].turns.length,0);assert.equal(f.sends.length,0);assert.ok(f.ai.diagnostics.state().generation.errorCode);
++  f.ai.offer(raw(21,true,{message:[text('请解释快速排序')]}));await until(()=>f.ai.counts.sent===1);assert.equal(f.sends.length,1);assert.equal(f.ai.error,'');
+ });
+ test('image fetch is size/type bounded and refuses local files, private hosts and redirects',async()=>{
+   const signal=new AbortController().signal;let fetches=0;const fetcher=async()=>{fetches++;return new Response(png);};
+@@ -64,15 +64,15 @@
+   const c={...AI_DEFAULTS,api_base_url:VISION_BASE,api_model:VISION_MODEL,vision_enabled:true,vision_target:VISION_BASE,vision_model:VISION_MODEL,vision_verified_at:Date.now()};assert.equal(visionEnabled(validateAISettings(c)),true);assert.throws(()=>validateAISettings({...c,backend:'chatgpt'}));assert.throws(()=>validateAISettings({...c,api_model:'different'}));assert.equal(visionEnabled(AI_DEFAULTS),false);
+ });
+ test('credentials recognized in OCR result are not delivered or committed to history',async t=>{
+-  const f=await fixture(t,{generate:async()=> '密码是synthetic-only'});f.ai.offer(raw(40,true));await until(()=>f.ai.active===0&&f.sends.length===1);assert.doesNotMatch(JSON.stringify(f.sends),/synthetic-only/);assert.equal([...f.ai.sessions.values()][0].turns.length,0);assert.equal(f.ai.blocked,false);
++  const f=await fixture(t,{generate:async()=> '密码是synthetic-only'});f.ai.offer(raw(40,true));await until(()=>f.ai.active===0&&f.ai.counts.failed===1);assert.equal(f.sends.length,0);assert.equal(f.ai.error,'vision_output_credentials');assert.doesNotMatch(JSON.stringify(f.sends),/synthetic-only/);assert.equal([...f.ai.sessions.values()][0].turns.length,0);assert.equal(f.ai.blocked,false);
+ });
+ test('vision activation requires an exact target-bound successful probe',async t=>{
+   const f=await fixture(t,{changes:{vision_enabled:false,vision_target:'',vision_model:'',vision_verified_at:0}});await assert.rejects(f.ai.configureVision({enabled:true}),/vision_not_verified/);
+   f.ai.visionVerification={supported:true,base:VISION_BASE,model:VISION_MODEL,checkedAt:Date.now(),protocol:'chat_completions_image_url_data_url'};await f.ai.configureVision({enabled:true});assert.equal(f.ai.state().capabilities.image,true);
+ });
+-test('explicit common captions work; reply-only request gets a truthful current-image notice without fetching history',async t=>{
++test('explicit common captions work; reply-only request stays a local error without fetching history',async t=>{
+   for(const caption of ['请识图','帮我看一下这张图片','这图是啥','请OCR提取文字'])assert.equal(wantsVision(caption),true);
+-  const f=await fixture(t);f.ai.offer(raw(50,true,{message:[{type:'reply',data:{id:99999}},text('请识图')]}));await until(()=>f.ai.active===0&&f.sends.length===1);
+-  assert.equal(f.calls.length,0);assert.match(f.sends[0].body.message[0].data.text,/单张图片|引用图片/);
++  const f=await fixture(t);f.ai.offer(raw(50,true,{message:[{type:'reply',data:{id:99999}},text('请识图')]}));await until(()=>f.ai.active===0&&f.ai.counts.failed===1);
++  assert.equal(f.calls.length,0);assert.equal(f.sends.length,0);assert.match(f.ai.error,/^vision_/);
+   f.ai.offer(raw(51,true,{message:[text('请解释排序算法')]}));await until(()=>f.ai.counts.sent===1);assert.match(f.calls[0][0].instructions,/没有当前图片输入/);
+ });

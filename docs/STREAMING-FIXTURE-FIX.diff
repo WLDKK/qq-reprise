@@ -1,0 +1,11 @@
+--- before/streaming.test.mjs
++++ after/streaming.test.mjs
+@@ -46,7 +46,7 @@
+   ai.config={...structuredClone(AI_DEFAULTS),enabled:true,binding_qq:'90001',api_model:'synthetic',timeout_seconds:0.015,cooldown_seconds:0};ai.auth.meta.api_configured=true;ai.auth.meta.api_id='synthetic';ai.auth.meta.api_binding=apiBinding(ai.config);
+   const msg=(id,text)=>({post_type:'message',message_type:'private',sub_type:'friend',self_id:90001,user_id:60001,message_id:id,time:Math.ceil(Date.now()/1000),message:[{type:'text',data:{text}}]});
+   ai.offer(msg(1,'请解释递归'));await until(()=>ai.counts.failed===1&&ai.active===0);assert.equal(ai.error,'request_timeout');assert.equal(ai.privateHolds.size,0);assert.equal(ai.jobs.size,0);assert.equal([...ai.sessions.values()][0].pending,null);assert.equal(sent.length,0);
+-  ai.offer(msg(2,'请解释排序'));await until(()=>ai.counts.sent===1);assert.equal(calls,2);assert.equal(ai.error,'');assert.equal(sent.length,1);assert.doesNotMatch(await readFile(ai.diagnostics.file.path,'utf8'),/synthetic-reason|next-answer/);
++  ai.offer(msg(2,'请解释排序'));await until(()=>ai.counts.sent===1&&ai.active===0);await ai.diagnostics.file.task;assert.equal(calls,2);assert.equal(ai.error,'');assert.equal(sent.length,1);assert.doesNotMatch(await readFile(ai.diagnostics.file.path,'utf8'),/synthetic-reason|next-answer/);
+ });
+ for(const mode of ['fetch_stall','body_stall','error'])test('image '+mode+' cannot block AI text or an independent withdrawal',async t=>{
+   const dir=await mkdtemp(join(tmpdir(),'image-isolation-mock-')),sent=[];let modelCalls=0;

@@ -1,0 +1,268 @@
+{
+  "status": "audited_release_content_authorized_for_publication",
+  "runtimeFiles": 51,
+  "runtimeMjsFiles": 49,
+  "testFiles": 20,
+  "historicalBaseline": {
+    "tests": 400,
+    "passed": 350,
+    "failed": 50
+  },
+  "original50FailureTriage": {
+    "real_defect": 2,
+    "obsolete_expectation": 45,
+    "fixture_issue": 3
+  },
+  "realModelRequests": 0,
+  "realQQSends": 0,
+  "productionDataIncluded": false,
+  "productionModifiedDuringCandidatePreparation": false,
+  "liveIntegrationVerified": false,
+  "licenseFilePresent": true,
+  "publicationBlockedUntil": [],
+  "checkedAtUTC": "2026-10-23T12:59:54.428424+00:00",
+  "allMjsSyntaxChecked": 71,
+  "syntaxFailures": [],
+  "localImportClosureMissing": [],
+  "externalPackageImports": [],
+  "publicFiles": 97,
+  "jsonFilesParsed": [
+    "CANDIDATE-VERIFICATION.json",
+    "PROVENANCE-AUDIT.json",
+    "RELEASE-MANIFEST.json",
+    "SOURCE-MANIFEST.json",
+    "TRIAGE-50.json",
+    "examples/ai-settings.example.json",
+    "examples/config.example.json"
+  ],
+  "documentationFiles": 11,
+  "localLinksChecked": 42,
+  "knownPersonalDataMatches": 0,
+  "credentialFindingsRequiringReview": 0,
+  "explicitSyntheticTestFindings": [
+    {
+      "file": "ai-api-draft.test.mjs",
+      "line": 34
+    },
+    {
+      "file": "ai-api-draft.test.mjs",
+      "line": 58
+    },
+    {
+      "file": "ai-api-draft.test.mjs",
+      "line": 107
+    },
+    {
+      "file": "ai-auth.test.mjs",
+      "line": 28
+    },
+    {
+      "file": "ai-auth.test.mjs",
+      "line": 94
+    },
+    {
+      "file": "ai-chat.test.mjs",
+      "line": 268
+    },
+    {
+      "file": "ai-chat.test.mjs",
+      "line": 277
+    },
+    {
+      "file": "ai-chat.test.mjs",
+      "line": 296
+    },
+    {
+      "file": "ai-chat.test.mjs",
+      "line": 314
+    },
+    {
+      "file": "ai-chat.test.mjs",
+      "line": 336
+    },
+    {
+      "file": "ai-diagnostics.test.mjs",
+      "line": 19
+    },
+    {
+      "file": "ai-diagnostics.test.mjs",
+      "line": 29
+    },
+    {
+      "file": "ai-providers.test.mjs",
+      "line": 16
+    },
+    {
+      "file": "ai-providers.test.mjs",
+      "line": 21
+    },
+    {
+      "file": "ai-providers.test.mjs",
+      "line": 66
+    },
+    {
+      "file": "chat-context.test.mjs",
+      "line": 44
+    },
+    {
+      "file": "chat-context.test.mjs",
+      "line": 97,
+      "review": "Synthetic adversarial fixture"
+    },
+    {
+      "file": "chat-context.test.mjs",
+      "line": 107
+    },
+    {
+      "file": "chat-context.test.mjs",
+      "line": 152
+    },
+    {
+      "file": "competition-platform.test.mjs",
+      "line": 13
+    },
+    {
+      "file": "competition-platform.test.mjs",
+      "line": 25
+    },
+    {
+      "file": "docs/TEST-CONTRACT-CHANGES.diff",
+      "line": 51
+    },
+    {
+      "file": "docs/TEST-CONTRACT-CHANGES.diff",
+      "line": 52
+    },
+    {
+      "file": "docs/TEST-CONTRACT-CHANGES.diff",
+      "line": 61
+    },
+    {
+      "file": "docs/TEST-CONTRACT-CHANGES.diff",
+      "line": 81
+    },
+    {
+      "file": "docs/TEST-CONTRACT-CHANGES.diff",
+      "line": 90
+    },
+    {
+      "file": "docs/TEST-CONTRACT-CHANGES.diff",
+      "line": 99
+    },
+    {
+      "file": "docs/TEST-CONTRACT-CHANGES.diff",
+      "line": 119
+    },
+    {
+      "file": "docs/TEST-CONTRACT-CHANGES.diff",
+      "line": 130
+    },
+    {
+      "file": "docs/TEST-CONTRACT-CHANGES.diff",
+      "line": 160
+    },
+    {
+      "file": "docs/TEST-CONTRACT-CHANGES.diff",
+      "line": 161
+    },
+    {
+      "file": "docs/TEST-CONTRACT-CHANGES.diff",
+      "line": 216
+    },
+    {
+      "file": "message-format.test.mjs",
+      "line": 27
+    },
+    {
+      "file": "message-format.test.mjs",
+      "line": 41
+    },
+    {
+      "file": "private-privacy.test.mjs",
+      "line": 9
+    },
+    {
+      "file": "private-privacy.test.mjs",
+      "line": 20
+    }
+  ],
+  "reviewedNonliteralSourceExpressions": [
+    {
+      "file": "ai-auth.mjs",
+      "line": 169,
+      "review": "Nonliteral runtime property expression"
+    },
+    {
+      "file": "ai-auth.mjs",
+      "line": 240,
+      "review": "Nonliteral runtime property expression"
+    },
+    {
+      "file": "qq-recall.mjs",
+      "line": 78,
+      "review": "Nonliteral runtime property expression"
+    }
+  ],
+  "productionRuntimeHashesStillMatchSourceManifest": true,
+  "testFunctionsRemovedOrSkipped": false,
+  "finalPortableCommandVerified": true,
+  "candidateSourcesUnchangedDuringTests": true,
+  "testRuntime": {
+    "platform": "win32",
+    "node": "v24.14.0"
+  },
+  "fullReleaseOfflineRegressionComplete": true,
+  "runtimeAndExampleIdentityBoundariesVerified": true,
+  "forwardSpecializedSuiteEvidence": "historical 2026-10-21; not counted in current 443 and not fully rerun here",
+  "productionReadsDuringOfflineTests": 0,
+  "productionWritesDuringOfflineTests": 0,
+  "oauthPublicClientOriginVerified": true,
+  "priorFunctionalTests": {
+    "tests": 438,
+    "passed": 438,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "guardBlocks": 0
+  },
+  "oauthFlowRegistrationEntrypointVerified": true,
+  "bundledPreissuedOAuthClientIds": false,
+  "thirdPartyCopiedCodeEvidenceFound": false,
+  "additionalFixtureEvidence": {
+    "originalFailureReportsPreservedLocally": true,
+    "anonymousConfigFixtureUsesActualValidator": true,
+    "streamingFixtureWaitsForIdleAndDiagnosticWrites": true,
+    "targetedStreamingRechecks": 3,
+    "targetedStreamingPassedPerRun": 10,
+    "additionalFixtureFixChangesRuntime": false
+  },
+  "oauthMockBoundaryTests": 21,
+  "provenanceAuditFile": "PROVENANCE-AUDIT.json",
+  "provenanceComparison": {
+    "runtimeFiles": 51,
+    "upstreamRepositories": 4,
+    "publicTreeBlobs": 5321,
+    "wholeFileOrNormalizedMatches": 0,
+    "fragmentSimilarityNotProven": true
+  },
+  "functionalTests": {
+    "tests": 443,
+    "passed": 443,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "guardBlocks": 0
+  },
+  "liveOAuthVerified": false,
+  "projectName": "回笺 · QQ Reprise",
+  "repositorySlug": "qq-reprise",
+  "copyrightHolder": "WLDKK",
+  "publicIdentityApproved": [
+    "WLDKK"
+  ],
+  "license": "MIT",
+  "releaseManifest": "RELEASE-MANIFEST.json",
+  "releaseStatusMeaning": "Validates release content before upload; remote repository/commit verification is recorded separately",
+  "publicationDocumentationRecheckPassed": true,
+  "runtimeAndTestSourceHashesUnchangedSince443Pass": true
+}

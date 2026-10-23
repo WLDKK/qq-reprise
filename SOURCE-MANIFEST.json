@@ -1,0 +1,569 @@
+{
+  "preparedAtUTC": "2026-10-23T10:07:53.764312+00:00",
+  "sourceProject": "QQ local assistant",
+  "sourceHasGitHistory": false,
+  "sourceRemoteAvailable": false,
+  "sourceVersion": "recall-rich-flow-v1-20261021; backend_recovery_version=2",
+  "licenseDecision": "pending_owner_choice",
+  "privateProductionDataIncluded": false,
+  "originalEvidenceRetainedOutsideCandidate": true,
+  "runtime": [
+    {
+      "file": "account-pool-service.mjs",
+      "sourceSHA256": "3d669ea78bafd7eb46c43d079997da19954cb0a99289b3111e188c86ad672536",
+      "candidateSHA256": "3d669ea78bafd7eb46c43d079997da19954cb0a99289b3111e188c86ad672536",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "ai-api-draft.mjs",
+      "sourceSHA256": "89de2ff617c076732134d5e3c705a77d787f288215b691a1265f856080669d9a",
+      "candidateSHA256": "89de2ff617c076732134d5e3c705a77d787f288215b691a1265f856080669d9a",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "ai-auth.mjs",
+      "sourceSHA256": "c00f455e08bd6a662fcadad091dec99a15f3fe7868d48112a2f68c257466e310",
+      "candidateSHA256": "c00f455e08bd6a662fcadad091dec99a15f3fe7868d48112a2f68c257466e310",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "ai-chat.mjs",
+      "sourceSHA256": "b0c8d981755d37492cf8924875b084346f9d0f31e625bc9a99415c5bd9dcf2e6",
+      "candidateSHA256": "4d6f7561f57452f9831e482b5ca7c05b611478615da6b41e536a498f5262c975",
+      "changes": [
+        "backend_recovery_memory_v2",
+        "unknown_delivery_retention_candidate_fix"
+      ]
+    },
+    {
+      "file": "ai-config.mjs",
+      "sourceSHA256": "c6f129ba029042ec0985c26e01ed925451de7e537ecf0918035545fbaecd6afe",
+      "candidateSHA256": "a854e53ec094e1921100f86a480c05294d2616a9633cb5848a848dbb16bb08fd",
+      "changes": [
+        "normalize_utf8_newlines",
+        "anonymize_default_bot_display_name"
+      ]
+    },
+    {
+      "file": "ai-diagnostics.mjs",
+      "sourceSHA256": "5cdb0d5d4b2353de3965736795846a481a7b41194603d2e0d0ce2eabe922f268",
+      "candidateSHA256": "5cdb0d5d4b2353de3965736795846a481a7b41194603d2e0d0ce2eabe922f268",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "ai-persona.mjs",
+      "sourceSHA256": "8436074b953106af98dea6a98eb2b22a02bcef760fe7572fc8b1730882230b37",
+      "candidateSHA256": "8436074b953106af98dea6a98eb2b22a02bcef760fe7572fc8b1730882230b37",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "ai-providers.mjs",
+      "sourceSHA256": "e1cbff716d6b7e6ff910a0ebd30107a637dca42e162cf3ddb1edd2774eb182c9",
+      "candidateSHA256": "e1cbff716d6b7e6ff910a0ebd30107a637dca42e162cf3ddb1edd2774eb182c9",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "ai-queue-policy.mjs",
+      "sourceSHA256": "56bfd8576b76df8b44fbe1f5cad0d41ca3c49ceaf1f6c4826a007e8f07662994",
+      "candidateSHA256": "56bfd8576b76df8b44fbe1f5cad0d41ca3c49ceaf1f6c4826a007e8f07662994",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "ai-state-handoff.mjs",
+      "sourceSHA256": "70cdb322cfa7efb578cd8ace64c6cfd0874aea3ee72c9ff0fde2d38d8b77e5b6",
+      "candidateSHA256": "70cdb322cfa7efb578cd8ace64c6cfd0874aea3ee72c9ff0fde2d38d8b77e5b6",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "ai-storage.mjs",
+      "sourceSHA256": "a6316842b874aba032a8daf083beab88b354cb31edceea37630ca4a7e424e276",
+      "candidateSHA256": "a6316842b874aba032a8daf083beab88b354cb31edceea37630ca4a7e424e276",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "ai-vision.mjs",
+      "sourceSHA256": "94cad23b80e285e6a76e0f9f6362ad4749b1ce9490916b471ad31cb44e289902",
+      "candidateSHA256": "94cad23b80e285e6a76e0f9f6362ad4749b1ce9490916b471ad31cb44e289902",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "api-account-pool.mjs",
+      "sourceSHA256": "5be8f77534710a3be829f9281ec7b215d6b04cf638adb68836f697c3a62a89a4",
+      "candidateSHA256": "5be8f77534710a3be829f9281ec7b215d6b04cf638adb68836f697c3a62a89a4",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "chat-display.mjs",
+      "sourceSHA256": "809c841cf4442369f949e2794db3b0fc714fa839a8e32a7bb4674c6a6cfd404f",
+      "candidateSHA256": "809c841cf4442369f949e2794db3b0fc714fa839a8e32a7bb4674c6a6cfd404f",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "chat-identity.mjs",
+      "sourceSHA256": "d4ec487c5ac295c5de3104e76176c8d520c7fb061ba89b5bf4ffdc1bdf962033",
+      "candidateSHA256": "d4ec487c5ac295c5de3104e76176c8d520c7fb061ba89b5bf4ffdc1bdf962033",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "command-confirmations.mjs",
+      "sourceSHA256": "8acf0706f1169dba91fedd80d917754d3ccb058b80ed414567495c5128e24435",
+      "candidateSHA256": "8acf0706f1169dba91fedd80d917754d3ccb058b80ed414567495c5128e24435",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "connection-pool-service.mjs",
+      "sourceSHA256": "f59ded2d0de901e24d849119ee8fbcb2c351f9e65cdd6af34242dea14d3a757a",
+      "candidateSHA256": "f59ded2d0de901e24d849119ee8fbcb2c351f9e65cdd6af34242dea14d3a757a",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "connection-watchdog.mjs",
+      "sourceSHA256": "a8e6d383e9c06be6fc71bf3dc145ebfd887b22e2dae924619e6e55c0239e16ef",
+      "candidateSHA256": "a8e6d383e9c06be6fc71bf3dc145ebfd887b22e2dae924619e6e55c0239e16ef",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "engine.mjs",
+      "sourceSHA256": "5e3b72711033de42efbfc1c4e11f54e5b8e80a2bea4655462cc32361dcaa483e",
+      "candidateSHA256": "5e3b72711033de42efbfc1c4e11f54e5b8e80a2bea4655462cc32361dcaa483e",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "group-context.mjs",
+      "sourceSHA256": "209eff6dcf5d3774f0351f3ece4017ec0de44082239f93d9fac57e36b3de7eae",
+      "candidateSHA256": "209eff6dcf5d3774f0351f3ece4017ec0de44082239f93d9fac57e36b3de7eae",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "group-participation.mjs",
+      "sourceSHA256": "db92d51d45fa584bae46f1a4bfc6cfe6f083f5e54f5a22f25163285cb1744114",
+      "candidateSHA256": "db92d51d45fa584bae46f1a4bfc6cfe6f083f5e54f5a22f25163285cb1744114",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "group-topics.mjs",
+      "sourceSHA256": "e8d76de9671b6b2f38ff9a66ebc744aca70a37da5d9e7a6d3dba6db47f87d81e",
+      "candidateSHA256": "e8d76de9671b6b2f38ff9a66ebc744aca70a37da5d9e7a6d3dba6db47f87d81e",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "group-understanding.mjs",
+      "sourceSHA256": "c4725bc90004f80c268f2afaddd2d06a027ef4eed327d644377acdd537c74362",
+      "candidateSHA256": "c4725bc90004f80c268f2afaddd2d06a027ef4eed327d644377acdd537c74362",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "input-diagnostics.mjs",
+      "sourceSHA256": "247eb8edea7bb45f42baef8d53bc57b110e5163ba0d3e5eacf758520e7765fcd",
+      "candidateSHA256": "247eb8edea7bb45f42baef8d53bc57b110e5163ba0d3e5eacf758520e7765fcd",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "input-mentions.mjs",
+      "sourceSHA256": "e62131b64fde49b65f29ff3f54c6253ffdc0af9a2dd762780f0ff19f4b66ed96",
+      "candidateSHA256": "e62131b64fde49b65f29ff3f54c6253ffdc0af9a2dd762780f0ff19f4b66ed96",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "local-content-review.mjs",
+      "sourceSHA256": "b9cb6860b461ece517ae2dc1cab38f8eca3aa05724a4752f7269bdf17e6b9efb",
+      "candidateSHA256": "b9cb6860b461ece517ae2dc1cab38f8eca3aa05724a4752f7269bdf17e6b9efb",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "media-frame.mjs",
+      "sourceSHA256": "b500fd3d68f55726bb491f892da1ac5ba522592ecf31b02b233da97a7528e832",
+      "candidateSHA256": "b500fd3d68f55726bb491f892da1ac5ba522592ecf31b02b233da97a7528e832",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "media-segments.mjs",
+      "sourceSHA256": "cbf52e71f6c04ed6dd9cfe2153c4fc7d6fc2b6c1dfd1cd4593ffd860aff6910e",
+      "candidateSHA256": "cbf52e71f6c04ed6dd9cfe2153c4fc7d6fc2b6c1dfd1cd4593ffd860aff6910e",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "oauth-diagnostic.mjs",
+      "sourceSHA256": "82e2e18a92b09fe34e2bc84465122408e2022f9298368e2279cb6427a7951d00",
+      "candidateSHA256": "82e2e18a92b09fe34e2bc84465122408e2022f9298368e2279cb6427a7951d00",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "onebot-diagnostics.mjs",
+      "sourceSHA256": "86040cb687c3ff9db0c550e0d3ca1e14fa587207533a31935b32e5e96dcca79a",
+      "candidateSHA256": "86040cb687c3ff9db0c550e0d3ca1e14fa587207533a31935b32e5e96dcca79a",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "participation-format.mjs",
+      "sourceSHA256": "16ab03538ce76f5f6640c0d2239f4d45d303f0211d871cc695dd2b33da57051e",
+      "candidateSHA256": "16ab03538ce76f5f6640c0d2239f4d45d303f0211d871cc695dd2b33da57051e",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "participation-ledger.mjs",
+      "sourceSHA256": "e7c9ee25c502747fa54f9426b08b01586e254983d925ac5507aa1a5568da16a8",
+      "candidateSHA256": "e7c9ee25c502747fa54f9426b08b01586e254983d925ac5507aa1a5568da16a8",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "private-privacy.mjs",
+      "sourceSHA256": "2814edc0bba3961c2d889543c43f9495574deaa7d3d222341dfb8ba3342bc9f5",
+      "candidateSHA256": "2814edc0bba3961c2d889543c43f9495574deaa7d3d222341dfb8ba3342bc9f5",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "private-review-archive.mjs",
+      "sourceSHA256": "ad0a825156dd3b81d53ddff17f1ddb14c4a8e24e688a6374fb9317ee63d86442",
+      "candidateSHA256": "ad0a825156dd3b81d53ddff17f1ddb14c4a8e24e688a6374fb9317ee63d86442",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "qq-output.mjs",
+      "sourceSHA256": "7a11506ebc7d71f95182e1900cad2cfb38e6fbb5e9732f8ccbf82dab1b33b6c4",
+      "candidateSHA256": "7a11506ebc7d71f95182e1900cad2cfb38e6fbb5e9732f8ccbf82dab1b33b6c4",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "qq-recall.mjs",
+      "sourceSHA256": "91b5429270ca3f159d218af0a78efb85f16f4178e9cefcc9ae58f60a571c30ea",
+      "candidateSHA256": "91b5429270ca3f159d218af0a78efb85f16f4178e9cefcc9ae58f60a571c30ea",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "quick-login.mjs",
+      "sourceSHA256": "a31f8a79e6542a481f32490eff8d5ad2b1be526717b37aed58f7469ede54235e",
+      "candidateSHA256": "a31f8a79e6542a481f32490eff8d5ad2b1be526717b37aed58f7469ede54235e",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "rate-limit-cooldown.mjs",
+      "sourceSHA256": "3a746d849e4e0c96a05d5cd1a626c9a9e761221053fd8fc7514fbaf25ea368da",
+      "candidateSHA256": "3a746d849e4e0c96a05d5cd1a626c9a9e761221053fd8fc7514fbaf25ea368da",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "recall-name-bindings.mjs",
+      "sourceSHA256": "04ff4f531f5791cff96ed48f181161cdd05e2813e39e249a82699ad2b9d95f3c",
+      "candidateSHA256": "04ff4f531f5791cff96ed48f181161cdd05e2813e39e249a82699ad2b9d95f3c",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "recall-rich-message.mjs",
+      "sourceSHA256": "04351675a929a8821b6bd80851357af1c486728f410dcc10cea2b71c8d6fa847",
+      "candidateSHA256": "04351675a929a8821b6bd80851357af1c486728f410dcc10cea2b71c8d6fa847",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "recovery-errors.mjs",
+      "sourceSHA256": "3a200d09f4bdb40a69658e0d011a6729b88e4ea7d85114780e672096540de98e",
+      "candidateSHA256": "3a200d09f4bdb40a69658e0d011a6729b88e4ea7d85114780e672096540de98e",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "recovery.mjs",
+      "sourceSHA256": "5b549e08f5d10d8c55ecff7e6fc212d9a22918b1c0023fd89858d68bd937bb4c",
+      "candidateSHA256": "5b549e08f5d10d8c55ecff7e6fc212d9a22918b1c0023fd89858d68bd937bb4c",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "retained-outbox.mjs",
+      "sourceSHA256": "90f1ec41c017e80042a8e75eddb40838388fc90579c720db8549a9655779dbf5",
+      "candidateSHA256": "90f1ec41c017e80042a8e75eddb40838388fc90579c720db8549a9655779dbf5",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "send-queue.mjs",
+      "sourceSHA256": "d31d16ecbdffc032f56f4480088bf960e81db8cd027b3034041707076137cf44",
+      "candidateSHA256": "d31d16ecbdffc032f56f4480088bf960e81db8cd027b3034041707076137cf44",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "settings-field-error.mjs",
+      "sourceSHA256": "a848155b81a25b85d77359e1ea2b4d3756954b73b797b235673769a0867df9e8",
+      "candidateSHA256": "a848155b81a25b85d77359e1ea2b4d3756954b73b797b235673769a0867df9e8",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "settings-rules.mjs",
+      "sourceSHA256": "85dd43c8fabe42272e7c18ff5129ece648aa9a1153cfcbd02e067b92ae535633",
+      "candidateSHA256": "85dd43c8fabe42272e7c18ff5129ece648aa9a1153cfcbd02e067b92ae535633",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "upstream-limit.mjs",
+      "sourceSHA256": "bb44de4e527d9e35f527d8a5d40a9636a49582958d96e0d76e5d675b3a035c69",
+      "candidateSHA256": "bb44de4e527d9e35f527d8a5d40a9636a49582958d96e0d76e5d675b3a035c69",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "vision-followup.mjs",
+      "sourceSHA256": "8d98a2199b365b8f24b9fa4e09b731a5475c289b928fdd411397be2707813123",
+      "candidateSHA256": "8d98a2199b365b8f24b9fa4e09b731a5475c289b928fdd411397be2707813123",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "vision-privacy.mjs",
+      "sourceSHA256": "0ad89f86a535ad6761cf7419ccacc36514ae9b1d4c96cb7933ae4fbe5cf98155",
+      "candidateSHA256": "0ad89f86a535ad6761cf7419ccacc36514ae9b1d4c96cb7933ae4fbe5cf98155",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "ui.html",
+      "sourceSHA256": "aacc21a987ad7aea510797a8390b279fa008c647b4fb774e30b666906fed938c",
+      "candidateSHA256": "aacc21a987ad7aea510797a8390b279fa008c647b4fb774e30b666906fed938c",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    },
+    {
+      "file": "media-frame.ps1",
+      "sourceSHA256": "39e6b83737e49437506d563e08129c05ae96f16245360e8d9180f09a45626af1",
+      "candidateSHA256": "39e6b83737e49437506d563e08129c05ae96f16245360e8d9180f09a45626af1",
+      "changes": [
+        "normalize_utf8_newlines"
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "file": "ai-api-draft.test.mjs",
+      "candidateSHA256": "4627031f4106032165f62bb5687e1a9e373a4d4501e3a80cd9a556267615e7d8",
+      "sourceSHA256": "4627031f4106032165f62bb5687e1a9e373a4d4501e3a80cd9a556267615e7d8",
+      "syntheticOnly": true
+    },
+    {
+      "file": "ai-auth.test.mjs",
+      "candidateSHA256": "809c28d4f0f914b79024a0e4e2ae9003de8e233d0286977c183f2ac6aa7a8a90",
+      "sourceSHA256": "8a8441e3b690d3eb0e66417382855cc811adac0b93603652e2f3e9809d9861e2",
+      "syntheticOnly": true
+    },
+    {
+      "file": "ai-chat.test.mjs",
+      "candidateSHA256": "78c91eb7d8d74bc922cc9d371d750ef5747512f564ddf89eab3f69463c308999",
+      "sourceSHA256": "e6c3f0036089704860ca05f20c9ec15f97c70a3c227bcee76fecd52a2d1f5835",
+      "syntheticOnly": true
+    },
+    {
+      "file": "ai-diagnostics.test.mjs",
+      "candidateSHA256": "8418c2f91fbfa7d8de3d0c9b88472fb595c1b260db10f5b10aee7f6ea1dd2f7b",
+      "sourceSHA256": "8418c2f91fbfa7d8de3d0c9b88472fb595c1b260db10f5b10aee7f6ea1dd2f7b",
+      "syntheticOnly": true
+    },
+    {
+      "file": "ai-providers.test.mjs",
+      "candidateSHA256": "39c9f0c1b0ba131ba2b1c7028e1100b44717a9b1c2e9b61bb3835e302e97ce1d",
+      "sourceSHA256": "fe1fc0b350c11553f780dc587d0dcbdc7f6ee201d30bae6513c781dc07a95c0a",
+      "syntheticOnly": true
+    },
+    {
+      "file": "anonymous-install.test.mjs",
+      "candidateSHA256": "d29d14cbb632972efccee10665964ae494505963ff3cf4e8deff67b66e8deffe",
+      "sourceSHA256": null,
+      "syntheticOnly": true
+    },
+    {
+      "file": "backend-recovery.test.mjs",
+      "candidateSHA256": "7204c9ed2c93b3340270116cc3259b1096c99029c9502ed113fd65b2b0fe57e2",
+      "sourceSHA256": null,
+      "syntheticOnly": true
+    },
+    {
+      "file": "cache.test.mjs",
+      "candidateSHA256": "1b76777e38a66a22a8db2e923da399140ff6676049ba4e821be96169da82096b",
+      "sourceSHA256": "1b76777e38a66a22a8db2e923da399140ff6676049ba4e821be96169da82096b",
+      "syntheticOnly": true
+    },
+    {
+      "file": "chat-context.test.mjs",
+      "candidateSHA256": "8cebee73f3eb1a4c285d251944510b3a90dddd9b2e5891fa7ec98b3f837dd27e",
+      "sourceSHA256": "9e2502254a23e37591405501cdc5b1b456c7a35b1ceca192799c94ce4c5f793c",
+      "syntheticOnly": true
+    },
+    {
+      "file": "competition-platform.test.mjs",
+      "candidateSHA256": "f46aa872298f1f862ac025a6ea8b07f3050610be3076631f8c64e08b1d92c8f6",
+      "sourceSHA256": "f46aa872298f1f862ac025a6ea8b07f3050610be3076631f8c64e08b1d92c8f6",
+      "syntheticOnly": true
+    },
+    {
+      "file": "delivery-unknown.test.mjs",
+      "candidateSHA256": "ca21131428e1541fb86c0fc9289e55b3e8fc8b5cc4d80feeb126d37d8b3f2275",
+      "sourceSHA256": null,
+      "syntheticOnly": true
+    },
+    {
+      "file": "features.test.mjs",
+      "candidateSHA256": "93e8826eb8e262035363d0ced53b18b8200770ce356088205bedcb9c2cb73079",
+      "sourceSHA256": "9a01d993e0ff4003b9cdf70de1129d8a76af5b9be8d3e15b6d1410777b28ed0d",
+      "syntheticOnly": true
+    },
+    {
+      "file": "message-format.test.mjs",
+      "candidateSHA256": "979a88537da802119bb223eb4b94391b32a7abf1d499fb9d7fde8bad21989f79",
+      "sourceSHA256": "979a88537da802119bb223eb4b94391b32a7abf1d499fb9d7fde8bad21989f79",
+      "syntheticOnly": true
+    },
+    {
+      "file": "outbox.test.mjs",
+      "candidateSHA256": "93cafcd868f7503193decee99134ee61217efbef40855f107c5a21abcb80d87b",
+      "sourceSHA256": "93cafcd868f7503193decee99134ee61217efbef40855f107c5a21abcb80d87b",
+      "syntheticOnly": true
+    },
+    {
+      "file": "private-compat.test.mjs",
+      "candidateSHA256": "16a5bbbf562c6498936818e86c2d7686de011a297db565529e45cfcf171e9574",
+      "sourceSHA256": "16a5bbbf562c6498936818e86c2d7686de011a297db565529e45cfcf171e9574",
+      "syntheticOnly": true
+    },
+    {
+      "file": "private-privacy.test.mjs",
+      "candidateSHA256": "4577e7c218ec2a0efe8f910989315c3c708f33d68567beaf3831eae8a89e11c2",
+      "sourceSHA256": "b0a3ee4666c69e718e3de5a5aca4b9678d7e7b1e976a01b130a5957f57a87710",
+      "syntheticOnly": true
+    },
+    {
+      "file": "stability.test.mjs",
+      "candidateSHA256": "4056578008c853f49da5e35a7d3e0cbc6c4eadaeaf36c3853f8c38ebf177d93b",
+      "sourceSHA256": "82a6fd9752c8e5a516e0db468fe82c92434b21204a97e4443a8f9f5873cf5e88",
+      "syntheticOnly": true
+    },
+    {
+      "file": "streaming.test.mjs",
+      "candidateSHA256": "00d94c442f03b933e821338c4df8245f9f52f1158d1ba2461d4cae4a14cab673",
+      "sourceSHA256": "290b4e84703a24a96cfed679b12c777de62991575d39580781520e0bc1591ffd",
+      "syntheticOnly": true
+    },
+    {
+      "file": "vision-source.test.mjs",
+      "candidateSHA256": "a89552b904d9baceccd6cfbdf24940cebda99823e875535a95d7026a93e5d027",
+      "sourceSHA256": "846a2e91e71ad8fb6ddd77aa31c52051cbbd87745e18833af367fd459e7b2067",
+      "syntheticOnly": true
+    },
+    {
+      "file": "vision.test.mjs",
+      "candidateSHA256": "7e63c23b530873a1df9fe5329dc2067358b3d50c6b9385efb41caab6220a0eff",
+      "sourceSHA256": "a54ff1edf5f80cf7c2f390b095fb9cbb5c8c6b75e7f0f951aa44b3945ed64ae9",
+      "syntheticOnly": true
+    }
+  ],
+  "helpers": [
+    {
+      "file": "run-offline-tests.mjs",
+      "candidateSHA256": "05cbe3135168064f207d0a86436f4242c1a49cf26b1057de3870e04bcfd6013e",
+      "testOnly": true
+    },
+    {
+      "file": "test-tools/offline-guard.mjs",
+      "candidateSHA256": "69c80d4f49aa31cff0ffba36fc52cce62d39f2a83ae4e13ea4640505de594bc4",
+      "testOnly": true
+    }
+  ],
+  "testPackagingAdjustments": [
+    {
+      "file": "stability.test.mjs",
+      "reason": "Use a fresh temporary directory instead of URL.pathname as a Windows config path; isolate generated state files",
+      "beforeSHA256": "82a6fd9752c8e5a516e0db468fe82c92434b21204a97e4443a8f9f5873cf5e88",
+      "afterSHA256": "4056578008c853f49da5e35a7d3e0cbc6c4eadaeaf36c3853f8c38ebf177d93b",
+      "runtimeLogicChanged": false,
+      "assertionsChanged": false
+    }
+  ],
+  "oauthRegistrationEntrypointVerified": true,
+  "bundledPreissuedOAuthClientIds": false,
+  "provenanceAudit": "PROVENANCE-AUDIT.json"
+}
