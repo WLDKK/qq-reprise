@@ -22,6 +22,7 @@ import { publicAIError } from './ai-providers.mjs';
 import { AIError } from './ai-auth.mjs';
 import { OAUTH_DIAGNOSTIC_VERSION, renderOAuthResultPage } from './oauth-diagnostic.mjs';
 import { inspectOneBotConnection } from './onebot-diagnostics.mjs';
+import { GroupSignService } from './group-sign.mjs';
 
 const ROOT = dirname(fileURLToPath(import.meta.url));
 const COMMAND_DEFAULTS = { command_on: '开机', command_off: '关机' };
@@ -140,6 +141,7 @@ export class PrivateRecallApp {
     this.outbox = new RetainedOutbox({ pace: this.sendQueue, inspect: job => this.outboxPermission(job),
       submit: job => this.submitOutbox(job), onState: (job, state) => this.outboxState(job, state) });
     this.ai = new AIChat({ dir: dirname(this.configPath), app: this, fetcher: options.aiFetcher, secrets: options.aiSecrets, poolSecrets: options.aiPoolSecrets, provider: options.aiProvider,initialState:options.initialAIState });
+    this.groupSign = new GroupSignService({dir:dirname(this.configPath),app:this,now:options.now||Date.now,...options.groupSignOptions});
     this.saveTask = Promise.resolve();
     this.recoveryActions = options.recoveryActions || { inspect: getLoginState, restart: restartWorker, login: quickLogin };
     this.recovery = new RecoveryWatchdog({
@@ -161,6 +163,7 @@ export class PrivateRecallApp {
   async initialize() {
     await this.recallNames.initialize();
     await this.ai.initialize();
+    await this.groupSign.initialize();
     try {
       const saved = await readJSON(this.configPath);
       this.preferences = {
@@ -240,6 +243,7 @@ export class PrivateRecallApp {
     const cache = this.engine?.cacheSnapshot();
     return {
       ai: this.ai.state(),
+      group_sign: this.groupSign.state(),
       recall_name_bindings: this.recallNames.state(),
       recall_cycle_version: 2,
       combined_control_error: this.combinedControlError || '',
@@ -821,6 +825,7 @@ export class PrivateRecallApp {
     }
   }
   async shutdown() {
+    await this.groupSign.close();
     this.ai.dispose();
     this.outbox.dispose();
     this.connectionWatchdog?.stop();
@@ -874,7 +879,7 @@ export async function startApp(options = {}) {
       if (request.url === '/health' && request.method === 'GET') {
         const recovery = app.recovery.snapshot();
         const cache = app.engine?.cacheSnapshot();
-        return send(200, { app: 'qq-recall-private', local_policy_version:'recall-rich-flow-v1-20261021',recall_rich_version:1,input_mentions_version:1,nickname_identity_version:1,structured_ai_mentions:true, display_name:'QQ 双功能助手', dual_ui:true, persistent_diagnostics:true, api_draft_test:true, real_group_mentions:true, unified_commands:true, ui_version:'chat-20261015', pid: process.pid, groups: true, commands: true, pacing: true,
+        return send(200, { app: 'qq-recall-private', group_sign_version:1,local_policy_version:'recall-rich-flow-v1-20261021',recall_rich_version:1,input_mentions_version:1,nickname_identity_version:1,structured_ai_mentions:true, display_name:'QQ 双功能助手', dual_ui:true, persistent_diagnostics:true, api_draft_test:true, real_group_mentions:true, unified_commands:true, ui_version:'chat-20261015', pid: process.pid, groups: true, commands: true, pacing: true,
           recovery: true, command_permissions: true, dynamic_pacing: true, self_recall: true,
           connection_watchdog: true, recovery_error_categories: true, verified_login_resume: true,
           resend_exemptions: true, command_confirmations: true, exact_command_replies: true,
@@ -886,6 +891,7 @@ export async function startApp(options = {}) {
           retained_outbox: true,
           ai_chat: true, ai_dual_auth: true,
           status_summary: { connected: app.connected, active: app.active,
+            group_sign:app.groupSign.state(false),
             ai: app.ai.state(false),
             auto_resend: app.preferences.auto_resend && !app.exemptionsError,
             resend_exemption_count: app.exemptQQIds.length, resend_exempt_error: app.exemptionsError,
@@ -935,7 +941,18 @@ export async function startApp(options = {}) {
       let body = '';
       for await (const chunk of request) {
         body += chunk;
-        if (body.length > (request.url === '/api/commands' || request.url.startsWith('/api/ai/') ? 1048576 : 4096)) return send(413, { error: '请求过大。' });
+        if (body.length > (request.url.startsWith('/api/group-sign/')?65536:request.url === '/api/commands' || request.url.startsWith('/api/ai/') ? 1048576 : 4096)) return send(413, { error: '请求过大。' });
+      }
+      if(request.url.startsWith('/api/group-sign/')){
+        try{const value=JSON.parse(body||'{}');let outcome;
+          if(request.url==='/api/group-sign/settings')await app.groupSign.configure(value);
+          else if(request.url==='/api/group-sign/manual'){if(Object.keys(value).some(k=>!['group_id','acknowledged'].includes(k)))throw{code:'sign_invalid_settings'};outcome=await app.groupSign.request(value.group_id,{acknowledged:value.acknowledged===true});}
+          else if(request.url==='/api/group-sign/check'){if(Object.keys(value).some(k=>k!=='group_id'))throw{code:'sign_invalid_settings'};outcome=await app.groupSign.check(value.group_id);}
+          else if(request.url==='/api/group-sign/capabilities'){if(Object.keys(value).length)throw{code:'sign_invalid_settings'};outcome=await app.groupSign.inspectCapabilities();}
+          else if(request.url==='/api/group-sign/acknowledge'){if(value.acknowledged!==true||Object.keys(value).some(k=>!['key','acknowledged'].includes(k)))throw{code:'sign_explicit_confirmation_required'};await app.groupSign.acknowledge(value.key);}
+          else return send(404,{error:'sign_operation_not_found'});
+          return send(200,{...app.groupSign.state(),outcome});
+        }catch(error){return send(400,{error:/^sign_[a-z0-9_]{1,75}$/.test(error?.code||'')?error.code:'sign_operation_failed'});}
       }
       if (request.url.startsWith('/api/ai/')) {
         try {

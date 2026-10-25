@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "enabled": false,
+  "binding_qq": "",
+  "timezone": "Asia/Shanghai",
+  "default_time": "08:30",
+  "missed_policy": "skip",
+  "catch_up_minutes": 60,
+  "retry_attempts": 2,
+  "retry_base_seconds": 60,
+  "retry_max_seconds": 900,
+  "confirmation_mode": "napcat_utc_today",
+  "confirmation_delay_seconds": 3,
+  "confirmation_checks": 2,
+  "confirmation_interval_seconds": 15,
+  "previous_unknown_policy": "pause_group",
+  "retention_days": 90,
+  "record_limit": 2000,
+  "groups": [],
+  "dispatch_concurrency": 1,
+  "dispatch_interval_ms": 500
+}

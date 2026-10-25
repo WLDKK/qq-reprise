@@ -2,7 +2,7 @@
 
 允许：运行源码（含media-frame.ps1）、合成测试、测试隔离工具、匿名examples、文档、来源/核验/失败分类清单。
 
-排除：真实config/ai-settings、账号元数据、DPAPI秘密、OAuth令牌/回调记录、昵称绑定、私聊审查归档、消息/撤回/媒体缓存、投递数据、用量账本、诊断与控制台日志、截图、数据库、HAR/转储、环境变量文件、压缩备份、Node/QQ/NapCat程序、原Git历史和机器目录。
+排除：真实config/ai-settings、账号元数据、DPAPI秘密、OAuth令牌/回调记录、昵称绑定、私聊审查归档、消息/撤回/媒体缓存、投递数据、用量账本、group-sign-settings/group-sign-ledger群计划与去重记录、诊断与控制台日志、真实界面截图、数据库、HAR/转储、环境变量文件、压缩备份、Node/QQ/NapCat程序、原Git历史和机器目录。
 
 `.gitignore`阻止常见运行数据，仅放行明确的公开JSON清单与匿名示例；它不能替代内容审查。合成测试中的synthetic/test字符串、QQ测试编号与example.invalid地址不是生产数据，均有测试上下文。不要把真实密钥填进示例、测试、角色指令或README。
 

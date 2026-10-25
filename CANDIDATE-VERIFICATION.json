@@ -1,8 +1,8 @@
 {
-  "status": "audited_source_with_synthetic_showcase",
-  "runtimeFiles": 51,
-  "runtimeMjsFiles": 49,
-  "testFiles": 20,
+  "status": "audited_group_sign_release",
+  "runtimeFiles": 52,
+  "runtimeMjsFiles": 50,
+  "testFiles": 23,
   "historicalBaseline": {
     "tests": 400,
     "passed": 350,
@@ -20,12 +20,12 @@
   "liveIntegrationVerified": false,
   "licenseFilePresent": true,
   "publicationBlockedUntil": [],
-  "checkedAtUTC": "2026-10-25T15:31:30.150255+00:00",
-  "allMjsSyntaxChecked": 71,
+  "checkedAtUTC": "2026-10-25T16:43:41.742428+00:00",
+  "allMjsSyntaxChecked": 75,
   "syntaxFailures": [],
   "localImportClosureMissing": [],
   "externalPackageImports": [],
-  "publicFiles": 101,
+  "publicFiles": 107,
   "jsonFilesParsed": [
     "CANDIDATE-VERIFICATION.json",
     "PROVENANCE-AUDIT.json",
@@ -33,10 +33,11 @@
     "SOURCE-MANIFEST.json",
     "TRIAGE-50.json",
     "examples/ai-settings.example.json",
-    "examples/config.example.json"
+    "examples/config.example.json",
+    "examples/group-sign-settings.example.json"
   ],
-  "documentationFiles": 13,
-  "localLinksChecked": 50,
+  "documentationFiles": 14,
+  "localLinksChecked": 56,
   "knownPersonalDataMatches": 0,
   "credentialFindingsRequiringReview": 0,
   "explicitSyntheticTestFindings": [
@@ -203,7 +204,6 @@
       "review": "Nonliteral runtime property expression"
     }
   ],
-  "productionRuntimeHashesStillMatchSourceManifest": true,
   "testFunctionsRemovedOrSkipped": false,
   "finalPortableCommandVerified": true,
   "candidateSourcesUnchangedDuringTests": true,
@@ -245,14 +245,6 @@
     "wholeFileOrNormalizedMatches": 0,
     "fragmentSimilarityNotProven": true
   },
-  "functionalTests": {
-    "tests": 443,
-    "passed": 443,
-    "failed": 0,
-    "skipped": 0,
-    "cancelled": 0,
-    "guardBlocks": 0
-  },
   "liveOAuthVerified": false,
   "projectName": "回笺 · QQ Reprise",
   "repositorySlug": "qq-reprise",
@@ -264,7 +256,7 @@
   "releaseManifest": "RELEASE-MANIFEST.json",
   "releaseStatusMeaning": "Validates release content before upload; remote repository/commit verification is recorded separately",
   "publicationDocumentationRecheckPassed": true,
-  "runtimeAndTestSourceHashesUnchangedSince443Pass": true,
+  "runtimeAndTestSourceHashesUnchangedSince443Pass": false,
   "syntheticShowcase": true,
   "showcaseRealQQConnections": 0,
   "showcaseRealModelRequests": 0,
@@ -277,5 +269,48 @@
     "skipped": 0,
     "guardBlocks": 0
   },
-  "functionalTestsEvidence": "Historical 443/443; unchanged runtime and test hashes, not a new real-QQ integration claim"
+  "functionalTestsEvidence": "Historical 443/443; unchanged runtime and test hashes, not a new real-QQ integration claim",
+  "productionBaselineHashCheckIsHistorical": true,
+  "functionalTestsBeforeGroupSign": {
+    "tests": 443,
+    "passed": 443,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "guardBlocks": 0
+  },
+  "groupSign": {
+    "version": 1,
+    "defaultEnabled": false,
+    "defaultEnabledGroups": 0,
+    "timezone": "Asia/Shanghai",
+    "dedupKey": "account+group+date",
+    "confirmedOnlyByPositiveSameUTCDateRecord": true,
+    "realGroupSigns": 0,
+    "coreTests": 47,
+    "httpTests": 8,
+    "schedulingTests": 10,
+    "finalFullRegressionPending": false,
+    "browserChecks": 27,
+    "browserPassed": 27,
+    "schedulerTickSeconds": 1,
+    "dispatchConcurrencyRange": [
+      1,
+      4
+    ],
+    "dispatchIntervalMsRange": [
+      250,
+      60000
+    ],
+    "settingsAndLedgerIndependent": true,
+    "nextExecutionDisplayVerified": true
+  },
+  "functionalTests": {
+    "tests": 508,
+    "passed": 508,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "guardBlocks": 0
+  }
 }
