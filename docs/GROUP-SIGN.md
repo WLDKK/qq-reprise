@@ -35,7 +35,7 @@ HTTP 200 / OneBot `ok` 只证明接口接收了请求，不等于 QQ 群打卡�
 
 ## 定时、去重与恢复
 
-- 定时检查约每秒一次；按配置时区计算当日，不承诺精确到秒。每条去重键为 **登录账号 + 群号 + 日期**，时区修改不会清除同一日期记录。
+- 独立定时检查默认约每秒一次；`scheduler_interval_ms` 可设 250–60000 毫秒，在界面高级策略中实时修改。大间隔、休眠或事件循环阻塞可能错过计划分钟，随后按所选补打策略处理。该设置不改变 QQ/AI 的后台周期，未到点只作本地检查，不发起群接口调用。按配置时区计算当日，不承诺精确到秒。每条去重键为 **登录账号 + 群号 + 日期**，时区修改不会清除同一日期记录。
 - 页面显示每群下次计划时间；它仍取决于在线、账号绑定、存储和未知记录策略，不保证打卡排名。夏令时不存在的本地时间会跳过，不伪造执行时间。
 - 默认 `missed_policy: skip`：错过计划分钟则跳过当日自动任务。可显式改为 `within_window`，仅在配置分钟窗口内补执行当天计划；不补前一天。
 - 默认最多 2 次确定未提交的尝试，指数退避 60 秒起、上限 900 秒；界面可调整。已发送或未知结果不走这条重试通路。
@@ -49,4 +49,4 @@ HTTP 200 / OneBot `ok` 只证明接口接收了请求，不等于 QQ 群打卡�
 
 协议事实参考 [NapCat API 文档](https://doc.napneko.icu/develop/api)、[SetGroupSign](https://github.com/NapNeko/NapCatQQ/blob/main/packages/napcat-onebot/action/extends/SetGroupSign.ts) 和 [GetGroupSignedList](https://github.com/NapNeko/NapCatQQ/blob/main/packages/napcat-onebot/action/extends/GetGroupSignedList.ts)。接口依赖 PacketBackend；不同版本、账号、群权限或 QQ 服务状态可能使它不可用。本项目没有打包或复制 NapCat 实现。
 
-验证使用合成账号、日期、接口与隔离本机 HTTP 服务，覆盖默认关闭、权限与账号绑定、同日并发、重启/睡眠/跨日、UTC 边界、记录首屏缺失、超时和迟到结果、有限退避、持久化失败及页面流程。**未执行真实群打卡，也未验证所有 NapCat / QQ 版本的业务成功回执。** 完整计数见 [测试记录](../TESTING.md)。
+验证使用合成账号、日期、接口与隔离本机 HTTP 服务，覆盖默认关闭、权限与账号绑定、同日并发、重启/睡眠/跨日、UTC 边界、记录首屏缺失、超时和迟到结果、有限退避、持久化失败及页面流程。**未执行真实群打卡，也未验证所有 NapCat / QQ 版本的业务成功回执。** 检查与调用计数只描述本服务，不代表 QQ 业务成功。修复说明见[本轮维护](UPDATE-20261026.md)。完整计数见 [测试记录](../TESTING.md)。

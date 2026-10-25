@@ -18,5 +18,6 @@
   "record_limit": 2000,
   "groups": [],
   "dispatch_concurrency": 1,
-  "dispatch_interval_ms": 500
+  "dispatch_interval_ms": 500,
+  "scheduler_interval_ms": 1000
 }

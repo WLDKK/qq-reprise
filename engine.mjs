@@ -1,3 +1,4 @@
+import {packetErrorDetails} from './packet-diagnostic-error.mjs';
 import { randomUUID } from 'node:crypto';
 import {needsRichSnapshot,pendingRichMessage,snapshotRichMessage,recallSendPlan} from './recall-rich-message.mjs';
 import { ResendQueue, messageMediaBytes, messageMediaStats } from './send-queue.mjs';
@@ -809,6 +810,7 @@ export class OneBotClient {
             }
             const error = new Error('OneBot 接口拒绝请求，retcode=' + String(data.retcode));
             error.retcode = Number(data.retcode);
+            if(pending.packetDiagnostic)error.packetDiagnostic=packetErrorDetails({message:data.message,wording:data.wording});
             // 仅保留安全分类，不记录可能包含消息、链接或凭据的原始错误正文。
             const description = String(data.message || data.wording || '');
             error.category = /禁言|muted/i.test(description) ? 'muted' : /离线|offline|not.?login/i.test(description) ? 'offline_reported'
@@ -852,7 +854,7 @@ export class OneBotClient {
         }
         rejectCall(new Error('接口响应超时，结果未知'));
       }, this.config.api_timeout_ms);
-      this.pending.set(echo, { resolve: resolveCall, reject: rejectCall, timer, onLateResult: options.onLateResult });
+      this.pending.set(echo, { resolve: resolveCall, reject: rejectCall, timer, onLateResult: options.onLateResult, packetDiagnostic:action==='nc_get_packet_status'&&options.packetDiagnostic===true });
       try { this.socket.send(JSON.stringify({ action, params, echo })); }
       catch (error) {
         clearTimeout(timer);

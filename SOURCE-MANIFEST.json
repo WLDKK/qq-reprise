@@ -3,7 +3,7 @@
   "sourceProject": "QQ local assistant",
   "sourceHasGitHistory": false,
   "sourceRemoteAvailable": false,
-  "sourceVersion": "recall-rich-flow-v1-20261021; backend_recovery_version=2; group_sign_version=1",
+  "sourceVersion": "recall-rich-flow-v1-20261021; backend_recovery_version=2; group_sign_version=1; group_sign_scheduler_version=2",
   "licenseDecision": "MIT_owner_approved",
   "privateProductionDataIncluded": false,
   "originalEvidenceRetainedOutsideCandidate": true,
@@ -157,9 +157,10 @@
     {
       "file": "engine.mjs",
       "sourceSHA256": "5e3b72711033de42efbfc1c4e11f54e5b8e80a2bea4655462cc32361dcaa483e",
-      "candidateSHA256": "5e3b72711033de42efbfc1c4e11f54e5b8e80a2bea4655462cc32361dcaa483e",
+      "candidateSHA256": "67464af7143d95ae67cf8e8432114e2f86123ae134b42d4d426863c4c3559111",
       "changes": [
-        "normalize_utf8_newlines"
+        "normalize_utf8_newlines",
+        "packet_only_opt_in_redacted_diagnostics"
       ]
     },
     {
@@ -181,9 +182,10 @@
     {
       "file": "group-sign.mjs",
       "sourceSHA256": null,
-      "candidateSHA256": "2128fd244f4f427eae15dfd2f6d4c93391e67b79070330dc3b1d30a2279d07f4",
+      "candidateSHA256": "769f095ab6d22ae0cd5d5dfe3e9cc1694a5e39b33e79fa221881005ddf2b3523",
       "changes": [
-        "new_original_group_sign_implementation"
+        "new_original_group_sign_implementation",
+        "independent_configurable_scheduler_v2"
       ],
       "protocolReferences": "docs/GROUP-SIGN.md"
     },
@@ -262,9 +264,18 @@
     {
       "file": "onebot-diagnostics.mjs",
       "sourceSHA256": "86040cb687c3ff9db0c550e0d3ca1e14fa587207533a31935b32e5e96dcca79a",
-      "candidateSHA256": "86040cb687c3ff9db0c550e0d3ca1e14fa587207533a31935b32e5e96dcca79a",
+      "candidateSHA256": "d3afe49a0fe5eec4c4e058819f623e489a3b4fcf6905daadc01ca5f20b77243a",
       "changes": [
-        "normalize_utf8_newlines"
+        "normalize_utf8_newlines",
+        "bounded_packet_diagnostic_wording"
+      ]
+    },
+    {
+      "file": "packet-diagnostic-error.mjs",
+      "sourceSHA256": null,
+      "candidateSHA256": "abd02d9da8c6253235a65d6322929c43d063d5c5cd61924079176888345271b9",
+      "changes": [
+        "original_packet_diagnostic_redaction_helper"
       ]
     },
     {
@@ -399,10 +410,11 @@
     {
       "file": "ui.html",
       "sourceSHA256": "aacc21a987ad7aea510797a8390b279fa008c647b4fb774e30b666906fed938c",
-      "candidateSHA256": "5c79d0b077453e23b25fcba809a485fdce4b15444179a09a7b62b38e17fade5d",
+      "candidateSHA256": "1a3578091b536b0dbdbbdd74bb33e6107b89bd3105acfa44c61bd47f6852ccb6",
       "changes": [
         "normalize_utf8_newlines",
-        "group_sign_v1"
+        "group_sign_v1",
+        "scheduler_precision_and_counters_ui"
       ]
     },
     {
@@ -510,6 +522,12 @@
       "syntheticOnly": true
     },
     {
+      "file": "group-sign-precision.test.mjs",
+      "candidateSHA256": "c276efe87c009f2eb9e0c911a12161ead961452b0aa04c51d5d4dff6cae43015",
+      "sourceSHA256": null,
+      "syntheticOnly": true
+    },
+    {
       "file": "group-sign-scheduling.test.mjs",
       "candidateSHA256": "59a0843453c2252f04a21fd689b514d14e735ba3bfc8e5dddab3ca8780c5b274",
       "sourceSHA256": null,
@@ -531,6 +549,18 @@
       "file": "outbox.test.mjs",
       "candidateSHA256": "93cafcd868f7503193decee99134ee61217efbef40855f107c5a21abcb80d87b",
       "sourceSHA256": "93cafcd868f7503193decee99134ee61217efbef40855f107c5a21abcb80d87b",
+      "syntheticOnly": true
+    },
+    {
+      "file": "packet-error.test.mjs",
+      "candidateSHA256": "323ed52ad6686baa6ccb33c85f7247e24ee9a4b70c0f358aba89f04ff7eea223",
+      "sourceSHA256": null,
+      "syntheticOnly": true
+    },
+    {
+      "file": "packet-transport.test.mjs",
+      "candidateSHA256": "832551e3218f5a6a4043f69ab8b60a56f45fbcb3a17a0c1cc0c5df4f6ed272d8",
+      "sourceSHA256": null,
       "syntheticOnly": true
     },
     {
@@ -595,5 +625,5 @@
   "oauthRegistrationEntrypointVerified": true,
   "bundledPreissuedOAuthClientIds": false,
   "provenanceAudit": "PROVENANCE-AUDIT.json",
-  "featurePreparedAtUTC": "2026-10-25T16:39:46.889089+00:00"
+  "featurePreparedAtUTC": "2026-10-25T19:01:44.781399+00:00"
 }

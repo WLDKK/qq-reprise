@@ -1,8 +1,8 @@
 {
-  "status": "audited_group_sign_release",
-  "runtimeFiles": 52,
-  "runtimeMjsFiles": 50,
-  "testFiles": 23,
+  "status": "audited_scheduler_v2_release",
+  "runtimeFiles": 53,
+  "runtimeMjsFiles": 51,
+  "testFiles": 26,
   "historicalBaseline": {
     "tests": 400,
     "passed": 350,
@@ -20,12 +20,12 @@
   "liveIntegrationVerified": false,
   "licenseFilePresent": true,
   "publicationBlockedUntil": [],
-  "checkedAtUTC": "2026-10-25T16:43:41.742428+00:00",
-  "allMjsSyntaxChecked": 75,
+  "checkedAtUTC": "2026-10-25T19:13:05.066504+00:00",
+  "allMjsSyntaxChecked": 79,
   "syntaxFailures": [],
   "localImportClosureMissing": [],
   "externalPackageImports": [],
-  "publicFiles": 107,
+  "publicFiles": 112,
   "jsonFilesParsed": [
     "CANDIDATE-VERIFICATION.json",
     "PROVENANCE-AUDIT.json",
@@ -36,8 +36,8 @@
     "examples/config.example.json",
     "examples/group-sign-settings.example.json"
   ],
-  "documentationFiles": 14,
-  "localLinksChecked": 56,
+  "documentationFiles": 15,
+  "localLinksChecked": 59,
   "knownPersonalDataMatches": 0,
   "credentialFindingsRequiringReview": 0,
   "explicitSyntheticTestFindings": [
@@ -243,7 +243,8 @@
     "upstreamRepositories": 4,
     "publicTreeBlobs": 5321,
     "wholeFileOrNormalizedMatches": 0,
-    "fragmentSimilarityNotProven": true
+    "fragmentSimilarityNotProven": true,
+    "baselineSnapshotBeforeTheseFiles": true
   },
   "liveOAuthVerified": false,
   "projectName": "回笺 · QQ Reprise",
@@ -291,9 +292,8 @@
     "httpTests": 8,
     "schedulingTests": 10,
     "finalFullRegressionPending": false,
-    "browserChecks": 27,
-    "browserPassed": 27,
-    "schedulerTickSeconds": 1,
+    "browserChecks": 31,
+    "browserPassed": 31,
     "dispatchConcurrencyRange": [
       1,
       4
@@ -303,14 +303,38 @@
       60000
     ],
     "settingsAndLedgerIndependent": true,
-    "nextExecutionDisplayVerified": true
+    "nextExecutionDisplayVerified": true,
+    "schedulerVersion": 2,
+    "schedulerIntervalMsDefault": 1000,
+    "schedulerIntervalMsRange": [
+      250,
+      60000
+    ],
+    "precisionTests": 11,
+    "diagnosticMaintenanceTests": 15,
+    "productionSchedulerVerified": true,
+    "productionNonDueWindowHadZeroAPICalls": true,
+    "ordinaryMessageErrorsDoNotExposeBody": true
   },
-  "functionalTests": {
+  "functionalTestsBeforeSchedulerV2": {
     "tests": 508,
     "passed": 508,
     "failed": 0,
     "skipped": 0,
     "cancelled": 0,
     "guardBlocks": 0
-  }
+  },
+  "functionalTests": {
+    "tests": 534,
+    "passed": 534,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "guardBlocks": 0
+  },
+  "productionDeploymentPerformedSeparately": true,
+  "additionalOriginalRuntimeFiles": [
+    "group-sign.mjs",
+    "packet-diagnostic-error.mjs"
+  ]
 }
