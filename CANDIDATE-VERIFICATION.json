@@ -1,5 +1,5 @@
 {
-  "status": "audited_release_content_authorized_for_publication",
+  "status": "audited_source_with_synthetic_showcase",
   "runtimeFiles": 51,
   "runtimeMjsFiles": 49,
   "testFiles": 20,
@@ -20,12 +20,12 @@
   "liveIntegrationVerified": false,
   "licenseFilePresent": true,
   "publicationBlockedUntil": [],
-  "checkedAtUTC": "2026-10-23T12:59:54.428424+00:00",
+  "checkedAtUTC": "2026-10-25T15:31:30.150255+00:00",
   "allMjsSyntaxChecked": 71,
   "syntaxFailures": [],
   "localImportClosureMissing": [],
   "externalPackageImports": [],
-  "publicFiles": 97,
+  "publicFiles": 101,
   "jsonFilesParsed": [
     "CANDIDATE-VERIFICATION.json",
     "PROVENANCE-AUDIT.json",
@@ -35,8 +35,8 @@
     "examples/ai-settings.example.json",
     "examples/config.example.json"
   ],
-  "documentationFiles": 11,
-  "localLinksChecked": 42,
+  "documentationFiles": 13,
+  "localLinksChecked": 50,
   "knownPersonalDataMatches": 0,
   "credentialFindingsRequiringReview": 0,
   "explicitSyntheticTestFindings": [
@@ -264,5 +264,18 @@
   "releaseManifest": "RELEASE-MANIFEST.json",
   "releaseStatusMeaning": "Validates release content before upload; remote repository/commit verification is recorded separately",
   "publicationDocumentationRecheckPassed": true,
-  "runtimeAndTestSourceHashesUnchangedSince443Pass": true
+  "runtimeAndTestSourceHashesUnchangedSince443Pass": true,
+  "syntheticShowcase": true,
+  "showcaseRealQQConnections": 0,
+  "showcaseRealModelRequests": 0,
+  "showcaseProductionDataAccess": 0,
+  "documentationUpdate": "2026-10-25; application source and test files unchanged",
+  "documentationTests": {
+    "tests": 4,
+    "passed": 4,
+    "failed": 0,
+    "skipped": 0,
+    "guardBlocks": 0
+  },
+  "functionalTestsEvidence": "Historical 443/443; unchanged runtime and test hashes, not a new real-QQ integration claim"
 }

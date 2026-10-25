@@ -1,12 +1,26 @@
 # 回笺 · QQ Reprise
 
-本地运行的 **QQ 撤回恢复与 AI 群聊助手**，通过独立安装的 QQ / NapCat 对接 OneBot。
+**QQ 撤回重发与 AI 群聊助手**
 
-A local Windows assistant for QQ message recall recovery and AI group conversations.
+在自己的 Windows 电脑上运行，通过 NapCat / OneBot 11 连接 QQ，用本机管理页配置撤回重发与 AI 对话。
 
-“回笺”指接住已收到的消息，也把回复送回对话。项目只能重建接收后成功缓存的内容；AI 使用你明确配置的接口和会话范围。本项目是独立工具，不代表 QQ、NapCat 或模型供应商。
+- **撤回重发**：对已收到并成功缓存的消息，在原会话按已配置的开关与权限重建发送。合并转发、媒体和卡片有明确的支持及降级范围。
+- **AI 群聊**：配置自己的 API 或可选 OAuth 接入，在授权范围内使用 @、昵称触发和连续对话；群背景外发需要单独启用。
+- **本机管理**：查看连接、队列、暂停原因和脱敏诊断；撤回重发、AI、私聊回复、主动参与等功能分别控制。
 
-[安装](#安装与首次运行) · [支持范围](#支持范围) · [AI 接入](#api-与-oauth) · [隐私与本地数据](#隐私与本地数据) · [测试](#测试与已知限制) · [MIT 许可](LICENSE)
+只能恢复助手实际接收并成功缓存的内容，无法找回启动前或已被淘汰的消息。上下文和撤回缓存主要保存在 RAM 中，重启不提供完整历史恢复。本项目不提供完整 QQ 备份或任意历史回看。
+
+公开示例默认关闭 AI 和自动重发，需自行安装 QQ / NapCat、配置接收方并明确开启功能。当前已有离线合成测试；真实客户端、供应商、OAuth 和全部媒体组合的验证边界见[测试记录](TESTING.md)。
+
+Self-hosted on Windows: QQ recall reposting and configurable AI group conversations, with a local control panel.
+
+[安装与首次运行](#安装与首次运行) · [支持与降级范围](#支持范围) · [API / OAuth](#api-与-oauth) · [隐私与本地数据](#隐私与本地数据) · [测试边界](#测试与已知限制) · [MIT](LICENSE)
+
+## 界面预览（合成数据）
+
+下图使用当前界面代码和手写合成状态，未连接真实 QQ、未调用模型；其中状态不代表真实联调验收。撤回示例和素材边界见[展示说明](docs/SHOWCASE.md)。
+
+![AI工作台：合成数据预览，未连接真实QQ或外部API](docs/assets/ai-workbench-synthetic.png)
 
 ## 安装与首次运行
 
