@@ -1,8 +1,8 @@
 {
-  "status": "audited_scheduler_v2_release",
+  "status": "audited_observability_release_candidate",
   "runtimeFiles": 53,
   "runtimeMjsFiles": 51,
-  "testFiles": 26,
+  "testFiles": 27,
   "historicalBaseline": {
     "tests": 400,
     "passed": 350,
@@ -20,12 +20,12 @@
   "liveIntegrationVerified": false,
   "licenseFilePresent": true,
   "publicationBlockedUntil": [],
-  "checkedAtUTC": "2026-10-25T19:13:05.066504+00:00",
-  "allMjsSyntaxChecked": 79,
+  "checkedAtUTC": "2026-10-26T06:07:32.275899+00:00",
+  "allMjsSyntaxChecked": 80,
   "syntaxFailures": [],
   "localImportClosureMissing": [],
   "externalPackageImports": [],
-  "publicFiles": 112,
+  "publicFiles": 115,
   "jsonFilesParsed": [
     "CANDIDATE-VERIFICATION.json",
     "PROVENANCE-AUDIT.json",
@@ -36,8 +36,8 @@
     "examples/config.example.json",
     "examples/group-sign-settings.example.json"
   ],
-  "documentationFiles": 15,
-  "localLinksChecked": 59,
+  "documentationFiles": 17,
+  "localLinksChecked": 78,
   "knownPersonalDataMatches": 0,
   "credentialFindingsRequiringReview": 0,
   "explicitSyntheticTestFindings": [
@@ -262,7 +262,7 @@
   "showcaseRealQQConnections": 0,
   "showcaseRealModelRequests": 0,
   "showcaseProductionDataAccess": 0,
-  "documentationUpdate": "2026-10-25; application source and test files unchanged",
+  "documentationUpdate": "2026-10-26; historical observation summary, UI and configuration guide updated",
   "documentationTests": {
     "tests": 4,
     "passed": 4,
@@ -270,7 +270,7 @@
     "skipped": 0,
     "guardBlocks": 0
   },
-  "functionalTestsEvidence": "Historical 443/443; unchanged runtime and test hashes, not a new real-QQ integration claim",
+  "functionalTestsEvidence": "549/549 isolated synthetic tests on the current source snapshot; no real QQ or provider integration claim",
   "productionBaselineHashCheckIsHistorical": true,
   "functionalTestsBeforeGroupSign": {
     "tests": 443,
@@ -292,8 +292,8 @@
     "httpTests": 8,
     "schedulingTests": 10,
     "finalFullRegressionPending": false,
-    "browserChecks": 31,
-    "browserPassed": 31,
+    "browserChecks": 36,
+    "browserPassed": 36,
     "dispatchConcurrencyRange": [
       1,
       4
@@ -325,8 +325,8 @@
     "guardBlocks": 0
   },
   "functionalTests": {
-    "tests": 534,
-    "passed": 534,
+    "tests": 549,
+    "passed": 549,
     "failed": 0,
     "skipped": 0,
     "cancelled": 0,
@@ -336,5 +336,39 @@
   "additionalOriginalRuntimeFiles": [
     "group-sign.mjs",
     "packet-diagnostic-error.mjs"
-  ]
+  ],
+  "functionalTestsBeforeObservability": {
+    "tests": 534,
+    "passed": 534,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "guardBlocks": 0
+  },
+  "thisUpdateDeployedToProduction": false,
+  "productionDeploymentIsHistorical": true,
+  "upstreamObservation": {
+    "version": 1,
+    "tests": 15,
+    "readOnlyDerivedMetadata": true,
+    "availabilityNotEstablishedByCooldown": true,
+    "historicalConfigurationMatch": "not_recorded",
+    "newModelCalls": 0,
+    "noRawPayloadsAdded": true
+  },
+  "browserReview": {
+    "passed": 53,
+    "aiObservationChecks": 17,
+    "groupSignChecks": 36,
+    "unexpectedNetworkAttempts": 0,
+    "pageErrors": 0,
+    "guardBlocks": 0,
+    "mockedSignCalls": 1,
+    "realModelRequests": 0,
+    "realQQConnections": 0,
+    "productionReads": 0,
+    "productionWrites": 0,
+    "settingsIsolated": true,
+    "fixtureStopped": true
+  }
 }

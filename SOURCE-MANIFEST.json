@@ -3,7 +3,7 @@
   "sourceProject": "QQ local assistant",
   "sourceHasGitHistory": false,
   "sourceRemoteAvailable": false,
-  "sourceVersion": "recall-rich-flow-v1-20261021; backend_recovery_version=2; group_sign_version=1; group_sign_scheduler_version=2",
+  "sourceVersion": "recall-rich-flow-v1-20261021; backend_recovery_version=2; group_sign_version=1; group_sign_scheduler_version=2; upstream_observation_version=1",
   "licenseDecision": "MIT_owner_approved",
   "privateProductionDataIncluded": false,
   "originalEvidenceRetainedOutsideCandidate": true,
@@ -53,9 +53,10 @@
     {
       "file": "ai-diagnostics.mjs",
       "sourceSHA256": "5cdb0d5d4b2353de3965736795846a481a7b41194603d2e0d0ce2eabe922f268",
-      "candidateSHA256": "5cdb0d5d4b2353de3965736795846a481a7b41194603d2e0d0ce2eabe922f268",
+      "candidateSHA256": "32d7ff73176e98cffbac114b9342cca844ede1a914ebfac52b0b31d7361a3347",
       "changes": [
-        "normalize_utf8_newlines"
+        "normalize_utf8_newlines",
+        "historical_observation_and_confirmation_display_only"
       ]
     },
     {
@@ -410,11 +411,12 @@
     {
       "file": "ui.html",
       "sourceSHA256": "aacc21a987ad7aea510797a8390b279fa008c647b4fb774e30b666906fed938c",
-      "candidateSHA256": "1a3578091b536b0dbdbbdd74bb33e6107b89bd3105acfa44c61bd47f6852ccb6",
+      "candidateSHA256": "f2b511516b4f3140e5390e415c61ad3da1bfc8340df2a0d32299f652396dd947",
       "changes": [
         "normalize_utf8_newlines",
         "group_sign_v1",
-        "scheduler_precision_and_counters_ui"
+        "scheduler_precision_and_counters_ui",
+        "historical_observation_and_confirmation_display_only"
       ]
     },
     {
@@ -598,6 +600,13 @@
       "candidateSHA256": "7e63c23b530873a1df9fe5329dc2067358b3d50c6b9385efb41caab6220a0eff",
       "sourceSHA256": "a54ff1edf5f80cf7c2f390b095fb9cbb5c8c6b75e7f0f951aa44b3945ed64ae9",
       "syntheticOnly": true
+    },
+    {
+      "file": "ai-observability.test.mjs",
+      "candidateSHA256": "058b7ba756db5b7da377e062452b86f3601ec90e0863dfe05baf18cba07e3cd3",
+      "sourceSHA256": null,
+      "syntheticOnly": true,
+      "origin": "Original tests added for this project"
     }
   ],
   "helpers": [
@@ -625,5 +634,5 @@
   "oauthRegistrationEntrypointVerified": true,
   "bundledPreissuedOAuthClientIds": false,
   "provenanceAudit": "PROVENANCE-AUDIT.json",
-  "featurePreparedAtUTC": "2026-10-25T19:01:44.781399+00:00"
+  "featurePreparedAtUTC": "2026-10-26T06:07:32.275899+00:00"
 }

@@ -22,6 +22,38 @@ localErrors.add('image_instruction_merged');localErrors.add('private_hold_migrat
 localErrors.add('vision_reference_before_private_epoch');
 const bounded=(value,max)=>Number.isSafeInteger(value)&&value>=0?Math.min(max,value):0;
 const tokenCount=value=>Number.isSafeInteger(value)&&value>=0&&value<=1000000000?value:null;
+const providerPhases=new Set(['http_request','http_response','streaming','reasoning','response_incomplete']);
+const providerNetworkErrors=new Set(['network_or_provider_error','network_dns_error','network_connection_refused','network_connection_lost','network_timeout','tls_verification_failed','request_timeout','cancelled_or_timeout']);
+const stamp=value=>Number.isSafeInteger(value)&&value>0&&value<=8640000000000000?value:null;
+
+// Historical metadata only: old records have no endpoint/credential binding.
+// Neither a local cooldown nor a retained successful response proves current availability.
+export function summarizeUpstreamDiagnostics(records={}){
+  const observed=[];
+  const add=(r,source)=>{
+    if(!r||typeof r!=='object')return;
+    const http=Number.isInteger(r.httpStatus)&&r.httpStatus>=100&&r.httpStatus<=599?r.httpStatus:null;
+    const error=typeof r.errorCode==='string'&&r.errorCode?(localErrors.has(r.errorCode)?r.errorCode:safeCode(r.errorCode)):'';
+    if(http===null&&!(providerPhases.has(r.phase)&&(r.status==='running'||providerNetworkErrors.has(error))))return;
+    const outputChars=Number.isSafeInteger(r.outputChars)&&r.outputChars>=0?Math.min(12000,r.outputChars):0;
+    const complete=http!==null&&http>=200&&http<300&&outputChars>0&&['stop','completed'].includes(r.finishReason)&&
+      (r.status==='completed'||r.status==='failed'&&['qq_delivery_uncertain','qq_not_submitted'].includes(error));
+    const outcome=complete?'response_completed':http>=400?'request_failed':r.status==='running'?'request_pending':
+      r.status==='cancelled'?'request_cancelled':http!==null&&http>=200&&http<300?'response_incomplete':'request_failed';
+    observed.push({source,outcome,started_at:stamp(r.startedAt),finished_at:stamp(r.finishedAt),http_status:http,
+      error_code:error,rate_limit_kind:['temporary','quota','unclassified'].includes(r.rateLimitKind)?r.rateLimitKind:null,
+      retry_after_seconds:Number.isSafeInteger(r.retryAfterSeconds)&&r.retryAfterSeconds>=0&&r.retryAfterSeconds<=2147483?r.retryAfterSeconds:null,
+      output_chars:outputChars,delivery:['queued','sending','sent','confirmed_late','uncertain','deferred','cancelled','expired','dropped','scope_changed'].includes(r.delivery)?r.delivery:null});
+  };
+  for(const r of Array.isArray(records.recent_generation)?records.recent_generation:[])add(r,'generation');
+  add(records.generation,'generation');add(records.test,'test');
+  observed.sort((a,b)=>(a.finished_at??a.started_at??0)-(b.finished_at??b.started_at??0));
+  const last=condition=>observed.findLast(condition)||null;
+  return {version:1,source_scope:'retained_diagnostics',configuration_match:'not_recorded',availability:'not_established',
+    latest:observed.at(-1)||null,last_failure:last(r=>['request_failed','response_incomplete'].includes(r.outcome)),
+    last_complete:last(r=>r.outcome==='response_completed')};
+}
+
 export class AIDiagnostics {
   constructor(dir,now=Date.now){this.file=new JsonFile(join(dir,'ai-diagnostics.json'),{version:1,test:null,generation:null});this.now=now;this.records={version:1,test:null,generation:null};this.recent=[];this.persistSequence=0;this.persistCompleted=0;this.persistence={status:'unknown',failureCount:0,lastFailureAt:null,lastSuccessAt:null,errorCode:''};}
   async initialize(){try{const data=await this.file.read();if(Array.isArray(data?.recent_generation))this.recent=data.recent_generation.slice(-80).map(value=>{const record=this.clean(value);if(['running','queued'].includes(record.status)){const queued=record.status==='queued';record.status=queued?'cancelled':'failed';record.errorCode=queued?'queued_discarded_by_restart':'interrupted_by_restart';record.finishedAt=this.now();}return record;});if(data?.version===1)for(const kind of ['test','generation'])if(data[kind]){this.records[kind]=this.clean(data[kind]);if(['running','queued'].includes(this.records[kind].status)){const queued=this.records[kind].status==='queued';this.records[kind].status=queued?'cancelled':'failed';this.records[kind].errorCode=queued?'queued_discarded_by_restart':'interrupted_by_restart';this.records[kind].finishedAt=this.now();}}this.trimRecent();}catch{}}
@@ -55,6 +87,6 @@ export class AIDiagnostics {
   update(kind,id,patch){const current=this.records[kind],old=current?.id===id?current:kind==='generation'?this.recent.find(r=>r.id===id):null;if(!old)return false;const record=this.clean({...old,...patch});if(current?.id===id)this.records[kind]=record;if(kind==='generation')this.recent=this.recent.map(r=>r.id===id?record:r);this.trimRecent();return true;}
   progress(kind,id,patch){if(this.update(kind,id,patch))void this.persist().catch(()=>{});}
   async finish(kind,id,patch){if(this.update(kind,id,{...patch,finishedAt:this.now()}))await this.persist().catch(()=>{});}
-  state(){return structuredClone({test:this.records.test,generation:this.records.generation,recent_generation:this.recent,persistence:this.persistence});}
+  state(){const records={test:this.records.test,generation:this.records.generation,recent_generation:this.recent};return structuredClone({...records,upstream_observation:summarizeUpstreamDiagnostics(records),persistence:this.persistence});}
 
 }

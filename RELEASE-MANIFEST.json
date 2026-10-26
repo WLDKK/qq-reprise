@@ -4,9 +4,9 @@
   "repository": "WLDKK/qq-reprise",
   "license": "MIT",
   "copyright": "2026 WLDKK",
-  "createdAtUTC": "2026-10-25T19:13:05.066504+00:00",
-  "manifestScope": "All 111 other public release files; manifest excludes itself",
-  "fileCountIncludingManifest": 112,
+  "createdAtUTC": "2026-10-26T06:07:32.275899+00:00",
+  "manifestScope": "All 114 other public release files; manifest excludes itself",
+  "fileCountIncludingManifest": 115,
   "files": [
     {
       "path": ".gitignore",
@@ -16,9 +16,9 @@
     },
     {
       "path": "CANDIDATE-VERIFICATION.json",
-      "bytes": 8307,
-      "sha256": "65b73d936e0e2e564442d347ae809622125192b3c7f02b575fa9520ce6910642",
-      "gitBlobSHA1": "149ed59b98220dc1b6ee8fa31d0241d99f909980"
+      "bytes": 9611,
+      "sha256": "dc8282d73e1fd5690ce7b3d1ecd5aad2e83d37731642ee83201e8ec1efa3f658",
+      "gitBlobSHA1": "d56ed50a018032c04c28f17d10c52d42e27a3b25"
     },
     {
       "path": "LICENSE",
@@ -52,9 +52,9 @@
     },
     {
       "path": "README.md",
-      "bytes": 16891,
-      "sha256": "4cc116e021e69893a0572c25b961a6f3a40cecbbef89d5059214b47044cb86ac",
-      "gitBlobSHA1": "192b84bf02ea2b2d49f2c0a51cfa3dbfd6270d99"
+      "bytes": 17773,
+      "sha256": "8689a486f4b1ba3d998b62a482b842a3f6ada9d9bd1ba766646e00f20005b142",
+      "gitBlobSHA1": "1644419caed52ed905808c33fe5f0fba67916353"
     },
     {
       "path": "RELEASE-READINESS.md",
@@ -64,15 +64,15 @@
     },
     {
       "path": "SOURCE-MANIFEST.json",
-      "bytes": 23647,
-      "sha256": "25c02969277af02248a591877579577a68e411f8c5e3a7ebfca0dbf0e4833ca1",
-      "gitBlobSHA1": "8b3e0973d65d7140e39d6d7ad97aa9907f51659d"
+      "bytes": 24707,
+      "sha256": "7a0d16767781a2530b3addf16f27ead46af713e45aed356a3d4c5d939870a626",
+      "gitBlobSHA1": "7f88fdc70f5f902b75958a3af9f6997100cae80f"
     },
     {
       "path": "TESTING.md",
-      "bytes": 6732,
-      "sha256": "d32597e44566f5dbcb434ead61fa831c4c604fc9a9333d0bded4c97589dde91c",
-      "gitBlobSHA1": "90aba5dea4c77689e2a4569fe52dd7f651168c39"
+      "bytes": 8439,
+      "sha256": "87d729e2683e4608978ba20ffb22153440e752b7e6244acbdbdfae0276a7ac92",
+      "gitBlobSHA1": "3aab4a50fb2e5873617ab060a0e46b3f645661f4"
     },
     {
       "path": "THIRD-PARTY-NOTES.md",
@@ -136,15 +136,21 @@
     },
     {
       "path": "ai-diagnostics.mjs",
-      "bytes": 12245,
-      "sha256": "5cdb0d5d4b2353de3965736795846a481a7b41194603d2e0d0ce2eabe922f268",
-      "gitBlobSHA1": "01b4b52ba618c1c67be78d5c68611bc51f9d7c41"
+      "bytes": 15250,
+      "sha256": "32d7ff73176e98cffbac114b9342cca844ede1a914ebfac52b0b31d7361a3347",
+      "gitBlobSHA1": "b2f7ccfebeac5d2c3c9c077bd2adf4972169184e"
     },
     {
       "path": "ai-diagnostics.test.mjs",
       "bytes": 8820,
       "sha256": "8418c2f91fbfa7d8de3d0c9b88472fb595c1b260db10f5b10aee7f6ea1dd2f7b",
       "gitBlobSHA1": "70544db4ed25b3e05ec811f230cb38e4cb805a00"
+    },
+    {
+      "path": "ai-observability.test.mjs",
+      "bytes": 8635,
+      "sha256": "058b7ba756db5b7da377e062452b86f3601ec90e0863dfe05baf18cba07e3cd3",
+      "gitBlobSHA1": "9e927071e38d47233693a46e0e118185ba4807a5"
     },
     {
       "path": "ai-persona.mjs",
@@ -267,6 +273,12 @@
       "gitBlobSHA1": "5f274c605c491bb745c09ea0c7fea002150dae88"
     },
     {
+      "path": "docs/CONFIGURATION.md",
+      "bytes": 7329,
+      "sha256": "669b4cb42e7d91c174b4509328127e0316a4a9979ad75ba810012e73d83d305d",
+      "gitBlobSHA1": "218d4c41b41a35397ce36ff894f9ffc5016a9a2b"
+    },
+    {
       "path": "docs/FORWARD-SUPPORT.md",
       "bytes": 4115,
       "sha256": "7ae9d05f8d13ed231eaa6d65e3cf3f73658e66df1019f5b426b87b96779aa167",
@@ -274,9 +286,9 @@
     },
     {
       "path": "docs/GROUP-SIGN.md",
-      "bytes": 6477,
-      "sha256": "faa956196ebd59f1b96ba7b918459265534c15f9644d8b9467f5ff8e590808ed",
-      "gitBlobSHA1": "074ba83565763bc9041f4d1d376ca90f6475f214"
+      "bytes": 7489,
+      "sha256": "d54de7c4a42050b61c5e65b3b407eebf5bb78a855336ef192668c681521cf548",
+      "gitBlobSHA1": "b34ed01f9a43bb499d67cb9425710bd191e070f1"
     },
     {
       "path": "docs/OAUTH-AUDIT.md",
@@ -325,6 +337,12 @@
       "bytes": 880,
       "sha256": "3ecec8cd68f0b8f9f091dc1fd66edfeaf16004a638883c5ee1fa9bc7fa2d5d61",
       "gitBlobSHA1": "939edf0384d25325bafbd2e183878d6c2720c749"
+    },
+    {
+      "path": "docs/UPDATE-20261026-OBSERVABILITY.md",
+      "bytes": 2128,
+      "sha256": "7176fc863ecd191e9f47b37ae0df410198c6bd54946f7ef485e5706e7830b231",
+      "gitBlobSHA1": "16ce91ac21e5a4741fe32cfd82d0c597cb2c452e"
     },
     {
       "path": "docs/UPDATE-20261026.md",
@@ -640,9 +658,9 @@
     },
     {
       "path": "ui.html",
-      "bytes": 203719,
-      "sha256": "1a3578091b536b0dbdbbdd74bb33e6107b89bd3105acfa44c61bd47f6852ccb6",
-      "gitBlobSHA1": "04bffc4d703670b65de23fa0b5d3fadace109759"
+      "bytes": 206594,
+      "sha256": "f2b511516b4f3140e5390e415c61ad3da1bfc8340df2a0d32299f652396dd947",
+      "gitBlobSHA1": "86ec536f86570a07f9f0643993c09e7fc5926676"
     },
     {
       "path": "upstream-limit.mjs",
