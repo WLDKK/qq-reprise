@@ -1,8 +1,8 @@
 {
-  "status": "audited_observability_release_candidate",
+  "status": "audited_onboarding_source_update",
   "runtimeFiles": 53,
   "runtimeMjsFiles": 51,
-  "testFiles": 27,
+  "testFiles": 28,
   "historicalBaseline": {
     "tests": 400,
     "passed": 350,
@@ -20,12 +20,12 @@
   "liveIntegrationVerified": false,
   "licenseFilePresent": true,
   "publicationBlockedUntil": [],
-  "checkedAtUTC": "2026-10-26T06:07:32.275899+00:00",
-  "allMjsSyntaxChecked": 80,
+  "checkedAtUTC": "2026-10-28T14:03:04.524910+00:00",
+  "allMjsSyntaxChecked": 82,
   "syntaxFailures": [],
   "localImportClosureMissing": [],
   "externalPackageImports": [],
-  "publicFiles": 115,
+  "publicFiles": 119,
   "jsonFilesParsed": [
     "CANDIDATE-VERIFICATION.json",
     "PROVENANCE-AUDIT.json",
@@ -36,8 +36,8 @@
     "examples/config.example.json",
     "examples/group-sign-settings.example.json"
   ],
-  "documentationFiles": 17,
-  "localLinksChecked": 78,
+  "documentationFiles": 19,
+  "localLinksChecked": 94,
   "knownPersonalDataMatches": 0,
   "credentialFindingsRequiringReview": 0,
   "explicitSyntheticTestFindings": [
@@ -247,7 +247,7 @@
     "baselineSnapshotBeforeTheseFiles": true
   },
   "liveOAuthVerified": false,
-  "projectName": "回笺 · QQ Reprise",
+  "projectName": "回响 QQ 助手（QQ Reprise）",
   "repositorySlug": "qq-reprise",
   "copyrightHolder": "WLDKK",
   "publicIdentityApproved": [
@@ -262,7 +262,7 @@
   "showcaseRealQQConnections": 0,
   "showcaseRealModelRequests": 0,
   "showcaseProductionDataAccess": 0,
-  "documentationUpdate": "2026-10-26; historical observation summary, UI and configuration guide updated",
+  "documentationUpdate": "2026-10-28; quickstart, symptom troubleshooting, concrete usage examples and optional offline preflight",
   "documentationTests": {
     "tests": 4,
     "passed": 4,
@@ -270,7 +270,7 @@
     "skipped": 0,
     "guardBlocks": 0
   },
-  "functionalTestsEvidence": "549/549 isolated synthetic tests on the current source snapshot; no real QQ or provider integration claim",
+  "functionalTestsEvidence": "568/568 guarded synthetic tests on current source; application/UI unchanged; no new live service verification",
   "productionBaselineHashCheckIsHistorical": true,
   "functionalTestsBeforeGroupSign": {
     "tests": 443,
@@ -325,8 +325,8 @@
     "guardBlocks": 0
   },
   "functionalTests": {
-    "tests": 549,
-    "passed": 549,
+    "tests": 568,
+    "passed": 568,
     "failed": 0,
     "skipped": 0,
     "cancelled": 0,
@@ -370,5 +370,41 @@
     "productionWrites": 0,
     "settingsIsolated": true,
     "fixtureStopped": true
-  }
+  },
+  "functionalTestsBeforeOnboarding": {
+    "tests": 549,
+    "passed": 549,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "guardBlocks": 0
+  },
+  "currentScopeRemotePublishingAllowed": true,
+  "environmentPreflight": {
+    "version": 1,
+    "tests": 19,
+    "actualOfflineChecksPassed": 8,
+    "networkRequests": 0,
+    "childProcesses": 0,
+    "configurationReads": 0,
+    "configurationWrites": 0,
+    "credentialReads": 0,
+    "minimumNode": "22.4.0",
+    "testedNode": "24.14.0",
+    "JSONASCIIRoundTripVerified": true,
+    "provesBackendAvailability": false
+  },
+  "historicalLimitedSignCheck": {
+    "scope": "one configured account and group, one scheduled business day",
+    "positiveRecordAfterUTCDateAlignment": true,
+    "recordDataIncluded": false,
+    "generalIntegrationOrRankProof": false
+  },
+  "publicationApproval": "owner_approved_existing_repository_source_update",
+  "releaseTagSelected": false,
+  "versionedReleaseCreated": false,
+  "displayName": "回响 QQ 助手",
+  "englishSubtitle": "QQ Reprise",
+  "chineseDisplayNameVerified": true,
+  "chinesePreflightHelpVerified": true
 }

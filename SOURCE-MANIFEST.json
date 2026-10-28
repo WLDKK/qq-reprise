@@ -607,6 +607,13 @@
       "sourceSHA256": null,
       "syntheticOnly": true,
       "origin": "Original tests added for this project"
+    },
+    {
+      "file": "environment-check.test.mjs",
+      "candidateSHA256": "03ce9aa0570795968968ab7f6806b5f3a9b65dd2867eaf21ff8feb5d7155c97f",
+      "sourceSHA256": null,
+      "syntheticOnly": true,
+      "origin": "Original offline prerequisite tests for this project"
     }
   ],
   "helpers": [
@@ -619,6 +626,13 @@
       "file": "test-tools/offline-guard.mjs",
       "candidateSHA256": "69c80d4f49aa31cff0ffba36fc52cce62d39f2a83ae4e13ea4640505de594bc4",
       "testOnly": true
+    },
+    {
+      "file": "scripts/check-environment.mjs",
+      "candidateSHA256": "0adbadcedf64d0347933d918437ac575bcf521f2c0b9f5fa6cd2f20660526de6",
+      "testOnly": false,
+      "readOnlyOfflineUtility": true,
+      "origin": "Original optional preflight; does not import the assistant"
     }
   ],
   "testPackagingAdjustments": [
@@ -634,5 +648,6 @@
   "oauthRegistrationEntrypointVerified": true,
   "bundledPreissuedOAuthClientIds": false,
   "provenanceAudit": "PROVENANCE-AUDIT.json",
-  "featurePreparedAtUTC": "2026-10-26T06:07:32.275899+00:00"
+  "featurePreparedAtUTC": "2026-10-28T13:30:18.724837+00:00",
+  "environmentPreflightVersion": 1
 }

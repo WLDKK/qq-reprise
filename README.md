@@ -1,8 +1,10 @@
-# 回笺 · QQ Reprise
+# 回响 QQ 助手
 
-**QQ 撤回重发与 AI 群聊助手**
+*QQ Reprise*
 
-在自己的 Windows 电脑上运行，通过 NapCat / OneBot 11 连接 QQ，用本机管理页配置撤回重发与 AI 对话。
+**Windows 自部署 QQ 助手：撤回重发 · AI 群聊 · 独立官方群打卡**
+
+通过 NapCat / OneBot 11 连接 QQ，在自己的 Windows 电脑上分别配置撤回重发、AI 对话和官方群打卡。适合能维护 QQ/NapCat 环境、希望自己控制名单、时间和接收方的使用者。
 
 - **撤回重发**：对已收到并成功缓存的消息，在原会话按已配置的开关与权限重建发送。合并转发、媒体和卡片有明确的支持及降级范围。
 - **AI 群聊**：配置自己的 API 或可选 OAuth 接入，在授权范围内使用 @、昵称触发和连续对话；群背景外发需要单独启用。
@@ -13,50 +15,58 @@
 
 公开示例默认关闭 AI、自动重发和官方群打卡，需自行安装 QQ / NapCat、配置接收方并明确开启功能。当前已有离线合成测试；真实客户端、供应商、OAuth 和全部媒体组合的验证边界见[测试记录](TESTING.md)。
 
-Self-hosted on Windows: QQ recall reposting and configurable AI group conversations, with a local control panel.
+## 可以怎样用
 
-[安装与首次运行](#安装与首次运行) · [配置指南](docs/CONFIGURATION.md) · [支持与降级范围](#支持范围) · [官方群打卡](docs/GROUP-SIGN.md) · [API / OAuth](#api-与-oauth) · [隐私与本地数据](#隐私与本地数据) · [测试边界](#测试与已知限制) · [MIT](LICENSE)
+| 场景 | 现有功能怎样处理 | 使用条件 |
+| --- | --- | --- |
+| 群里撤回一段“演示文字” | 在原会话按配置重建已成功缓存的内容；转发和媒体按支持矩阵处理 | 助手当时已收到并缓存，且该会话的重发已明确开启 |
+| 在允许群中真实@当前助手：`请解释下面这段代码的时间复杂度` | 把授权输入交给自己配置的模型，分别记录模型完成和QQ投递 | 已绑定本人QQ、允许该群/成员，且API或可选OAuth接入可用 |
+| 群A每天00:00、群B每天08:30打卡 | 各群可覆盖全局时间/时区，按账号、群、日期去重并展示待确认/已确认/未知 | 独立总/分群开关已开启，QQ/NapCat与PacketBackend可用；不保证排名 |
+
+上面是按已实现能力给出的使用例子，不是新发生的真实聊天或演示实拍。先看[明确标注为合成的界面预览](docs/SHOWCASE.md)，再按[快速启动](docs/QUICKSTART.md)选择一项功能；群名单、时间和策略均由使用者决定。
+
+英文副名为 QQ Reprise，源码仓库继续使用 `qq-reprise` 标识。
+
+[快速启动](docs/QUICKSTART.md) · [按症状排查](docs/TROUBLESHOOTING.md) · [配置指南](docs/CONFIGURATION.md) · [支持与降级范围](#支持范围) · [官方群打卡](docs/GROUP-SIGN.md) · [API / OAuth](#api-与-oauth) · [隐私与本地数据](#隐私与本地数据) · [测试边界](#测试与已知限制) · [MIT](LICENSE)
 
 ## 界面预览（合成数据）
 
-下图制作于打卡面板加入前，使用当时界面代码和手写合成状态，未连接真实 QQ、未调用模型；其中状态不代表真实联调验收。撤回示例和素材边界见[展示说明](docs/SHOWCASE.md)。
+下图属于旧版界面的合成示意，当前中文展示名以本文为准。图片制作于打卡面板加入前，使用当时界面代码和手写合成状态，未连接真实 QQ、未调用模型；其中状态不代表真实联调验收。撤回示例和素材边界见[展示说明](docs/SHOWCASE.md)。
 
 ![AI工作台：合成数据预览，未连接真实QQ或外部API](docs/assets/ai-workbench-synthetic.png)
 
 ## 安装与首次运行
 
-需要 Windows、Node.js 22.4 或更高版本、Windows PowerShell / .NET。此次实际离线验证使用 Node.js 24.14.0；其他版本尚未完成兼容性矩阵。运行代码只依赖 Node 内置模块和本地文件，**无需 `npm install`**。源码没有附带 QQ、NapCat 或其他第三方二进制。
+需要 Windows、Node.js **22.4.0+**、Windows PowerShell / .NET，以及独立安装并登录的 QQ/NapCat。本次离线实测 Node **24.14.0**；最低版本达标不代表所有组合已验证。代码只依赖 Node 内置模块，**无需 `npm install`**。详细版本边界、NapCat 连接和首次功能选择见[快速启动](docs/QUICKSTART.md)。
 
-安装 Git 后，在准备存放项目的目录打开 PowerShell：
+下面用于全新源码目录；自检不连接 QQ 或模型，示例明确关闭主动功能：
 
 ```powershell
 git clone https://github.com/WLDKK/qq-reprise.git
 Set-Location qq-reprise
-node --version
-Copy-Item examples/config.example.json config.json
-Copy-Item examples/ai-settings.example.json ai-settings.json
-node qq-recall.mjs
+node scripts/check-environment.mjs
+if ($LASTEXITCODE -ne 0) { throw '请先解决离线环境自检中的问题。' }
+if ((Test-Path -LiteralPath 'config.json') -or (Test-Path -LiteralPath 'ai-settings.json')) {
+    throw '已有配置，请保留原文件，不要覆盖。'
+}
+Copy-Item -LiteralPath 'examples\config.example.json' -Destination 'config.json'
+Copy-Item -LiteralPath 'examples\ai-settings.example.json' -Destination 'ai-settings.json'
+node qq-recall.mjs --no-browser
 ```
 
-上面的复制命令用于全新目录；升级时保留已有私有配置，不要用示例覆盖。终端会输出本次管理页地址，并尝试打开浏览器。管理服务监听 `127.0.0.1` 的临时端口，以终端显示的完整地址为准。也可以使用 `node qq-recall.mjs --no-browser` 后手动打开该地址。
+打开终端输出的本机地址，核对 QQ 在线和账号绑定，再选择要开启的功能。已有配置升级时保留原文件；不要复制示例覆盖，也不要同时启动生产、开源副本和备份目录。AI 接口测试与手动打卡分别是真实动作，离线自检不会调用它们。
 
-首次连接：
+```mermaid
+flowchart LR
+    Q["QQ + NapCat / OneBot 11"] <--> A["回响 QQ 助手：Windows 本机进程"]
+    A --> R["撤回缓存与重发"]
+    A --> S["独立官方群打卡计划"]
+    A <-->|"仅启用且授权的 AI 输入"| M["用户配置的模型服务"]
+```
 
-1. 独立安装并登录 QQ / NapCat。在 NapCat 中启用 **OneBot 11 正向 WebSocket 服务端**，使用本机地址与有效端口；如配置了 Token，保持它只在本机配置中。
-2. 助手会查找常见位置的 NapCat `config/onebot11*.json`。若安装在其他位置，在同一个 PowerShell 会话中指定根目录，再运行助手：
+不确定卡在哪一步时，从[按症状排查](docs/TROUBLESHOOTING.md)进入；不要把管理页可打开或本地未暂停当作供应商恢复。完整配置自由度和继承关系见[配置指南](docs/CONFIGURATION.md)。
 
-   ```powershell
-   $env:NAPCAT_DIR = 'C:\NapCat.Shell'
-   node qq-recall.mjs --no-browser
-   ```
-
-   把示例路径换成自己的 NapCat 根目录。助手读取启用的本机 WebSocket 配置，不要求把 Token 粘贴到 README 或源码中。
-
-3. 在管理页核对实际登录账号，选择目标群或好友，再按需要启动监控和撤回重发。自动重发、自身撤回重发与豁免规则分别控制；首次启动不会自动替你开启。
-4. 如需官方群打卡，在“撤回重发 → 官方群打卡”中添加群，核对时间与时区后明确启用。接口依赖 PacketBackend；返回 ok 只表示提交，成功需核对同日记录，见[打卡说明](docs/GROUP-SIGN.md)。
-5. 如需 AI，再配置接收方、模型与凭据，绑定自己的 QQ，选择群/用户范围，并显式启用 AI。接口测试会产生真实上游请求；离线测试命令不会。
-
-退出终端实例可使用 `Ctrl+C`。只运行一个实例；升级或退出前先查看队列，处理结果未知的投递。存在未知投递时不要通过重启或手动重发来猜测是否送达。
+想先验证一项功能，可按[单个获准会话的最小试用](docs/QUICKSTART.md#在一个获准会话中完成最小试用)操作。反馈时使用[Issue入口](https://github.com/WLDKK/qq-reprise/issues/new)和[脱敏复现格式](docs/TROUBLESHOOTING.md#提交一个可处理的问题)，无需上传整个运行目录。
 
 ## 公开默认配置
 
@@ -164,9 +174,9 @@ node run-offline-tests.mjs
 
 该入口只使用合成消息和 mock，阻断 Internet、生产目录和非测试端口；允许测试自己创建的临时本地 HTTP 服务和固定 DPAPI 合成数据往返。报告保存在系统临时目录，不写入源码目录。测试需要正常 Windows 的相应系统能力，受限沙箱可能无法执行本地监听或 DPAPI。不要把测试隔离工具预加载到正在运行的助手。
 
-本版完整离线回归 **27 个测试文件、549/549 项通过，0 跳过/取消/隔离守卫阻断**：400 项既有测试、32 项恢复回归、2 项未知投递回归、4 项匿名安装/文档检查、5 项 OAuth 发布边界检查，以及 65 项打卡核心/HTTP/调度回归、11 项计时精度、15 项只读诊断维护和 15 项历史结果观察回归。原基线 50 项失败已分类：2 项对应同一个未知投递真实缺陷，45 项属于旧契约预期，3 项属于 TTL 夹具问题；不是把所有失败都判为无关。修改与原始证据边界见 [测试记录](TESTING.md)、[逐项分类](docs/TRIAGE-50.md) 和 [验证清单](CANDIDATE-VERIFICATION.json)。
+本版完整离线回归 **28 个测试文件、568/568 项通过，0 跳过/取消/隔离守卫阻断**：400 项既有测试、32 项恢复回归、2 项未知投递回归、4 项匿名安装/文档检查、5 项 OAuth 发布边界检查，以及 65 项打卡核心/HTTP/调度回归、11 项计时精度、15 项只读诊断维护、15 项历史结果观察及 19 项离线环境自检回归。原基线 50 项失败已分类：2 项对应同一个未知投递真实缺陷，45 项属于旧契约预期，3 项属于 TTL 夹具问题；不是把所有失败都判为无关。修改与原始证据边界见 [测试记录](TESTING.md)、[逐项分类](docs/TRIAGE-50.md) 和 [验证清单](CANDIDATE-VERIFICATION.json)。
 
-此前仅对兼容 NapCat 的本机连接、PacketBackend 元数据和非到点计时作过只读验收；本轮配置说明与历史结果展示仅做离线合成验证，未验证真实群打卡、完整 QQ 消息与模型供应商联调、真实 OAuth 登录、所有媒体/卡片组合、长期运行与跨系统/多 Node 版本兼容。合并转发的完整历史专项未在当前 549 项内全部重跑，当前支持声明需结合 [矩阵中的证据边界](docs/FORWARD-SUPPORT.md) 阅读。发布代码不代表这些集成已经通过，也不代表任何现有实例的上游服务恢复。
+此前仅对兼容 NapCat 的本机连接、PacketBackend 元数据和非到点计时作过只读验收；本轮配置说明与历史结果展示仅做离线合成验证，未验证真实群打卡、完整 QQ 消息与模型供应商联调、真实 OAuth 登录、所有媒体/卡片组合、长期运行与跨系统/多 Node 版本兼容。合并转发的完整历史专项未在当前 568 项内全部重跑，当前支持声明需结合 [矩阵中的证据边界](docs/FORWARD-SUPPORT.md) 阅读。发布代码不代表这些集成已经通过，也不代表任何现有实例的上游服务恢复。
 
 ## 许可证与来源
 
