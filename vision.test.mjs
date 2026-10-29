@@ -25,9 +25,9 @@ async function fixture(t,{changes={},generate,imageFetcher=async()=>new Response
 }
 test('image_url data URL uses the exact configured Discovery alias and only current text/image',async()=>{
   let posted;const p=new AIProviders({auth:{readAPIFor:async()=> 'synthetic-key'},fetcher:async(u,o)=>{assert.equal(u,VISION_BASE+'/chat/completions');posted=JSON.parse(o.body);return new Response('data: '+JSON.stringify({choices:[{delta:{content:'synthetic-result'},finish_reason:'stop'}]})+'\n\n',{headers:{'content-type':'text/event-stream'}});}});
-  const c={...AI_DEFAULTS,api_platform:'intern_discovery',api_base_url:VISION_BASE,api_model:VISION_MODEL};assert.equal(await p.generate(c,[],'current request',undefined,()=>{},{image:probe.image}),'synthetic-result');
+  const c={...AI_DEFAULTS,api_platform:'intern_discovery',api_base_url:VISION_BASE,api_model:VISION_MODEL,vision_enabled:true,vision_target:VISION_BASE,vision_model:VISION_MODEL,vision_verified_at:Date.now()};assert.equal(await p.generate(c,[],'current request',undefined,()=>{},{image:probe.image}),'synthetic-result');
   assert.equal(posted.model,VISION_MODEL);assert.deepEqual(posted.messages.at(-1).content,[{type:'text',text:'current request'},{type:'image_url',image_url:{url:probe.image.dataURL}}]);assert.equal(posted.messages.length,2);
-  await assert.rejects(p.generate({...c,api_model:'other'},[],'new',undefined,()=>{},{image:probe.image}),/vision_model_unsupported/);
+  await assert.rejects(p.generate({...c,api_model:'other'},[],'new',undefined,()=>{},{image:probe.image}),/vision_not_verified/);
 });
 for(const privateChat of [false,true])test((privateChat?'private':'group')+' explicit single fresh image succeeds and does not enter later image history or disk',async t=>{
   const f=await fixture(t);assert.equal(f.ai.offer(raw(1,privateChat)),true);await until(()=>f.ai.counts.sent===1);

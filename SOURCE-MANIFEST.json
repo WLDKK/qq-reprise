@@ -3,7 +3,7 @@
   "sourceProject": "QQ local assistant",
   "sourceHasGitHistory": false,
   "sourceRemoteAvailable": false,
-  "sourceVersion": "recall-rich-flow-v1-20261021; backend_recovery_version=2; group_sign_version=1; group_sign_scheduler_version=2; upstream_observation_version=1; ai_network_version=1; api_test_lifecycle_version=1; backend_handoff_errors_version=1",
+  "sourceVersion": "recall-rich-flow-v1-20261021; backend_recovery_version=2; group_sign_version=1; group_sign_scheduler_version=2; upstream_observation_version=1; ai_network_version=1; api_test_lifecycle_version=1; backend_handoff_errors_version=1; vision_version=7; vision_binding_version=2",
   "licenseDecision": "MIT_owner_approved",
   "privateProductionDataIncluded": false,
   "originalEvidenceRetainedOutsideCandidate": true,
@@ -11,9 +11,10 @@
     {
       "file": "account-pool-service.mjs",
       "sourceSHA256": "3d669ea78bafd7eb46c43d079997da19954cb0a99289b3111e188c86ad672536",
-      "candidateSHA256": "3d669ea78bafd7eb46c43d079997da19954cb0a99289b3111e188c86ad672536",
+      "candidateSHA256": "c49b4dd855e6b1ea7a71203aac557de93b0712ba17fa652f40ccefbe5f7e79cc",
       "changes": [
-        "normalize_utf8_newlines"
+        "normalize_utf8_newlines",
+        "generic_vision_update_or_regression_fixture"
       ]
     },
     {
@@ -35,30 +36,33 @@
     {
       "file": "ai-chat.mjs",
       "sourceSHA256": "b0c8d981755d37492cf8924875b084346f9d0f31e625bc9a99415c5bd9dcf2e6",
-      "candidateSHA256": "f816350181e93fd60e11b97540e88336ea38f0deda489e3c9bb23fa9a0c810ec",
+      "candidateSHA256": "4484ff6d2d6387dae764404c57deeaa762c8e14989b6748be9b6994972896e3d",
       "changes": [
         "backend_recovery_memory_v2",
         "unknown_delivery_retention_candidate_fix",
-        "isolated_ai_network_and_test_lifecycle_v1"
+        "isolated_ai_network_and_test_lifecycle_v1",
+        "generic_vision_update_or_regression_fixture"
       ]
     },
     {
       "file": "ai-config.mjs",
       "sourceSHA256": "c6f129ba029042ec0985c26e01ed925451de7e537ecf0918035545fbaecd6afe",
-      "candidateSHA256": "a854e53ec094e1921100f86a480c05294d2616a9633cb5848a848dbb16bb08fd",
+      "candidateSHA256": "f677a58a6b4b84f0a68086f934d3310d93f80ef0d92dbf959daec3e165f7a548",
       "changes": [
         "normalize_utf8_newlines",
-        "anonymize_default_bot_display_name"
+        "anonymize_default_bot_display_name",
+        "generic_vision_update_or_regression_fixture"
       ]
     },
     {
       "file": "ai-diagnostics.mjs",
       "sourceSHA256": "5cdb0d5d4b2353de3965736795846a481a7b41194603d2e0d0ce2eabe922f268",
-      "candidateSHA256": "a0cf7bb5337b163f6676d865487d01802f4f16e16714055b99578b0470b7f1e3",
+      "candidateSHA256": "0727fe9a6e2a5f63cfb38e25756da9d7cf552f2c36df3c7f7e0d0a60a45cd467",
       "changes": [
         "normalize_utf8_newlines",
         "historical_observation_and_confirmation_display_only",
-        "isolated_ai_network_and_test_lifecycle_v1"
+        "isolated_ai_network_and_test_lifecycle_v1",
+        "generic_vision_update_or_regression_fixture"
       ]
     },
     {
@@ -72,10 +76,11 @@
     {
       "file": "ai-providers.mjs",
       "sourceSHA256": "e1cbff716d6b7e6ff910a0ebd30107a637dca42e162cf3ddb1edd2774eb182c9",
-      "candidateSHA256": "9fdc642054158ace4202a935676780eb0132d89c40355e1358432e4a53794bab",
+      "candidateSHA256": "73280841516d02faf7ac6d18453099ae6eef47cca101bdb63bdc674aeca8baa0",
       "changes": [
         "normalize_utf8_newlines",
-        "isolated_ai_network_and_test_lifecycle_v1"
+        "isolated_ai_network_and_test_lifecycle_v1",
+        "generic_vision_update_or_regression_fixture"
       ]
     },
     {
@@ -89,10 +94,11 @@
     {
       "file": "ai-state-handoff.mjs",
       "sourceSHA256": "70cdb322cfa7efb578cd8ace64c6cfd0874aea3ee72c9ff0fde2d38d8b77e5b6",
-      "candidateSHA256": "355b4180f689eea30ac584ec4f8f6105433db66b341f56905963f937bf1254de",
+      "candidateSHA256": "349a41f4dad4e4022e2147b4b34091dc67b43d77b7bac2a3e651178ce35fe126",
       "changes": [
         "normalize_utf8_newlines",
-        "preserve_known_network_errors_during_controlled_reload"
+        "preserve_known_network_errors_during_controlled_reload",
+        "generic_vision_update_or_regression_fixture"
       ]
     },
     {
@@ -106,9 +112,10 @@
     {
       "file": "ai-vision.mjs",
       "sourceSHA256": "94cad23b80e285e6a76e0f9f6362ad4749b1ce9490916b471ad31cb44e289902",
-      "candidateSHA256": "94cad23b80e285e6a76e0f9f6362ad4749b1ce9490916b471ad31cb44e289902",
+      "candidateSHA256": "df511e654c589dc36d8d5a4b364643b78be743e6748ca82ff7a07d9c3f55c672",
       "changes": [
-        "normalize_utf8_newlines"
+        "normalize_utf8_newlines",
+        "generic_vision_update_or_regression_fixture"
       ]
     },
     {
@@ -146,9 +153,10 @@
     {
       "file": "connection-pool-service.mjs",
       "sourceSHA256": "f59ded2d0de901e24d849119ee8fbcb2c351f9e65cdd6af34242dea14d3a757a",
-      "candidateSHA256": "f59ded2d0de901e24d849119ee8fbcb2c351f9e65cdd6af34242dea14d3a757a",
+      "candidateSHA256": "daf5235e95f7b53a441983b6ef205dcd92bc9b330392838383bba65bdc7b470a",
       "changes": [
-        "normalize_utf8_newlines"
+        "normalize_utf8_newlines",
+        "generic_vision_update_or_regression_fixture"
       ]
     },
     {
@@ -326,11 +334,12 @@
     {
       "file": "qq-recall.mjs",
       "sourceSHA256": "91b5429270ca3f159d218af0a78efb85f16f4178e9cefcc9ae58f60a571c30ea",
-      "candidateSHA256": "c5b573b2142756d73b1efe4e428d3a3bf76ed07d3f471a1eee7e51579dda0911",
+      "candidateSHA256": "58c48df024c05c6dbf5de7bc59bd1630af00ac0552731a2b20db0fc0c2eb76f9",
       "changes": [
         "normalize_utf8_newlines",
         "group_sign_v1",
-        "isolated_ai_network_and_test_lifecycle_v1"
+        "isolated_ai_network_and_test_lifecycle_v1",
+        "generic_vision_update_or_regression_fixture"
       ]
     },
     {
@@ -408,21 +417,23 @@
     {
       "file": "settings-rules.mjs",
       "sourceSHA256": "85dd43c8fabe42272e7c18ff5129ece648aa9a1153cfcbd02e067b92ae535633",
-      "candidateSHA256": "85dd43c8fabe42272e7c18ff5129ece648aa9a1153cfcbd02e067b92ae535633",
+      "candidateSHA256": "5ab73b45508bde5e96586e9dfa6a2ef9636f3ea48da4309d57b26e25b6d3646f",
       "changes": [
-        "normalize_utf8_newlines"
+        "normalize_utf8_newlines",
+        "generic_vision_update_or_regression_fixture"
       ]
     },
     {
       "file": "ui.html",
       "sourceSHA256": "aacc21a987ad7aea510797a8390b279fa008c647b4fb774e30b666906fed938c",
-      "candidateSHA256": "ee8fe8a3c2813d67329bac939e9be8f079f765568e2141ab8510e9741e9375c8",
+      "candidateSHA256": "134ee355077938bc3e2a0f0f125b255063f2acebb9c06085549b3b7524f0bb18",
       "changes": [
         "normalize_utf8_newlines",
         "group_sign_v1",
         "scheduler_precision_and_counters_ui",
         "historical_observation_and_confirmation_display_only",
-        "isolated_ai_network_and_test_lifecycle_v1"
+        "isolated_ai_network_and_test_lifecycle_v1",
+        "generic_vision_update_or_regression_fixture"
       ]
     },
     {
@@ -460,9 +471,10 @@
     {
       "file": "ai-test-ui.mjs",
       "sourceSHA256": null,
-      "candidateSHA256": "a141defac68546f5f6d30a96509a3af494dbaa5f9be75460183d6d37f472aaa6",
+      "candidateSHA256": "29d59921b952cc42b97593bdd9937063dc02b5f22010d36509a2605350c89925",
       "changes": [
-        "new_candidate_ai_network_or_test_implementation"
+        "new_candidate_ai_network_or_test_implementation",
+        "generic_vision_update_or_regression_fixture"
       ]
     }
   ],
@@ -622,15 +634,21 @@
     },
     {
       "file": "vision-source.test.mjs",
-      "candidateSHA256": "a89552b904d9baceccd6cfbdf24940cebda99823e875535a95d7026a93e5d027",
+      "candidateSHA256": "d946fe3e404e3edc1f56f69b1062d16f82f555d4cecd9dafe26dc403cf4a17dc",
       "sourceSHA256": "846a2e91e71ad8fb6ddd77aa31c52051cbbd87745e18833af367fd459e7b2067",
-      "syntheticOnly": true
+      "syntheticOnly": true,
+      "changes": [
+        "generic_vision_update_or_regression_fixture"
+      ]
     },
     {
       "file": "vision.test.mjs",
-      "candidateSHA256": "7e63c23b530873a1df9fe5329dc2067358b3d50c6b9385efb41caab6220a0eff",
+      "candidateSHA256": "4a8c330534b8176ba9cbbd702548e4303ce978be4ac1ab66410f7a81be2f5902",
       "sourceSHA256": "a54ff1edf5f80cf7c2f390b095fb9cbb5c8c6b75e7f0f951aa44b3945ed64ae9",
-      "syntheticOnly": true
+      "syntheticOnly": true,
+      "changes": [
+        "generic_vision_update_or_regression_fixture"
+      ]
     },
     {
       "file": "ai-observability.test.mjs",
@@ -677,6 +695,14 @@
       "changes": [
         "strict_network_error_handoff_regression"
       ]
+    },
+    {
+      "file": "vision-generic.test.mjs",
+      "sourceSHA256": null,
+      "candidateSHA256": "e7a8b99d25913f067ca73adfecc2d11f061aa810177d4e85cbfe004e2f628478",
+      "changes": [
+        "new_36_synthetic_generic_vision_regressions"
+      ]
     }
   ],
   "helpers": [
@@ -711,8 +737,9 @@
   "oauthRegistrationEntrypointVerified": true,
   "bundledPreissuedOAuthClientIds": false,
   "provenanceAudit": "PROVENANCE-AUDIT.json",
-  "featurePreparedAtUTC": "2026-10-29T04:03:35.713429+00:00",
+  "featurePreparedAtUTC": "2026-10-29T07:29:29.085651+00:00",
   "environmentPreflightVersion": 1,
   "aiNetworkVersion": 1,
-  "apiTestLifecycleVersion": 1
+  "apiTestLifecycleVersion": 1,
+  "genericVisionVersion": 2
 }

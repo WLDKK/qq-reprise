@@ -134,7 +134,7 @@ export class AccountPoolService {
     config=requestCeilings(config,options);
     if(this.loadFailed)throw new PoolError(this.error);
     // Images and explicit existing API tests retain their original verified path.
-    if (!this.config.enabled || config.backend !== 'api' || options.image || options.testReply || options.key || !options.requestId) return this.fallback.generate(config, history, prompt, signal, onProgress, options);
+    if (!this.config.enabled || config.backend !== 'api' || options.image || options.images || options.visionProbe || options.testReply || options.key || !options.requestId) return this.fallback.generate(config, history, prompt, signal, onProgress, options);
     try {
       this.assertReady(config);
       // A finite pool reservation requires the same finite output cap on the wire.

@@ -1,8 +1,8 @@
 {
-  "status": "audited_network_error_handoff_followup",
+  "status": "audited_generic_vision_candidate",
   "runtimeFiles": 55,
   "runtimeMjsFiles": 53,
-  "testFiles": 32,
+  "testFiles": 33,
   "historicalBaseline": {
     "tests": 400,
     "passed": 350,
@@ -20,25 +20,15 @@
   "liveIntegrationVerified": false,
   "licenseFilePresent": true,
   "publicationBlockedUntil": [],
-  "checkedAtUTC": "2026-10-29T04:03:35.713429+00:00",
-  "allMjsSyntaxChecked": 88,
+  "checkedAtUTC": "2026-10-29T07:29:29.085651+00:00",
+  "allMjsSyntaxChecked": 89,
   "syntaxFailures": [],
   "localImportClosureMissing": [],
   "externalPackageImports": [],
-  "publicFiles": 128,
-  "jsonFilesParsed": [
-    "CANDIDATE-VERIFICATION.json",
-    "PROVENANCE-AUDIT.json",
-    "RELEASE-MANIFEST.json",
-    "SOURCE-MANIFEST.json",
-    "TRIAGE-50.json",
-    "examples/ai-network.example.json",
-    "examples/ai-settings.example.json",
-    "examples/config.example.json",
-    "examples/group-sign-settings.example.json"
-  ],
-  "documentationFiles": 21,
-  "localLinksChecked": 98,
+  "publicFiles": 131,
+  "jsonFilesParsed": 9,
+  "documentationFiles": 23,
+  "localLinksChecked": 108,
   "knownPersonalDataMatches": 0,
   "credentialFindingsRequiringReview": 0,
   "explicitSyntheticTestFindings": [
@@ -238,7 +228,7 @@
   "showcaseRealQQConnections": 0,
   "showcaseRealModelRequests": 0,
   "showcaseProductionDataAccess": 0,
-  "documentationUpdate": "2026-10-29; isolated AI networking, draft test lifecycle and cancellation",
+  "documentationUpdate": "2026-10-29; generic image inputs, target-bound visual verification and configurable image limits",
   "documentationTests": {
     "tests": 4,
     "passed": 4,
@@ -246,7 +236,7 @@
     "skipped": 0,
     "guardBlocks": 0
   },
-  "functionalTestsEvidence": "628/628 guarded public-source tests; preserved-private-default production combination separately 628/628; unchanged UI retains 22 mock-browser checks",
+  "functionalTestsEvidence": "664/664 public source and 664/664 retained-private-default production combination; 22/22 synthetic browser checks",
   "productionBaselineHashCheckIsHistorical": true,
   "functionalTestsBeforeGroupSign": {
     "tests": 443,
@@ -301,8 +291,9 @@
     "guardBlocks": 0
   },
   "functionalTests": {
-    "tests": 628,
-    "passed": 628,
+    "files": 33,
+    "tests": 664,
+    "passed": 664,
     "failed": 0,
     "skipped": 0,
     "cancelled": 0,
@@ -422,5 +413,32 @@
     "afterPassed": 12,
     "errorsCleared": false,
     "bindingPrivateHoldAndAgeChecksRetained": true
+  },
+  "functionalTestsBeforeGenericVision": {
+    "tests": 628,
+    "passed": 628,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "guardBlocks": 0
+  },
+  "genericVision": {
+    "version": 7,
+    "bindingVersion": 2,
+    "protocols": [
+      "responses",
+      "chat_completions"
+    ],
+    "newSyntheticTests": 36,
+    "browserChecks": 22,
+    "liveModelImageVerified": false,
+    "realUserImagesUploaded": 0,
+    "defaultImageExport": false,
+    "defaultImageCount": 1,
+    "defaultReferenceExport": false,
+    "defaultRecentImageExport": false,
+    "maxCount": 8,
+    "providerFailoverForImages": false,
+    "existingNetworkSettingsPreserved": true
   }
 }

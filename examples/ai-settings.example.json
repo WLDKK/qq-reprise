@@ -23,5 +23,15 @@
     "助手"
   ],
   "chat_owner_qq": "",
-  "chat_display_overrides": []
+  "chat_display_overrides": [],
+  "vision_format": "",
+  "vision_target": "",
+  "vision_model": "",
+  "vision_verified_at": 0,
+  "vision_verified_images": 0,
+  "vision_max_images": 1,
+  "vision_max_image_bytes": 5242880,
+  "vision_max_total_bytes": 5242880,
+  "vision_download_timeout_seconds": 10,
+  "vision_request_timeout_seconds": 60
 }

@@ -1,6 +1,6 @@
 import { AIError, SIWC, readJSONResponse, safeCode } from './ai-auth.mjs';
 import { redactTestReply } from './ai-api-draft.mjs';
-import {visionTarget,VISION_MAX_BYTES} from './ai-vision.mjs';
+import {visionTarget,visionEnabled,visionLimits,imageData} from './ai-vision.mjs';
 import{retryAfterSeconds}from'./upstream-limit.mjs';
 
 export function publicAIError(error) {
@@ -70,7 +70,18 @@ export class AIProviders {
     return models.filter(m => typeof m.id === 'string' && /^[\w.\-:/]{1,160}$/.test(m.id)).slice(0, 200);
   }
   async generate(config, history, prompt, signal, onProgress=()=>{}, options = {}) {
-    if(options.image&&(!visionTarget(config)||typeof options.image.dataURL!=='string'||options.image.dataURL.length>Math.ceil(VISION_MAX_BYTES/3)*4+100||!/^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/]+=*$/u.test(options.image.dataURL)))throw new AIError('vision_model_unsupported');
+    if(options.image&&options.images)throw new AIError('vision_image_ambiguous');
+    const images=options.images??(options.image?[options.image]:[]),limits=visionLimits(config);
+    if(!Array.isArray(images)||options.images!==undefined&&!images.length)throw new AIError('vision_image_missing');
+    if(images.length>limits.vision_max_images)throw new AIError('vision_image_count_exceeded');
+    if(images.length&&(!visionTarget(config)||!visionEnabled(config)&&options.visionProbe!==true))throw new AIError('vision_not_verified');
+    let imageBytes=0;
+    for(const image of images){
+      if(typeof image?.dataURL!=='string'||image.dataURL.length>Math.ceil(limits.vision_max_image_bytes/3)*4+100||!/^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/]+=*$/u.test(image.dataURL))throw new AIError('vision_image_format_unsupported');
+      const checked=imageData(Buffer.from(image.dataURL.split(',')[1],'base64'),limits.vision_max_image_bytes);
+      if(checked.dataURL!==image.dataURL)throw new AIError('vision_image_format_unsupported');
+      imageBytes+=checked.bytes;if(imageBytes>limits.vision_max_total_bytes)throw new AIError('vision_total_bytes_exceeded');
+    }
     const progress=value=>{try{onProgress(value);}catch{}};
     const began = Date.now();
     progress({phase:'credentials'});
@@ -82,7 +93,10 @@ export class AIProviders {
     if(!['custom','platform_default','chatgpt_managed'].includes(outputMode)||config.backend!=='chatgpt'&&outputMode==='chatgpt_managed')throw new AIError('invalid_ai_settings');
     if(outputMode==='custom'&&(!Number.isSafeInteger(config.api_max_output_tokens)||config.api_max_output_tokens<=0))throw new AIError('invalid_ai_settings');
     progress({phase:'request_ready'});
-    const messages = [...history, { role: 'user', content: options.image?[{type:'text',text:prompt},{type:'image_url',image_url:{url:options.image.dataURL}}]:prompt }];
+    // Context is text only; previous image parts must never be silently resent.
+    const textHistory=history.map(m=>({role:m.role,content:Array.isArray(m.content)?m.content.filter(v=>['text','input_text','output_text'].includes(v?.type)&&typeof v.text==='string').map(v=>v.text).join('\n'):m.content}));
+    const parts=detail.responses?[{type:'input_text',text:prompt},...images.map(image=>({type:'input_image',image_url:image.dataURL,detail:'auto'}))]:[{type:'text',text:prompt},...images.map(image=>({type:'image_url',image_url:{url:image.dataURL}}))];
+    const messages = [...textHistory, { role: 'user', content: images.length?parts:prompt }];
     let body;
     if (detail.responses) {
       body = { model: detail.model, store: false, stream: true, instructions: config.instructions,

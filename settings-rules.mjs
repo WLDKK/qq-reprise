@@ -5,6 +5,7 @@ export const MAX_TIMER_MINUTES=Math.floor(2147483647/60000);
 const safe=Number.MAX_SAFE_INTEGER;
 const rule=(label,min=0,zero='',max=safe)=>({label,min,max,zero,integer:true});
 export const SETTING_RULES={
+ vision_max_images:rule('单次识图图片数（增加后须重新验证）',1,'',8),vision_max_image_bytes:rule('单图原始/静态帧字节上限',1024,'',5242880),vision_max_total_bytes:rule('单次识图总字节上限',1024,'',20971520),vision_download_timeout_seconds:rule('每张图片下载超时 / 秒',1,'',120),vision_request_timeout_seconds:rule('识图请求总等待上限 / 秒',1,'',600),
  vision_instruction_grace_ms:rule('单图后等候补充解题指令 / 毫秒',0,'不另等候补充指令',2147483647),
 temporary_recovery_attempts:rule('临时限流自动恢复次数（不重发旧题）',0,'不设本地恢复次数上限',safe),temporary_recovery_min_seconds:rule('临时限流恢复最少等待 / 秒',0,'不另加等待下限',MAX_TIMER_SECONDS),temporary_recovery_max_retry_after_seconds:rule('允许自动恢复的上游Retry-After最大秒数',0,'不设本地上限；仍受计时器范围限制',MAX_TIMER_SECONDS),account_capacity_wait_seconds:rule('账户额度最多本地等待 / 秒（不会在等待中调用模型）',0,'不等待本地额度',MAX_TIMER_SECONDS),account_capacity_wait_rounds:rule('账户额度等待最多重新检查次数',0,'不设本地检查次数上限',safe),
  private_review_limit:rule('私聊待审核会话容量（扩容不自动解除既有审核暂停）',1),private_archive_limit:rule('本地私聊审核归档容量（不自动删除已有归档）',1),

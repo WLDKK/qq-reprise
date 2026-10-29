@@ -7,10 +7,29 @@ import {id,parseCQ} from './engine.mjs';
 export const VISION_BASE='https://discovery-api.intern-ai.org.cn/v1';
 export const VISION_MODEL='deepseek-v4-flash-vision';
 export const VISION_MAX_BYTES=5*1024*1024;
+export const VISION_MAX_TOTAL_BYTES=20*1024*1024,VISION_MAX_IMAGES=8;
+export const VISION_ERRORS=Object.freeze(['vision_model_unsupported','vision_not_verified','vision_probe_mismatch','vision_image_too_large','vision_image_format_unsupported','vision_image_source_unsupported','vision_image_download_failed','vision_download_timeout','vision_sensitive_result','vision_current_image_only','vision_reference_scope_unknown','vision_image_ambiguous','vision_no_recent_image','vision_reference_unavailable','vision_reference_no_image','vision_animation_unsupported','vision_animation_timeout','vision_reference_before_private_epoch','vision_image_missing','vision_image_count_exceeded','vision_total_bytes_exceeded','vision_limits_invalid','vision_target_changed','vision_request_timeout',...['input','output'].flatMap(stage=>['credentials','identity','format','length'].map(reason=>'vision_'+stage+'_'+reason))]);
+export const VISION_LIMIT_DEFAULTS=Object.freeze({vision_max_images:1,vision_max_image_bytes:VISION_MAX_BYTES,vision_max_total_bytes:VISION_MAX_BYTES,vision_download_timeout_seconds:10,vision_request_timeout_seconds:60});
+export const VISION_LIMIT_FIELDS=Object.keys(VISION_LIMIT_DEFAULTS);
+export function visionLimits(config={}){
+  const value={...VISION_LIMIT_DEFAULTS,...Object.fromEntries(VISION_LIMIT_FIELDS.filter(k=>config[k]!==undefined).map(k=>[k,config[k]]))};
+  const ranges={vision_max_images:[1,VISION_MAX_IMAGES],vision_max_image_bytes:[1024,VISION_MAX_BYTES],vision_max_total_bytes:[1024,VISION_MAX_TOTAL_BYTES],vision_download_timeout_seconds:[1,120],vision_request_timeout_seconds:[1,600]};
+  for(const [key,[min,max]]of Object.entries(ranges))if(!Number.isSafeInteger(value[key])||value[key]<min||value[key]>max)throw new AIError('vision_limits_invalid');
+  if(value.vision_max_image_bytes>value.vision_max_total_bytes)throw new AIError('vision_limits_invalid');
+  return value;
+}
+// Eligibility is a serialization route, never evidence that a model can see.
+export function visionTarget(config){
+  if(config?.backend!=='api'||!['responses','chat_completions'].includes(config.api_format)||typeof config.api_model!=='string'||!config.api_model.trim()||config.api_model.length>160||/[\u0000-\u001f\u007f]/u.test(config.api_model))return false;
+  try{const u=new URL(config.api_base_url);return !u.username&&!u.password&&!u.search&&!u.hash&&(u.protocol==='https:'||u.protocol==='http:'&&['localhost','127.0.0.1','[::1]'].includes(u.hostname));}catch{return false;}
+}
+export const visionFormat=c=>c.vision_format||(c.vision_target===VISION_BASE&&c.vision_model===VISION_MODEL?'chat_completions':'');
+export const visionVerifiedImages=c=>c.vision_verified_images||(c.vision_target===VISION_BASE&&c.vision_model===VISION_MODEL&&visionFormat(c)==='chat_completions'?1:0);
+export const visionBinding=c=>({base:c.api_base_url,model:c.api_model,format:c.api_format});
+export const sameVisionBinding=(proof,c)=>!!proof&&proof.base===c.api_base_url&&proof.model===c.api_model&&(proof.format|| (proof.protocol==='chat_completions_image_url_data_url'?'chat_completions':''))===c.api_format;
+export function visionEnabled(c){return visionTarget(c)&&c.vision_enabled===true&&c.vision_target===c.api_base_url&&c.vision_model===c.api_model&&visionFormat(c)===c.api_format&&c.vision_verified_at>0&&(c.vision_max_images??1)<=visionVerifiedImages(c);}
 export const VISION_RECENT_MS=120000,VISION_REFERENCE_MS=600000;
 export const wantsVision=text=>!/^(?:(?:什么是|何谓|介绍一下|请解释|解释一下)\s*OCR\b.*|OCR\s*(?:是什么|如何工作|的原理).*)$/iu.test(text.trim())&&/(?:识图|识别(?:这|一下|图片|照片|图中|文字)|(?:看看|看下|看一下|看一看|请看|分析|描述|解释|读取|提取|辨认).{0,12}(?:这张|图片|照片|图中|图里)|(?:这张|这图|图片|照片|图中|图里).{0,12}(?:什么|啥|内容|文字|识别)|\bOCR\b)/iu.test(text);
-export const visionTarget=config=>config.backend==='api'&&config.api_format==='chat_completions'&&config.api_base_url===VISION_BASE&&config.api_model===VISION_MODEL;
-export const visionEnabled=config=>visionTarget(config)&&config.vision_enabled&&config.vision_target===VISION_BASE&&config.vision_model===VISION_MODEL&&config.vision_verified_at>0;
 const scope=e=>`${e.self_id}:${e.conversation_type}:${e.peer_id}:`;
 export function visionSourceAllowed(e,c,{allowOwnPrivate=false}={}){
   if(!c.enabled||!visionEnabled(c)||e.self_id!==c.binding_qq)return false;
@@ -27,15 +46,15 @@ export class RecentVisionImages{
     this.configure(c);if((!c.vision_reference_enabled&&!c.vision_recent_enabled)||!visionSourceAllowed(e,c)||(e.conversation_type==='private'&&event.post_type!=='message')||event.anonymous||event.from_history||event.message_source==='history'||!['message','message_sent'].includes(event.post_type)||!Number.isSafeInteger(event.time)||event.time*1000<this.now()-10000||event.time*1000>this.now()+5000)return;
     const segments=typeof event.message==='string'?parseCQ(event.message):event.message;if(!Array.isArray(segments)||segments.some(s=>s?.type==='reply'))return;
     const images=imageSegments(segments);if(!images.length)return;const key=scope(e)+e.message_id;if(this.items.has(key))return;
-    const d=images.length===1?images[0].data:null;const source=typeof d?.url==='string'&&d.url?d.url:d?.file;
-    const input=images.length===1&&typeof source==='string'&&source.length<Math.ceil(VISION_MAX_BYTES/3)*4+100?{url:typeof d.url==='string'?d.url:'',file:typeof d.file==='string'?d.file:''}:null;
-    const bytes=input?Buffer.byteLength(JSON.stringify(input)):0,owner=scope(e)+e.user_id;
+    const limits=visionLimits(c),inputs=images.length<=limits.vision_max_images?images.map(v=>v.data).map(d=>{const source=typeof d?.url==='string'&&d.url?d.url:d?.file;return typeof source==='string'&&source.length<Math.ceil(limits.vision_max_image_bytes/3)*4+100?{url:typeof d.url==='string'?d.url:'',file:typeof d.file==='string'?d.file:''}:null;}):null;
+    const valid=inputs?.every(Boolean)?inputs:null,input=valid?.[0]??null;
+    const bytes=valid?Buffer.byteLength(JSON.stringify(valid)):0,owner=scope(e)+e.user_id;
     if(bytes>this.byteLimit){this.overflow.set(owner,this.ttlMs?this.now()+this.ttlMs:Infinity);return;}
-    this.items.set(key,{scope:scope(e),owner,id:e.message_id,sender:e.user_id,at:event.time*1000,observedAt:this.now(),count:images.length,input,bytes,sequence:++this.sequence});this.bytes+=bytes;
+    this.items.set(key,{scope:scope(e),owner,id:e.message_id,sender:e.user_id,at:event.time*1000,observedAt:this.now(),count:images.length,input,inputs:valid,bytes,sequence:++this.sequence});this.bytes+=bytes;
     while(this.items.size>this.limit||this.bytes>this.byteLimit)this.drop(this.items.keys().next().value,true);
   }
-  reference(e,messageId,c){this.configure(c);const v=this.items.get(scope(e)+messageId);if(!v)return null;if(!visionSourceAllowed({...e,user_id:v.sender},c))throw new AIError('vision_reference_scope_unknown');if(v.count!==1||!v.input)throw new AIError('vision_image_ambiguous');return{input:structuredClone(v.input),sourceId:v.id,sourceAt:v.at};}
-  recent(e,c,throughSequence=Infinity){this.configure(c);const owner=scope(e)+e.user_id,values=[...this.items.values()].filter(v=>v.owner===owner&&v.sequence<=throughSequence);if(this.overflow.has(owner)||values.length>1||values.some(v=>v.count!==1||!v.input))throw new AIError('vision_image_ambiguous');if(!values.length)throw new AIError('vision_no_recent_image');return this.reference(e,values[0].id,c);}
+  reference(e,messageId,c){this.configure(c);const v=this.items.get(scope(e)+messageId);if(!v)return null;if(!visionSourceAllowed({...e,user_id:v.sender},c))throw new AIError('vision_reference_scope_unknown');if(v.count>visionLimits(c).vision_max_images)throw new AIError('vision_image_count_exceeded');if(!v.inputs)throw new AIError('vision_image_ambiguous');return{input:structuredClone(v.input),inputs:structuredClone(v.inputs),sourceId:v.id,sourceAt:v.at};}
+  recent(e,c,throughSequence=Infinity){this.configure(c);const owner=scope(e)+e.user_id,values=[...this.items.values()].filter(v=>v.owner===owner&&v.sequence<=throughSequence);if(this.overflow.has(owner)||values.length>1)throw new AIError('vision_image_ambiguous');if(!values.length)throw new AIError('vision_no_recent_image');return this.reference(e,values[0].id,c);}
   hasRecent(e,throughSequence=Infinity){this.prune();return[...this.items.values()].some(v=>v.owner===scope(e)+e.user_id&&v.sequence<=throughSequence)||this.overflow.has(scope(e)+e.user_id);}
   latestAt(e,throughSequence=Infinity){this.prune();return Math.max(0,...[...this.items.values()].filter(v=>v.owner===scope(e)+e.user_id&&v.sequence<=throughSequence).map(v=>v.observedAt));}
   hasReference(e,messageId){this.prune();return this.items.has(scope(e)+messageId);}
@@ -54,13 +73,14 @@ export async function resolveVisionReference(e,reference,c,cache,api,signal,now=
   else if(value.message_type!=='private'||id(value.group_id,true)!==null||!(sender===e.peer_id||(sender===e.self_id&&id(value.target_id,true)===e.peer_id)))throw new AIError('vision_reference_scope_unknown');
   if(!visionSourceAllowed({...e,user_id:sender},c,{allowOwnPrivate:true}))throw new AIError('vision_reference_scope_unknown');
   const segments=typeof value.message==='string'?parseCQ(value.message):value.message;if(!Array.isArray(segments))throw new AIError('vision_reference_unavailable');const images=imageSegments(segments);
-  if(images.length!==1)throw new AIError(images.length?'vision_image_ambiguous':'vision_reference_no_image');
-  return{input:structuredClone(images[0].data),sourceId:referenceId,sourceAt:time*1000};
+  if(!images.length)throw new AIError('vision_reference_no_image');
+  if(images.length>visionLimits(c).vision_max_images)throw new AIError('vision_image_count_exceeded');
+  return{input:structuredClone(images[0].data),inputs:images.map(v=>structuredClone(v.data)),sourceId:referenceId,sourceAt:time*1000};
 }
 async function abortable(promise,signal){signal.throwIfAborted();let stop;const canceled=new Promise((_,reject)=>{stop=()=>reject(signal.reason);signal.addEventListener('abort',stop,{once:true});});try{return await Promise.race([promise,canceled]);}finally{signal.removeEventListener('abort',stop);}}
-export function imageData(bytes){
+export function imageData(bytes,maxBytes=VISION_MAX_BYTES){
   if(!Buffer.isBuffer(bytes))bytes=Buffer.from(bytes);
-  if(!bytes.length||bytes.length>VISION_MAX_BYTES)throw new AIError('vision_image_too_large');
+  if(!bytes.length||bytes.length>Math.min(maxBytes,VISION_MAX_BYTES))throw new AIError('vision_image_too_large');
   let mime,width=0,height=0;
   if(bytes.length>=24&&bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))){mime='image/png';width=bytes.readUInt32BE(16);height=bytes.readUInt32BE(20);}
   else if(bytes.length>8&&bytes[0]===255&&bytes[1]===216&&bytes[2]===255){mime='image/jpeg';for(let p=2,n=0;p+8<bytes.length&&n++<256;){if(bytes[p++]!==255)break;const marker=bytes[p++];if(marker===217||marker===218)break;if(marker===0||marker===255)continue;const len=bytes.readUInt16BE(p);if(len<2||p+len>bytes.length)break;if([192,193,194,195,197,198,199,201,202,203,205,206,207].includes(marker)){height=bytes.readUInt16BE(p+3);width=bytes.readUInt16BE(p+5);break;}p+=len;}}
@@ -73,35 +93,44 @@ export function imageData(bytes){
   if(!mime||!width||!height||width>8192||height>8192||width*height>20000000)throw new AIError('vision_image_format_unsupported');
   return{dataURL:'data:'+mime+';base64,'+bytes.toString('base64'),mime,bytes:bytes.length};
 }
-export async function prepareImageBytes(bytes,signal,decoder=decodeStaticFrame){
+export async function prepareImageBytes(bytes,signal,decoder=decodeStaticFrame,maxBytes=VISION_MAX_BYTES){
   signal.throwIfAborted();if(!Buffer.isBuffer(bytes))bytes=Buffer.from(bytes);
-  if(!bytes.length||bytes.length>VISION_MAX_BYTES)throw new AIError('vision_image_too_large');
+  if(!bytes.length||bytes.length>Math.min(maxBytes,VISION_MAX_BYTES))throw new AIError('vision_image_too_large');
   const gif=bytes.length>=10&&/^GIF8[79]a$/.test(bytes.toString('ascii',0,6));
   const webp=bytes.length>=30&&bytes.toString('ascii',0,4)==='RIFF'&&bytes.toString('ascii',8,16)==='WEBPVP8X'&&(bytes[20]&2);
   let apng=false;if(bytes.length>=24&&bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))){for(let p=8,n=0;p+12<=bytes.length&&n++<10000;){const len=bytes.readUInt32BE(p);if(len>bytes.length-p-12)break;const tag=bytes.toString('ascii',p+4,p+8);if(tag==='acTL'){apng=true;break;}p+=len+12;}}
-  if(!gif&&!webp&&!apng)return imageData(bytes);
+  if(!gif&&!webp&&!apng)return{...imageData(bytes,maxBytes),sourceBytes:bytes.length};
   const width=gif?bytes.readUInt16LE(6):webp?1+bytes.readUIntLE(24,3):bytes.readUInt32BE(16),height=gif?bytes.readUInt16LE(8):webp?1+bytes.readUIntLE(27,3):bytes.readUInt32BE(20);
   if(!width||!height||width>8192||height>8192||width*height>20000000)throw new AIError('vision_image_format_unsupported');
-  const frame=await decoder(bytes,signal);signal.throwIfAborted();const result=imageData(frame);
+  const frame=await decoder(bytes,signal);signal.throwIfAborted();const result=imageData(frame,maxBytes);
   if(result.mime!=='image/png')throw new AIError('vision_animation_unsupported');
-  return{...result,animation:'static_frame'};
+  return{...result,sourceBytes:bytes.length,animation:'static_frame'};
 }
-export async function prepareVisionImage(input,signal,fetcher=globalThis.fetch,timeoutMs=10000){
-  const combined=AbortSignal.any([signal,AbortSignal.timeout(Math.max(1,Math.min(10000,timeoutMs)))]);let reader;
+export async function prepareVisionImage(input,signal,fetcher=globalThis.fetch,timeoutMs=10000,maxBytes=VISION_MAX_BYTES,decoder=decodeStaticFrame){
+  maxBytes=Math.min(maxBytes,VISION_MAX_BYTES);
+  const combined=AbortSignal.any([signal,AbortSignal.timeout(Math.max(1,Math.min(120000,timeoutMs)))]);let reader;
   try{
     const source=typeof input?.url==='string'&&input.url?input.url:input?.file;
     if(typeof source!=='string')throw new AIError('vision_image_source_unsupported');
-    if(source.startsWith('base64://')){const b=source.slice(9);if(b.length>Math.ceil(VISION_MAX_BYTES/3)*4||!b||!/^[A-Za-z0-9+/]*={0,2}$/.test(b))throw new AIError('vision_image_too_large');return await prepareImageBytes(Buffer.from(b,'base64'),combined);}
+    if(source.startsWith('base64://')){const b=source.slice(9);if(b.length>Math.ceil(maxBytes/3)*4||!b||!/^[A-Za-z0-9+/]*={0,2}$/.test(b))throw new AIError('vision_image_too_large');return await prepareImageBytes(Buffer.from(b,'base64'),combined,decoder,maxBytes);}
     let url;try{url=new URL(source);}catch{throw new AIError('vision_image_source_unsupported');}
     if(url.username||url.password||url.hash||!['http:','https:'].includes(url.protocol)||!/(?:^|\.)(?:qpic\.cn|gtimg\.cn|qq\.com|qq\.com\.cn)$/i.test(url.hostname)||url.port)throw new AIError('vision_image_source_unsupported');
     url.protocol='https:';
     const response=await abortable(Promise.resolve(fetcher(url.href,{redirect:'error',headers:{Accept:'image/png,image/jpeg,image/webp,image/gif'},signal:combined})).then(r=>{if(combined.aborted){void r.body?.cancel().catch(()=>{});combined.throwIfAborted();}return r;}),combined);
     if(!response.ok||!response.body){void response.body?.cancel().catch(()=>{});const error=new AIError('vision_image_download_failed');if(Number.isInteger(response.status)&&response.status>=100&&response.status<=599)error.imageHTTPStatus=response.status;throw error;}
-    if(Number(response.headers.get('content-length'))>VISION_MAX_BYTES){void response.body.cancel().catch(()=>{});throw new AIError('vision_image_too_large');}
+    if(Number(response.headers.get('content-length'))>maxBytes){void response.body.cancel().catch(()=>{});throw new AIError('vision_image_too_large');}
     reader=response.body.getReader();const cancel=()=>{void reader.cancel().catch(()=>{});};combined.addEventListener('abort',cancel,{once:true});const chunks=[];let size=0;
-    try{for(;;){const part=await abortable(reader.read(),combined);combined.throwIfAborted();if(part.done)break;size+=part.value.length;if(size>VISION_MAX_BYTES)throw new AIError('vision_image_too_large');chunks.push(part.value);}}finally{combined.removeEventListener('abort',cancel);cancel();try{reader.releaseLock();}catch{}}
-    return await prepareImageBytes(Buffer.concat(chunks,size),combined);
+    try{for(;;){const part=await abortable(reader.read(),combined);combined.throwIfAborted();if(part.done)break;size+=part.value.length;if(size>maxBytes)throw new AIError('vision_image_too_large');chunks.push(part.value);}}finally{combined.removeEventListener('abort',cancel);cancel();try{reader.releaseLock();}catch{}}
+    return await prepareImageBytes(Buffer.concat(chunks,size),combined,decoder,maxBytes);
   }catch(error){if(error?.name==='TimeoutError')throw new AIError('vision_download_timeout');throw error;}
+}
+export async function prepareVisionImages(inputs,signal,fetcher=globalThis.fetch,config={},decoder=decodeStaticFrame){
+  const limits=visionLimits(config);
+  if(!Array.isArray(inputs)||!inputs.length)throw new AIError('vision_image_missing');
+  if(inputs.length>limits.vision_max_images)throw new AIError('vision_image_count_exceeded');
+  const images=[];let total=0;
+  try{for(const input of inputs){signal.throwIfAborted();const remaining=limits.vision_max_total_bytes-total;if(remaining<1)throw new AIError('vision_total_bytes_exceeded');let image;try{image=await prepareVisionImage(input,signal,fetcher,limits.vision_download_timeout_seconds*1000,Math.min(limits.vision_max_image_bytes,remaining),decoder);}catch(error){if(error.code==='vision_image_too_large'&&remaining<limits.vision_max_image_bytes)throw new AIError('vision_total_bytes_exceeded');throw error;}total+=Math.max(image.bytes,image.sourceBytes??image.bytes);images.push(image);}return images;}
+  catch(error){for(const image of images)image.dataURL='';throw error;}
 }
 function crc32(bytes){let c=0xffffffff;for(const byte of bytes){c^=byte;for(let i=0;i<8;i++)c=(c>>>1)^((c&1)?0xedb88320:0);}return(c^0xffffffff)>>>0;}
 function chunk(type,data){const t=Buffer.from(type),out=Buffer.alloc(data.length+12);out.writeUInt32BE(data.length);t.copy(out,4);data.copy(out,8);out.writeUInt32BE(crc32(Buffer.concat([t,data])),data.length+8);return out;}

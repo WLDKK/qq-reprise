@@ -3,7 +3,7 @@ import { id } from './engine.mjs';
 import { DEFAULT_PERSONA, normalizeBotAliases, validatePersonaPatch } from './ai-persona.mjs';
 import {validateChatIdentityPatch} from './chat-identity.mjs';
 import { SettingsFieldError } from './settings-field-error.mjs';
-import {visionTarget,VISION_BASE,VISION_MODEL} from './ai-vision.mjs';
+import {visionEnabled,VISION_BASE,VISION_MODEL,VISION_LIMIT_DEFAULTS,VISION_MAX_IMAGES} from './ai-vision.mjs';
 
 export const AI_DEFAULTS = Object.freeze({ enabled: false, backend: 'api', api_platform: 'custom', api_format: 'chat_completions',
   api_base_url: 'https://api.openai.com/v1', api_model: '', siwc_model: '', active_profile: '',
@@ -14,7 +14,7 @@ export const AI_DEFAULTS = Object.freeze({ enabled: false, backend: 'api', api_p
   participation_enabled:true,participation_cooldown_seconds:0,participation_hourly_limit:0,participation_daily_limit:0,participation_activity_min_messages:8,participation_activity_window_seconds:120,participation_group_blacklist:[],
   participation_min_text_chars:8,participation_min_speakers:3,participation_topic_min_messages:3,participation_topic_min_speakers:2,participation_quiet_seconds:3,participation_output_tokens:384,participation_output_chars:280,participation_timeout_seconds:30,participation_stale_seconds:45,participation_max_model_calls:1,participation_hourly_model_calls:0,
   private_local_review: false,
-  vision_enabled:false,vision_target:'',vision_model:'',vision_verified_at:0,
+  vision_enabled:false,vision_target:'',vision_model:'',vision_format:'',vision_verified_images:0,vision_verified_at:0,...VISION_LIMIT_DEFAULTS,
   vision_reference_enabled:false,vision_recent_enabled:false,
   concurrency: 1, queue_limit: 5, queue_wait_seconds: 60, timeout_seconds: 30, cooldown_seconds: 0,
   daily_requests: 0, input_chars: 2000, output_chars: 4000, api_max_output_tokens: 512,api_output_token_mode:'custom',
@@ -50,8 +50,12 @@ export function validateAISettings(input) {
   if (url.username || url.password || url.search || url.hash || url.href.length > 1048576 ||
       (url.protocol !== 'https:' && !(url.protocol === 'http:' && ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)))) throw new Error('API地址须为HTTPS或本机HTTP，不包含凭据、参数或片段。');
   result.api_base_url = url.href.replace(/\/+$/, '');
+  // Existing Discovery proof covered one Chat Completions image only.
+  if(!result.vision_format&&result.vision_target===VISION_BASE&&result.vision_model===VISION_MODEL&&result.vision_verified_at>0){result.vision_format='chat_completions';result.vision_verified_images=1;}
   if(typeof result.vision_target!=='string'||typeof result.vision_model!=='string'||!Number.isSafeInteger(result.vision_verified_at)||result.vision_verified_at<0)throw new Error('识图设置无效。');
-  if(result.vision_enabled&&(!visionTarget(result)||result.vision_target!==VISION_BASE||result.vision_model!==VISION_MODEL||!result.vision_verified_at))throw new Error('识图必须绑定已验证的当前Discovery模型。');
+  if(!['','responses','chat_completions'].includes(result.vision_format)||!Number.isSafeInteger(result.vision_verified_images)||result.vision_verified_images<0||result.vision_verified_images>VISION_MAX_IMAGES)throw new Error('识图验证格式或图片数量无效。');
+  if(result.vision_enabled&&!visionEnabled(result))throw new Error('识图须绑定已验证的当前服务端点、协议、模型和图片数量。');
+  if(result.vision_max_image_bytes>result.vision_max_total_bytes)throw new SettingsFieldError('vision_max_total_bytes','单次图片总字节上限不得小于单图上限。');
   if((result.vision_reference_enabled||result.vision_recent_enabled)&&!result.vision_enabled)throw new Error('引用和近期图片须先启用已验证的识图范围。');
   if(typeof result.group_context_target!=='string'||(result.group_context_export&&(result.backend!=='api'||result.group_context_target!==result.api_base_url)))throw new Error('附近消息外发须明确绑定当前普通API接收方。');
   if(!Number.isSafeInteger(result.api_max_output_tokens)||result.api_max_output_tokens<=0)throw new SettingsFieldError('api_max_output_tokens','需为可准确表示的正整数；供应商和模型的实际限制另计。');

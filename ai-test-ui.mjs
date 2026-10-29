@@ -7,8 +7,8 @@ export function bounded(promise,signal) {
   });
 }
 export class APITestController {
-  constructor({ post,refresh=async()=>{},render=()=>{},now=Date.now,id=()=>crypto.randomUUID(),graceMs=5000,refreshMs=3000,tickMs=250 } = {}) {
-    Object.assign(this,{post,refresh,render,now,id,graceMs,refreshMs,tickMs});this.active=null;this.serial=0;
+  constructor({ post,refresh=async()=>{},render=()=>{},now=Date.now,id=()=>crypto.randomUUID(),graceMs=5000,refreshMs=3000,tickMs=250,action='test-api' } = {}) {
+    Object.assign(this,{post,refresh,render,now,id,graceMs,refreshMs,tickMs,action});this.active=null;this.serial=0;
   }
   emit(operation,value) { if (operation.serial === this.serial) this.render({id:operation.id,elapsed_ms:Math.max(0,this.now()-operation.started),...value}); }
   observe(id,phase) { if (this.active?.id === id && /^[a-z_]{1,50}$/.test(phase || '')) { this.active.phase=phase;this.emit(this.active,{status:'running',busy:true,phase}); } }
@@ -37,7 +37,7 @@ export class APITestController {
     const ticker=setInterval(()=>{if(this.active===op)this.emit(op,{status:'running',busy:true,phase:op.phase});},this.tickMs);
     this.emit(op,{status:'running',busy:true,phase:op.phase});
     try {
-      const result=await bounded(this.post('test-api',{...payload,test_id:op.id},op.controller.signal),op.controller.signal);
+      const result=await bounded(this.post(this.action,{...payload,test_id:op.id},op.controller.signal),op.controller.signal);
       if(this.active!==op)return;
       if(!result||typeof result.ok!=='boolean')throw Object.assign(new Error('invalid_test_result'),{code:'invalid_test_result'});
       this.emit(op,{status:result.ok?'completed':'failed',busy:false,phase:result.phase||'completed',result});

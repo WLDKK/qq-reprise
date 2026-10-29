@@ -32,7 +32,7 @@ import{PrivateReviewArchive}from'./private-review-archive.mjs';
 import {inspectVisionText,visionPrivacyMessage} from './vision-privacy.mjs';
 import { LocalContentReviewer } from './local-content-review.mjs';
 import { createHash } from 'node:crypto';
-import {visionTarget,visionEnabled,wantsVision,prepareVisionImage,makeVisionProbe,VISION_BASE,VISION_MODEL,RecentVisionImages,resolveVisionReference,VISION_RECENT_MS} from './ai-vision.mjs';
+import {visionTarget,visionEnabled,visionFormat,visionVerifiedImages,visionBinding,sameVisionBinding,visionLimits,VISION_LIMIT_FIELDS,wantsVision,prepareVisionImages,makeVisionProbe,RecentVisionImages,resolveVisionReference,VISION_RECENT_MS} from './ai-vision.mjs';
 
 const keyOf = e => `${e.self_id}:${e.conversation_type}:${e.peer_id}:${e.message_id}`;
 const normalizeAI = event => { const e = normalizeEvent(event);if(e?.conversation_type==='group'&&event.user_id!==undefined&&event.sender?.user_id!==undefined&&id(event.user_id,true)!==id(event.sender.user_id,true))return null; return e ? { ...e, self_id: String(e.self_id), message_id: String(e.message_id) } : null; };
@@ -89,7 +89,7 @@ export class AIChat {
       private_archive_version:1,vision_intent_version:2,private_archived_count:this.privateArchive.forBinding(this.config.binding_qq).length,private_epoch_since:this.privateArchiveFreshSince||null,...(includeConfig?{archived_private_reviews:this.privateArchive.forBinding(this.config.binding_qq)}:{}),
       group_context: this.groupContext.state(this.config),group_understanding:{version:1,last:this.lastGroupUnderstanding||null},group_participation:{...this.participation.state(this.config),...(includeConfig?{effective:this.participationPolicy()}: {})},...(includeConfig?{persona_suggestion:DEFAULT_PERSONA}:{}), group_sender_policy: this.config.backend === 'api' ? this.config.group_member_policy : 'owner_only',
       input_mentions_version:1,chat_display_version:1,structured_mentions_version:1,message_format_version: 2, private_input_policy: this.config.private_local_review ? 'local_review' : 'ordinary_text',
-      streaming_version: 2, vision_version:6,vision_followup_version:1,vision_privacy_version:2,conversation_order_version:2,queue_policy_version:2,group_context_version:2,persona_version:2,name_trigger_version:1,capabilities: {text:true,image:visionEnabled(this.config),sticker:visionEnabled(this.config),animated_image:'static_frame',face:'metadata_only',audio:false,video:false,image_outbound_enabled:visionEnabled(this.config)},vision_recent:this.recentVisionImages.state(),
+      streaming_version: 2, vision_version:7,vision_binding_version:2,vision_followup_version:1,vision_privacy_version:2,conversation_order_version:2,queue_policy_version:2,group_context_version:2,persona_version:2,name_trigger_version:1,capabilities: {text:true,image:visionEnabled(this.config),sticker:visionEnabled(this.config),image_route_available:visionTarget(this.config),image_max_count:visionLimits(this.config).vision_max_images,image_verified_count:visionVerifiedImages(this.config),image_format:visionFormat(this.config),image_limits:visionLimits(this.config),animated_image:'static_frame',face:'metadata_only',audio:false,video:false,image_outbound_enabled:visionEnabled(this.config)},vision_recent:this.recentVisionImages.state(),
       vision_verification:this.visionVerification?{...this.visionVerification}:null,
       local_review: {enabled:this.config.private_local_review,...this.localReviewer.state()},
       ...(includeConfig ? { self_messages_reported: typeof this.app.client?.config?.report_self === 'boolean' ? this.app.client.config.report_self : null,
@@ -106,6 +106,7 @@ export class AIChat {
   async configureContextPermission(input){if(!input||Object.keys(input).sort().join()!=='enabled,expected_base'||typeof input.enabled!=='boolean'||input.expected_base!==this.config.api_base_url||this.config.backend!=='api')throw new AIError('context_recipient_changed');if(this.personaSaving||this.draftSaving)throw new AIError('configuration_busy');const next=validateAISettings({...this.config,group_context_export:input.enabled,group_context_target:input.enabled?input.expected_base:''});this.personaSaving=true;try{this.reset();await this.settingsFile.write(next);this.config=next;return this.state();}catch{throw new AIError('settings_save_failed');}finally{this.personaSaving=false;this.kick();}}
   day() { const parts=new Intl.DateTimeFormat('en-CA',{timeZone:this.config.daily_reset_timezone||'UTC',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(this.now());const get=type=>parts.find(v=>v.type===type).value;return get('year')+'-'+get('month')+'-'+get('day'); }
   credentialsChanged() {
+    this.visionVerification=null;
     this.reset(); this.blocked = this.unresolvedPrivateHolds.length>0; this.error = this.unresolvedPrivateHolds.length?'private_hold_migration_pending':'';this.rateLimitRecovery=null;this.rateLimitRecoveryCount=0;
     if (this.config.enabled) { this.config.enabled = false; void this.settingsFile.write(this.config).catch(() => { this.error = 'settings_save_failed'; }); }
   }
@@ -134,32 +135,62 @@ export class AIChat {
     let next;try{next=validateAISettings({...this.config,group_context_export:input.enabled,group_context_target:input.enabled?input.expected_base:'',group_cache_limit:input.limit,group_cache_ttl_minutes:input.ttl_minutes,group_context_chars:input.max_chars});}catch(error){if(error instanceof SettingsFieldError)throw error;throw new AIError('invalid_ai_settings');}
     this.reset();await this.settingsFile.write(next);this.config=next;return this.state();
   }
-  async testVision(){
+  async testVision(input={}){
     if(!visionTarget(this.config))throw new AIError('vision_model_unsupported');
-    if(this.testController||this.active||this.queue.length||this.outbox.snapshot().pending)throw new AIError('generation_in_progress');
-    const controller=new AbortController();this.testController=controller;this.visionVerification=null;
-    const config={...this.config,instructions:'Read only the supplied synthetic image. Return exactly the requested four color names. No tools.',output_chars:500},probe=makeVisionProbe(),diagnosticId=this.diagnostics.begin('test',config);
-    try{await this.reserveBudget();const reply=await this.provider.generate(config,[],probe.prompt,controller.signal,p=>this.diagnostics.progress('test',diagnosticId,p),{image:probe.image});
-      const words=reply.toLowerCase().match(/\b(?:red|green|blue|yellow)\b/g)||[],supported=words.join(' ')===probe.expected;
-      this.visionVerification={supported,base:config.api_base_url,model:config.api_model,protocol:'chat_completions_image_url_data_url',checkedAt:this.now()};
-      await this.diagnostics.finish('test',diagnosticId,{status:supported?'completed':'failed',errorCode:supported?'':'vision_probe_mismatch'});
-      return{...this.visionVerification,errorCode:supported?'':'vision_probe_mismatch',qqMessages:0,syntheticImageOnly:true};
-    }catch(error){await this.diagnostics.finish('test',diagnosticId,{status:'failed',errorCode:publicAIError(error),...(error.status?{httpStatus:error.status}:{})});throw error;}finally{probe.image.dataURL='';this.testController=null;this.kick();}
+    if(this.testController||this.active||this.queue.length||this.outbox.snapshot().pending||this.personaSaving||this.draftSaving)throw new AIError('generation_in_progress');
+    if(!input||typeof input!=='object'||Array.isArray(input)||Object.keys(input).some(k=>!['test_id','expected_base','expected_model','expected_format','target'].includes(k)))throw new AIError('invalid_ai_settings');
+    for(const [key,field]of [['expected_base','api_base_url'],['expected_model','api_model'],['expected_format','api_format']])if(input[key]!==undefined&&input[key]!==this.config[field])throw new AIError('vision_target_changed');
+    const operationId=input.test_id??randomUUID();if(typeof operationId!=='string'||!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(operationId))throw new AIError('invalid_ai_settings');
+    const limits=visionLimits(this.config),seconds=Math.min(limits.vision_request_timeout_seconds,this.config.timeout_seconds);
+    if(input.target!==undefined&&(!input.target||typeof input.target!=='object'||Array.isArray(input.target)||Object.keys(input.target).join()!=='timeout_seconds'||input.target.timeout_seconds!==seconds))throw new AIError('vision_target_changed');
+    const controller=new AbortController(),generation=this.generation,began=this.now();this.testController=controller;this.testOperationId=operationId;this.visionVerification=null;
+    const config={...this.config,timeout_seconds:seconds,instructions:'Read only the supplied synthetic images. Return only the requested color names in image order. No tools.',output_chars:Math.max(500,limits.vision_max_images*40)},probes=Array.from({length:limits.vision_max_images},()=>makeVisionProbe());
+    const diagnosticId=this.diagnostics.begin('test',config),deadline=setTimeout(()=>controller.abort(new AIError('request_timeout')),seconds*1000);
+    const current=()=>!controller.signal.aborted&&this.testController===controller&&generation===this.generation&&sameVisionBinding(visionBinding(config),this.config);
+    const result=(ok,errorCode='')=>{const record=this.diagnostics.state().test;return{ok,supported:ok,test_id:operationId,...visionBinding(config),imageCount:probes.length,elapsed_ms:Math.max(0,this.now()-began),phase:record?.phase||'preparing',http_status:record?.httpStatus??null,error_code:errorCode,errorCode,qqMessages:0,syntheticImageOnly:true,saved:false,upstream_cancel_confirmed:false};};
+    try{
+      this.diagnostics.progress('test',diagnosticId,{phase:'budget',visionRequested:true,imageCount:probes.length});
+      await withAbort(this.reserveBudget(),controller.signal);controller.signal.throwIfAborted();
+      const prompt='For each supplied image, in the supplied image order, name its four solid-color quadrants: top-left, top-right, bottom-left, bottom-right. Reply only with all '+(probes.length*4)+' lowercase color names separated by spaces. Use only red, green, blue, yellow.';
+      const reply=await withAbort(this.provider.generate(config,[],prompt,controller.signal,p=>{if(current())this.diagnostics.progress('test',diagnosticId,p);},{images:probes.map(p=>p.image),visionProbe:true}),controller.signal);
+      if(!current())throw new AIError('test_cancelled');
+      const supported=reply.trim().toLowerCase().split(/\s+/).join(' ')===probes.map(p=>p.expected).join(' ');
+      const verification={supported,...visionBinding(config),protocol:config.api_format==='responses'?'responses_input_image_data_url':'chat_completions_image_url_data_url',imageCount:probes.length,checkedAt:this.now()};
+      await withAbort(this.diagnostics.finish('test',diagnosticId,{status:supported?'completed':'failed',phase:'completed',errorCode:supported?'':'vision_probe_mismatch'}),controller.signal);
+      if(!current())throw new AIError('test_cancelled');this.visionVerification=verification;
+      return{...result(supported,supported?'':'vision_probe_mismatch'),...verification};
+    }catch(error){if(controller.signal.aborted)error=controller.signal.reason?.code==='request_timeout'?controller.signal.reason:new AIError('test_cancelled');const code=publicAIError(error),finished=this.diagnostics.finish('test',diagnosticId,{status:controller.signal.aborted?'cancelled':'failed',errorCode:code,...(error.status?{httpStatus:error.status}:{})});void finished.catch(()=>{});if(!controller.signal.aborted)await withAbort(finished,controller.signal).catch(()=>{});return result(false,code);}
+    finally{clearTimeout(deadline);for(const p of probes)p.image.dataURL='';if(this.testController===controller){this.testController=null;this.testOperationId=null;}this.kick();}
+  }
+  visionProofPatch(config=this.config,{fresh=false}={}){
+    if(!fresh&&visionEnabled(this.config)&&sameVisionBinding(visionBinding(this.config),config)&&visionLimits(config).vision_max_images<=visionVerifiedImages(this.config))return{vision_target:this.config.vision_target,vision_model:this.config.vision_model,vision_format:visionFormat(this.config),vision_verified_images:visionVerifiedImages(this.config),vision_verified_at:this.config.vision_verified_at};
+    const proof=this.visionVerification;
+    if(!proof?.supported||!visionTarget(config)||!sameVisionBinding(proof,config)||this.now()-proof.checkedAt<0||this.now()-proof.checkedAt>1800000||(proof.imageCount??(proof.protocol==='chat_completions_image_url_data_url'?1:0))<visionLimits(config).vision_max_images)throw new AIError('vision_not_verified');
+    return{vision_target:config.api_base_url,vision_model:config.api_model,vision_format:config.api_format,vision_verified_images:proof.imageCount??1,vision_verified_at:proof.checkedAt};
+  }
+  async configureVisionLimits(input){
+    if(!input||Object.keys(input).length!==VISION_LIMIT_FIELDS.length||Object.keys(input).some(k=>!VISION_LIMIT_FIELDS.includes(k)))throw new AIError('invalid_ai_settings');
+    if(this.personaSaving||this.draftSaving||this.testController||this.active||this.queue.length||this.outbox.snapshot().pending)throw new AIError('configuration_busy');
+    const candidate={...this.config,...input},invalidates=visionLimits(candidate).vision_max_images>visionVerifiedImages(this.config);
+    if(invalidates)Object.assign(candidate,{vision_enabled:false,vision_reference_enabled:false,vision_recent_enabled:false});
+    const next=validateAISettings(candidate);this.personaSaving=true;
+    try{await this.settingsFile.write(next);this.reset();this.config=next;this.visionVerification=null;return this.state();}
+    catch(error){if(error instanceof SettingsFieldError)throw error;throw new AIError('settings_save_failed');}
+    finally{this.personaSaving=false;this.kick();}
   }
   async configureVisionSettings(input){
-    const fields=['vision_enabled','vision_reference_enabled','vision_recent_enabled'];if(!input||Object.keys(input).length!==3||Object.keys(input).some(k=>!fields.includes(k))||fields.some(k=>typeof input[k]!=='boolean'))throw new AIError('invalid_ai_settings');if(this.personaSaving||this.draftSaving)throw new AIError('configuration_busy');
-    if(input.vision_enabled){const v=this.visionVerification;if(!visionEnabled(this.config)&&(!v?.supported||!visionTarget(this.config)||v.base!==this.config.api_base_url||v.model!==this.config.api_model||this.now()-v.checkedAt>1800000))throw new AIError('vision_not_verified');}
-    const enabled=input.vision_enabled,v=this.visionVerification,next=validateAISettings({...this.config,...input,...(!enabled?{vision_reference_enabled:false,vision_recent_enabled:false}:{vision_target:VISION_BASE,vision_model:VISION_MODEL,vision_verified_at:visionEnabled(this.config)?this.config.vision_verified_at:v.checkedAt})});this.personaSaving=true;
+    const fields=['vision_enabled','vision_reference_enabled','vision_recent_enabled'];if(!input||Object.keys(input).length!==3||Object.keys(input).some(k=>!fields.includes(k))||fields.some(k=>typeof input[k]!=='boolean'))throw new AIError('invalid_ai_settings');if(this.personaSaving||this.draftSaving||this.testController||this.active||this.queue.length||this.outbox.snapshot().pending)throw new AIError('configuration_busy');
+    const enabled=input.vision_enabled,next=validateAISettings({...this.config,...input,...(!enabled?{vision_reference_enabled:false,vision_recent_enabled:false}:this.visionProofPatch())});this.personaSaving=true;
     try{this.reset();await this.settingsFile.write(next);this.config=next;return this.state();}catch{throw new AIError('settings_save_failed');}finally{this.personaSaving=false;this.kick();}
   }
   async configureVision(input){
     if(input.enabled!==true)throw new AIError('invalid_ai_settings');
-    const v=this.visionVerification;if(!v?.supported||!visionTarget(this.config)||v.base!==this.config.api_base_url||v.model!==this.config.api_model||this.now()-v.checkedAt>1800000)throw new AIError('vision_not_verified');
+    const proof=this.visionProofPatch(this.config,{fresh:true});
     if(this.active||this.queue.length||this.outbox.snapshot().pending)throw new AIError('generation_in_progress');
-    const next=validateAISettings({...this.config,vision_enabled:true,vision_target:VISION_BASE,vision_model:VISION_MODEL,vision_verified_at:v.checkedAt});this.reset();await this.settingsFile.write(next);this.config=next;return this.state();
+    const next=validateAISettings({...this.config,vision_enabled:true,...proof});this.reset();await this.settingsFile.write(next);this.config=next;return this.state();
   }
   async configureVisionScope(input){
-    if(!visionEnabled(this.config)||input.expected_base!==this.config.api_base_url||input.expected_model!==this.config.api_model||input.references!==true||input.recent!==true)throw new AIError('vision_not_verified');
+    if(!visionEnabled(this.config)||input.expected_base!==this.config.api_base_url||input.expected_model!==this.config.api_model||input.expected_format!==undefined&&input.expected_format!==this.config.api_format||input.references!==true||input.recent!==true)throw new AIError('vision_not_verified');
     if(this.active||this.queue.length||this.outbox.snapshot().pending||this.testController)throw new AIError('generation_in_progress');
     const next=validateAISettings({...this.config,vision_reference_enabled:true,vision_recent_enabled:true});this.reset();await this.settingsFile.write(next);this.config=next;return this.state();
   }
@@ -194,7 +225,11 @@ export class AIChat {
   async configureRuntime(input){const result=await this.saveSettingsSection(input,RUNTIME_FIELDS,patch=>{const next=validateAISettings({...this.config,...patch});return Object.fromEntries(Object.keys(patch).map(k=>[k,next[k]]));},{reset:false});this.privateArchive.configure(this.config);if(this.rateLimitRecovery){const old=this.rateLimitRecovery;this.rateLimitRecovery=temporaryCooldown({status:429,rateLimitKind:'temporary',retryAfterSeconds:old.retryAfterSeconds??old.seconds},Math.max(0,this.rateLimitRecoveryCount-1),old.startedAt??this.now(),this.generation,this.config);}this.outbox.byteLimit=this.config.delivery_byte_limit;this.outbox.configure(this.config.delivery_limit,this.config.delivery_ttl_minutes*60000);return this.state();}
   async configure(input) {
     if(this.personaSaving)throw new AIError('configuration_busy');
-    let config; try { config = validateAISettings({...this.config,...input}); } catch(error){if(error instanceof SettingsFieldError)throw error;throw new AIError('invalid_ai_settings');}
+    const merged={...this.config,...input},targetChanged=['backend','api_base_url','api_format','api_model'].some(k=>merged[k]!==this.config[k]);
+    if(targetChanged)Object.assign(merged,{vision_enabled:false,vision_reference_enabled:false,vision_recent_enabled:false,vision_target:'',vision_model:'',vision_format:'',vision_verified_images:0,vision_verified_at:0});
+    else if(merged.vision_enabled)Object.assign(merged,this.visionProofPatch(merged));
+    let config; try { config = validateAISettings(merged); } catch(error){if(error instanceof SettingsFieldError)throw error;throw new AIError('invalid_ai_settings');}
+    if(targetChanged)this.visionVerification=null;
     if (config.enabled) {
       if(this.unresolvedPrivateHolds.length)throw new AIError('private_hold_migration_pending');
       if (!this.app.connected || !this.app.onlineConfirmed || !this.app.selfId) throw new AIError('qq_verification_required');
@@ -403,7 +438,7 @@ export class AIChat {
     const visionRequest=visualCapability&&images.length>0||explicitImageCandidate||!knownTextReply&&(wantsVision(text)||contextualIntent||bareMedia||visualTask||visualDescription)&&(recentContext||/识图|照片|图片|图中|图里|这张|这图|表情/u.test(text));
     if(images.length&&!visionRequest)return reject('unsupported_message');
     if(!visionRequest&&(replies.length>1||replies.some(s=>!this.knownReply(e,s.data?.id))))return reject('reply_not_in_conversation');
-    if(bareMedia)text='请描述本次发送的这张图片或表情包；只说明能从图中确认的内容。';
+    if(bareMedia)text=images.length>1?'请按发送顺序描述本次发送的这些图片；只说明能从图中确认的内容。':'请描述本次发送的这张图片或表情包；只说明能从图中确认的内容。';
     if(faces)text=(text?text+'\n':'')+faces;
     const inputContext=buildInputMentions(e,inputMentionData,this.config,this.groupContext,this.inputSnapshots.get(event)?.groupSequence??this.groupContext.sequence).context;
     lengths.inputChars=withInputMentions(text,inputContext).length;this.inputDiagnostics.note(event,null,lengths);
@@ -411,12 +446,12 @@ export class AIChat {
     if(lengths.inputChars>this.config.input_chars)return reject('input_too_long');
     let visionError='',visionSelection=null,imageInput=null;if(visionRequest){if(!Number.isSafeInteger(event.time)||event.time*1000<Math.floor(this.privateLiveSince/1000)*1000||event.time*1000<this.now()-10000||event.time*1000>this.now()+5000||event.from_history||event.message_source==='history')return reject('vision_not_new');
       if(!visionEnabled(this.config))visionError='vision_not_verified';
-      else if(images.length===1&&!replies.length){imageInput=structuredClone(images[0].data);visionSelection={kind:'current',sourceId:e.message_id,sourceAt:event.time*1000};}
+      else if(images.length&&!replies.length){if(images.length>visionLimits(this.config).vision_max_images)visionError='vision_image_count_exceeded';else{imageInput=images.map(v=>structuredClone(v.data));visionSelection={kind:'current',sourceId:e.message_id,sourceAt:event.time*1000};}}
       else if(!images.length&&replies.length===1&&this.config.vision_reference_enabled){const reference=id(replies[0].data?.id);if(reference===null)visionError='vision_reference_scope_unknown';else visionSelection={kind:'reference',messageId:reference};}
       else if(!images.length&&!replies.length&&this.config.vision_recent_enabled){try{visionSelection={kind:'recent',...this.recentVisionImages.recent(e,this.config,imageSequence)};}catch(error){visionError=error.code||'vision_no_recent_image';}}
       else visionError=images.length>1||images.length&&replies.length?'vision_image_ambiguous':'vision_current_image_only';
     }
-    return { e, prompt: text,inputMentionData, command: directPrivate ? false : command, directPrivate,visionRequest,visionError,visionSelection,imageInput,contextSourceKey,replyTo:replies.length===1?id(replies[0].data?.id):null,visionTask:visualTask?'solve':'recognize',provisionalImage:bareMedia&&images.length===1,lengths };
+    return { e, prompt: text,inputMentionData, command: directPrivate ? false : command, directPrivate,visionRequest,visionError,visionSelection,imageInput,contextSourceKey,replyTo:replies.length===1?id(replies[0].data?.id):null,visionTask:visualTask?'solve':'recognize',provisionalImage:bareMedia&&images.length>0,lengths };
   }
   holdPrivate(e, reason) {
     const key = e.self_id + ':' + e.peer_id; let hold = this.privateHolds.get(key);
@@ -657,15 +692,16 @@ export class AIChat {
       if (!this.privatePayload(job).allowed) {if(job.inputRejected)await this.groupInputFeedback(job,'group_input_rejected');return;}
       if(!diagnosticId){diagnosticId=this.diagnostics.begin('generation',job.config);job.diagnosticId=diagnosticId;}
       if(job.visionRequest){if(job.visionError)throw new AIError(job.visionError);let selection=job.visionSelection;
-        if(selection?.kind==='reference'){if(this.tombstones.has(keyOf({...job.e,message_id:selection.messageId})))throw new AIError('vision_reference_unavailable');this.diagnostics.progress('generation',diagnosticId,{phase:'image_reference'});const api=this.app.client||this.app.latestEventApi;selection=await resolveVisionReference(job.e,selection.messageId,job.config,this.recentVisionImages,api,job.controller.signal,this.now);if(api!==(this.app.client||this.app.latestEventApi)||!this.valid(job))return;job.imageInput=selection.input;}
-        else if(selection?.kind==='recent'){if(job.config.context_ttl_minutes>0&&this.now()-selection.sourceAt>job.config.context_ttl_minutes*60000)throw new AIError('vision_no_recent_image');job.imageInput=selection.input;}
+        job.visionSignal=AbortSignal.any([job.controller.signal,AbortSignal.timeout(Math.min(job.config.timeout_seconds,visionLimits(job.config).vision_request_timeout_seconds)*1000)]);
+        if(selection?.kind==='reference'){if(this.tombstones.has(keyOf({...job.e,message_id:selection.messageId})))throw new AIError('vision_reference_unavailable');this.diagnostics.progress('generation',diagnosticId,{phase:'image_reference'});const api=this.app.client||this.app.latestEventApi;selection=await resolveVisionReference(job.e,selection.messageId,job.config,this.recentVisionImages,api,job.visionSignal,this.now);if(api!==(this.app.client||this.app.latestEventApi)||!this.valid(job))return;job.imageInput=selection.inputs??[selection.input];}
+        else if(selection?.kind==='recent'){if(job.config.context_ttl_minutes>0&&this.now()-selection.sourceAt>job.config.context_ttl_minutes*60000)throw new AIError('vision_no_recent_image');job.imageInput=selection.inputs??[selection.input];}
         if(job.e.conversation_type==='private'&&this.privateArchiveFreshSince&&selection?.sourceAt<this.privateArchiveFreshSince)throw new AIError('vision_reference_before_private_epoch');
         if(selection?.sourceId)job.visionSourceKey=keyOf({...job.e,message_id:selection.sourceId});if(!this.valid(job))return;
-        this.diagnostics.progress('generation',diagnosticId,{phase:'image_download'});job.image=await prepareVisionImage(job.imageInput,job.controller.signal,this.imageFetcher);job.imageInput=null;this.diagnostics.progress('generation',diagnosticId,{visionSelection:job.visionSelection?.kind||null,imageMime:job.image.mime,imageBytes:job.image.bytes,imageStaticFrame:job.image.animation==='static_frame'});if(!this.valid(job))return;}
+        this.diagnostics.progress('generation',diagnosticId,{phase:'image_download'});job.images=await prepareVisionImages(job.imageInput,job.visionSignal,this.imageFetcher,job.config);job.image=job.images[0];job.imageInput=null;this.diagnostics.progress('generation',diagnosticId,{visionSelection:job.visionSelection?.kind||null,imageCount:job.images.length,imageTotalBytes:job.images.reduce((n,v)=>n+v.bytes,0),imageMime:job.image.mime,imageBytes:job.image.bytes,imageStaticFrame:job.images.some(v=>v.animation==='static_frame')});if(!this.valid(job))return;}
       this.diagnostics.progress('generation',diagnosticId,{phase:'budget'});
-      await this.reserveBudget(); if (!this.valid(job) || !this.app.connected || !this.app.onlineConfirmed) return;
+      await (job.visionRequest?withAbort(this.reserveBudget(),job.visionSignal):this.reserveBudget()); if (!this.valid(job) || !this.app.connected || !this.app.onlineConfirmed) return;
       const payload = this.privatePayload(job); if (!payload.allowed || !this.valid(job)) {if(job.inputRejected)await this.groupInputFeedback(job,'group_input_rejected');return;}
-      if(job.image?.animation==='static_frame')job.config.instructions+='\n本次输入是动图的静态封面/第一帧，只能分析这一帧，不得声称看过完整动画或推断未见动作。';
+      if(job.images?.some(v=>v.animation==='static_frame'))job.config.instructions+='\n本次动图输入仅提供静态封面/第一帧，只能分析这一帧，不得声称看过完整动画或推断未见动作。';
       if(job.visionTask==='solve')job.config.instructions+='\n用户要求解答图中题目。优先给出简洁完整的解法、关键步骤和必要代码，不要仅描述网页布局、标题或链接；控制篇幅，尊重当前输出上限。';
       if(!job.visionRequest)job.config.instructions+='\n本次只提供文字，没有当前图片输入；不得声称已查看本次图片，可依据已有文字解释。';
       this.diagnostics.progress('generation',diagnosticId,{historyMessages:payload.history.length,visionRequested:job.visionRequest});
@@ -673,8 +709,8 @@ export class AIChat {
       job.mentionTargets=[...(job.mentionTargets||[]),...input.targets.filter(v=>!(job.mentionTargets||[]).some(t=>t.id===v.id))];
       payload.prompt=withInputMentions(payload.prompt,input.context);
       job.config.instructions+=mentionInstructions(job);
-      const generation=this.provider.generate(job.config, payload.history, payload.prompt, job.controller.signal,progress=>this.diagnostics.progress('generation',diagnosticId,progress),job.image?{image:job.image}:{requestId:job.key,...(job.participation?{outputTokenCeiling:job.config.participation_output_tokens,timeoutCeilingSeconds:job.config.participation_timeout_seconds,maxModelCalls:job.config.participation_max_model_calls,beforeSubmit:async()=>{if(!this.valid(job)){job.controller.abort();throw new AIError('cancelled');}return this.participation.modelPrepared(job.participationAttemptId,job.config);},onSubmitted:submission=>this.participation.modelInvoked(job.participationAttemptId,submission),onNotSubmitted:submission=>this.participation.modelNotSubmitted(job.participationAttemptId,submission)}:{})});
-      const rawReply = await (job.participation?abortableResult(generation,job.controller.signal):generation);
+      const generation=this.provider.generate(job.config, payload.history, payload.prompt, job.visionSignal??job.controller.signal,progress=>{if(this.valid(job)&&!job.visionSignal?.aborted)this.diagnostics.progress('generation',diagnosticId,progress);},job.images?.length?(job.images.length===1?{image:job.images[0]}:{images:job.images}):{requestId:job.key,...(job.participation?{outputTokenCeiling:job.config.participation_output_tokens,timeoutCeilingSeconds:job.config.participation_timeout_seconds,maxModelCalls:job.config.participation_max_model_calls,beforeSubmit:async()=>{if(!this.valid(job)){job.controller.abort();throw new AIError('cancelled');}return this.participation.modelPrepared(job.participationAttemptId,job.config);},onSubmitted:submission=>this.participation.modelInvoked(job.participationAttemptId,submission),onNotSubmitted:submission=>this.participation.modelNotSubmitted(job.participationAttemptId,submission)}:{})});
+      const rawReply = await (job.visionRequest?withAbort(generation,job.visionSignal):job.participation?abortableResult(generation,job.controller.signal):generation);
       const decoded=decodeChatReply(rawReply,job),text=decoded.text;
       if (!this.valid(job)) return;
       if(job.participation&&text.trim().startsWith(PARTICIPATION_SKIP)){this.participation.counts.declined++;this.participation.lastReason='model_declined';await this.diagnostics.finish('generation',diagnosticId,{status:'cancelled',phase:'completed',errorCode:'participation_declined'});return;}
@@ -685,6 +721,7 @@ export class AIChat {
       await this.outbox.enqueue({ ...job, selfId: job.e.self_id, type: job.e.conversation_type, peerId: job.e.peer_id,
         authorId: job.e.user_id, isSelf: job.e.user_id === job.e.self_id, message: qqOutput.message });
     } catch (error) {
+      if(job.visionSignal?.aborted&&!job.controller.signal.aborted)error=new AIError('vision_request_timeout');
       if (!this.valid(job) || job.controller.signal.aborted) return;
       const priorBlock=this.blocked?this.error:'',failureCode=publicAIError(error);this.error=priorBlock&&priorBlock!=='rate_limit_exceeded'?priorBlock:failureCode;this.counts.failed++;
       if(diagnosticId)await this.diagnostics.finish('generation',diagnosticId,{status:'failed',errorCode:failureCode,...(error.status?{httpStatus:error.status}:{}),...(error.imageHTTPStatus?{imageHTTPStatus:error.imageHTTPStatus}:{}),...(error.privacyStage?{privacyStage:error.privacyStage,privacyReason:error.privacyReason}:{}),...(error.rateLimitKind?{rateLimitKind:error.rateLimitKind,retryAfterSeconds:error.retryAfterSeconds}:{})});
@@ -693,7 +730,7 @@ export class AIChat {
       // Failed generation/location stays local; never enqueue an error as a chat answer.
       this.inputStats.silent_failures=(this.inputStats.silent_failures||0)+1;
       if (job.config.backend === 'chatgpt' && error?.status === 401 && this.error === 'invalid_user') await this.auth.invalidate(job.config.active_profile);
-    } finally {if(job.participation)await this.participation.finish(job.participationAttemptId,job.cancelled?'cancelled':'finished');if(job.image)job.image.dataURL='';job.image=null;job.imageInput=null;job.visionSelection=null;if(diagnosticId&&(this.diagnostics.recent.find(r=>r.id===diagnosticId)||this.diagnostics.records.generation)?.status==='running')await this.diagnostics.finish('generation',diagnosticId,{status:'cancelled',errorCode:'cancelled'});}
+    } finally {if(job.participation)await this.participation.finish(job.participationAttemptId,job.cancelled?'cancelled':'finished');for(const image of job.images??[])image.dataURL='';job.images=null;job.image=null;job.imageInput=null;job.visionSelection=null;if(diagnosticId&&(this.diagnostics.recent.find(r=>r.id===diagnosticId)||this.diagnostics.records.generation)?.status==='running')await this.diagnostics.finish('generation',diagnosticId,{status:'cancelled',errorCode:'cancelled'});}
   }
   async groupInputFeedback(job,code){if(this.valid(job))this.inputStats.local_feedback_suppressed=(this.inputStats.local_feedback_suppressed||0)+1;}
   draftAPIConfig(input) {

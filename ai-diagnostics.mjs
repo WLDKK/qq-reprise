@@ -1,4 +1,5 @@
 import { NETWORK_ERRORS } from './ai-network.mjs';
+import { VISION_ERRORS } from './ai-vision.mjs';
 import { join } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { JsonFile } from './ai-storage.mjs';
@@ -9,6 +10,7 @@ const finishes=new Set(['stop','length','tool_calls','function_call','content_fi
 const localErrors=new Set(['api_key_required','model_required','generation_incomplete','generation_failed','stream_interrupted','stream_required','stream_missing','stream_json_invalid','stream_event_too_large','stream_too_large','output_character_limit','empty_response','tools_not_supported','cancelled','test_cancelled','cancelled_or_timeout','api_backend_required','test_in_progress','generation_in_progress','unexpected_test_reply','daily_request_limit','network_or_provider_error','network_dns_error','network_connection_refused','network_connection_lost','network_timeout','tls_verification_failed','secure_storage_invalid','secure_storage_unavailable','interrupted_by_restart','invalid_upstream_response']);
 for (const code of ['api_credential_target_mismatch','api_credential_selection_required','api_credential_target_required','api_credential_changed','api_draft_required','invalid_ai_settings','configuration_busy']) localErrors.add(code);
 for(const code of NETWORK_ERRORS)localErrors.add(code);
+for(const code of VISION_ERRORS)localErrors.add(code);
 localErrors.add('request_timeout');
 localErrors.add('qq_delivery_uncertain');localErrors.add('qq_not_submitted');
 localErrors.add('group_input_rejected');
@@ -70,7 +72,7 @@ export class AIDiagnostics {
     privacyStage:['input','output'].includes(value.privacyStage)?value.privacyStage:null,privacyReason:['credentials','identity','format','length','health','finance','contact_location','personal_sensitive','confidential','unreviewed'].includes(value.privacyReason)?value.privacyReason:null,
     ...Object.fromEntries(INPUT_LENGTH_FIELDS.map(key=>[key,Number.isSafeInteger(value[key])&&value[key]>=0?value[key]:null])),
     imageHTTPStatus:Number.isInteger(value.imageHTTPStatus)&&value.imageHTTPStatus>=100&&value.imageHTTPStatus<=599?value.imageHTTPStatus:null,
-    imageMime:['image/png','image/jpeg','image/webp'].includes(value.imageMime)?value.imageMime:null,imageBytes:bounded(value.imageBytes,5242880),imageStaticFrame:value.imageStaticFrame===true,
+    imageMime:['image/png','image/jpeg','image/webp'].includes(value.imageMime)?value.imageMime:null,imageBytes:bounded(value.imageBytes,5242880),imageCount:bounded(value.imageCount,8),imageTotalBytes:bounded(value.imageTotalBytes,20971520),imageStaticFrame:value.imageStaticFrame===true,
     finishReason:finishes.has(value.finishReason)?value.finishReason:null,outputChars:Number.isSafeInteger(value.outputChars)&&value.outputChars>=0?Math.min(value.outputChars,12000):0,
     outputTokenMode:['custom','platform_default','chatgpt_managed'].includes(value.outputTokenMode)?value.outputTokenMode:value.backend==='chatgpt'?'chatgpt_managed':'custom',
     outputTokenLimit:['platform_default','chatgpt_managed'].includes(value.outputTokenMode)||value.backend==='chatgpt'?null:Number.isSafeInteger(value.outputTokenLimit)&&value.outputTokenLimit>=0?value.outputTokenLimit:0,

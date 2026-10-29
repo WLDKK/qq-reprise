@@ -92,3 +92,7 @@ Copy-Item -LiteralPath 'examples\ai-settings.example.json' -Destination 'ai-sett
 ## 单独配置 AI 网络
 
 浏览器可访问供应商不等于助手进程使用了相同代理。不要把代理地址填进 API Base URL。在本机页面选择独立的 AI 网络方式，先用合成草稿测试，再按需单独保存；默认不会更换原路由。匿名示例为 [ai-network.example.json](../examples/ai-network.example.json)，保持旧行为且没有代理地址。详细步骤见 [AI 网络与测试](AI-NETWORK-AND-TEST.md)。
+
+## 可选：接入自己模型的识图能力
+
+先完成普通 API 的合法配置，再按 [通用识图步骤](GENERIC-VISION.md)保存图片限制、验证已保存的图文目标，并单独开启所需图片范围。选择 Responses 不会自动获得模型视觉权限；合成验证可能计费，不要在未知状态连续点击。只有另行获准的真实测试会话才用于 QQ 图片联调。公开安装默认不外传图片，不附带任何视觉验证结论。

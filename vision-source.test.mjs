@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import{mkdtemp,rm,readFile,readdir}from'node:fs/promises';import{join}from'node:path';import{tmpdir}from'node:os';
-import{AIChat}from'./ai-chat.mjs';import{AI_DEFAULTS}from'./ai-config.mjs';import{MemorySecrets}from'./ai-storage.mjs';import{ResendQueue}from'./send-queue.mjs';import{apiBinding}from'./ai-api-draft.mjs';import{normalizeEvent}from'./engine.mjs';
+import{AIChat}from'./ai-chat.mjs';import{AI_DEFAULTS,validateAISettings}from'./ai-config.mjs';import{MemorySecrets}from'./ai-storage.mjs';import{ResendQueue}from'./send-queue.mjs';import{apiBinding}from'./ai-api-draft.mjs';import{normalizeEvent}from'./engine.mjs';
 import{RecentVisionImages,resolveVisionReference,makeVisionProbe,VISION_BASE,VISION_MODEL}from'./ai-vision.mjs';
 const until=async fn=>{for(let i=0;i<200;i++){if(fn())return;await new Promise(r=>setTimeout(r,5));}assert.fail('synthetic timeout');};
 const text=value=>({type:'text',data:{text:value}}),image=(n=1)=>({type:'image',data:{url:'https://gchat.qpic.cn/synthetic-'+n+'.png'}}),at={type:'at',data:{qq:90001}},reply=id=>({type:'reply',data:{id}});
@@ -9,7 +9,7 @@ const config=()=>({...structuredClone(AI_DEFAULTS),enabled:true,binding_qq:'9000
 async function fixture(t,options={}){
   const dir=await mkdtemp(join(tmpdir(),'vision-source-mock-')),calls=[],sends=[],lookups=[],downloads=[];const png=Buffer.from(makeVisionProbe().image.dataURL.split(',')[1],'base64');
   const app={selfId:'90001',connected:true,onlineConfirmed:true,sendQueue:new ResendQueue({intervalMs:0,jitterMs:0}),client:{call:async(action,body)=>{if(action==='get_msg'){lookups.push(body);if(options.lookup)return options.lookup(body);throw new Error('No lookup expected');}sends.push({action,body});return{message_id:80000+sends.length};}}};
-  const ai=new AIChat({dir,app,secrets:new MemorySecrets(),imageFetcher:async(u)=>{downloads.push(u);return new Response(png);},provider:{generate:async(...args)=>{calls.push(args);return options.generate?options.generate(...args):'这是一张合成测试图。';}}});await ai.initialize();ai.config={...config(),...options.changes};ai.auth.meta.api_configured=true;ai.auth.meta.api_id='synthetic';ai.auth.meta.api_binding=apiBinding(ai.config);
+  const ai=new AIChat({dir,app,secrets:new MemorySecrets(),imageFetcher:async(u)=>{downloads.push(u);return new Response(png);},provider:{generate:async(...args)=>{calls.push(args);return options.generate?options.generate(...args):'这是一张合成测试图。';}}});await ai.initialize();ai.config=validateAISettings({...config(),...options.changes});ai.auth.meta.api_configured=true;ai.auth.meta.api_id='synthetic';ai.auth.meta.api_binding=apiBinding(ai.config);
   t.after(async()=>{ai.dispose();await ai.budgetTask.catch(()=>{});await ai.settingsFile.task.catch(()=>{});await ai.diagnostics.file.task.catch(()=>{});await rm(dir,{recursive:true,force:true});});return{ai,calls,sends,lookups,downloads,dir,offer:raw=>{ai.observe(raw);return ai.offer(raw);}};
 }
 test('photo followed by a natural same-person same-chat request uses one recent picture, never old caption',async t=>{

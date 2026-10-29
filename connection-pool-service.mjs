@@ -131,7 +131,7 @@ export class ConnectionPoolService extends AccountPoolService {
   main=requestCeilings(main,options);
   if(this.connectionLoadFailed)fail(this.error);
   if(!this.manager)return super.generate(main,history,prompt,signal,onProgress,options);
-  if(!this.manager.enabled||main.backend!=='api'||options.image||options.testReply||options.key||!options.requestId)return this.fallback.generate(main,history,prompt,signal,onProgress,options);
+   if(!this.manager.enabled||main.backend!=='api'||options.image||options.images||options.visionProbe||options.testReply||options.key||!options.requestId)return this.fallback.generate(main,history,prompt,signal,onProgress,options);
   try{
    this.assertReady(main);const tokenCeiling=Number.isSafeInteger(options.outputTokenCeiling)&&options.outputTokenCeiling>0?options.outputTokenCeiling:Infinity,timeoutCeiling=Number.isSafeInteger(options.timeoutCeilingSeconds)&&options.timeoutCeilingSeconds>0?options.timeoutCeilingSeconds:Infinity;const connections=this.selected().map(c=>({...c,maxOutputTokens:Math.min(c.maxOutputTokens,tokenCeiling),timeoutSeconds:Math.min(c.timeoutSeconds,timeoutCeiling)}));
    const inputBound=Buffer.byteLength(JSON.stringify([main.instructions,history,prompt]),'utf8')+2048,reservationTokens=Object.fromEntries(connections.map(c=>[c.id,inputBound+c.maxOutputTokens]));

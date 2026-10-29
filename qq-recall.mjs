@@ -977,7 +977,8 @@ export async function startApp(options = {}) {
           else if (request.url === '/api/ai/output-budget') await app.ai.configureOutputBudget(value);
           else if (request.url === '/api/ai/settings') await app.ai.configure(value);
           else if (request.url === '/api/ai/group-context') await app.ai.configureNearbyContext(value);
-          else if (request.url === '/api/ai/test-vision') return send(200,await app.ai.testVision());
+          else if (request.url === '/api/ai/test-vision') return send(200,await app.ai.testVision(value));
+          else if (request.url === '/api/ai/vision-limits') await app.ai.configureVisionLimits(value);
           else if (request.url === '/api/ai/vision-settings') await app.ai.configureVisionSettings(value);
           else if (request.url === '/api/ai/vision') await app.ai.configureVision(value);
           else if (request.url === '/api/ai/vision-scope') await app.ai.configureVisionScope(value);
