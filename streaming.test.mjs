@@ -36,7 +36,7 @@ test('a fetcher that ignores AbortSignal cannot hold a request or trigger an aut
 });
 test('length exhaustion remains an incomplete answer and records body/reasoning counts',async()=>{
   const patches=[],f=provider(()=>new Response(encode([{choices:[{index:0,delta:{reasoning_content:'synthetic-reason'}}]},content('partial'),{choices:[{index:0,delta:{},finish_reason:'length'}]}]),{headers:{'content-type':'text/event-stream'}}),{api_max_output_tokens:2048});
-  await assert.rejects(f.p.generate(f.config,[],'synthetic',undefined,p=>patches.push(p)),/generation_incomplete/);assert.equal(patches.at(-1).outputChars,7);assert.equal(patches.at(-1).reasoningChars,16);assert.equal(f.calls.length,1);assert.equal(JSON.parse(f.calls[0][1].body).max_tokens,2048);
+  await assert.rejects(f.p.generate(f.config,[],'synthetic',undefined,p=>patches.push(p)),/generation_incomplete/);assert.equal(patches.at(-1).outputChars,7);assert.equal(patches.at(-1).reasoningChars,16);assert.equal(f.calls.length,1);assert.equal(JSON.parse(f.calls[0][1].body).max_completion_tokens,2048);assert.equal(JSON.parse(f.calls[0][1].body).max_tokens,undefined);
 });
 test('AI timeout frees the conversation and permits the next ordinary text without retrying the old job',async t=>{
   const dir=await mkdtemp(join(tmpdir(),'stream-job-mock-')),secrets=new MemorySecrets(),sent=[];await secrets.setAPI('synthetic-key');let calls=0;

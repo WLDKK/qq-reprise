@@ -9,7 +9,8 @@
 | 打卡 v1 完整离线回归（历史） | 508 | 508 | 0 | 0 |
 | 调度 v2 完整离线回归（历史） | 534 | 534 | 0 | 0 |
 | 历史结果观察完整离线回归（历史） | 549 | 549 | 0 | 0 |
-| 当前候选完整离线回归 | 568 | 568 | 0 | 0 |
+| 中文上手候选完整离线回归（历史） | 568 | 568 | 0 | 0 |
+| 当前 AI 网络与测试修复完整离线回归 | 616 | 616 | 0 | 0 |
 
 ## 本次修复和测试调整
 
@@ -21,34 +22,37 @@ Windows健康测试曾把URL.pathname当文件路径，形成双盘符；仅改�
 
 | 文件 | 总数 | 通过 | 失败 | 跳过 |
 | --- | ---: | ---: | ---: | ---: |
-| `ai-api-draft.test.mjs` | 17 | 17 | 0 | 0 |
-| `ai-auth.test.mjs` | 21 | 21 | 0 | 0 |
-| `ai-chat.test.mjs` | 72 | 72 | 0 | 0 |
-| `ai-diagnostics.test.mjs` | 16 | 16 | 0 | 0 |
-| `ai-observability.test.mjs` | 15 | 15 | 0 | 0 |
-| `ai-providers.test.mjs` | 15 | 15 | 0 | 0 |
-| `anonymous-install.test.mjs` | 4 | 4 | 0 | 0 |
-| `backend-recovery.test.mjs` | 32 | 32 | 0 | 0 |
-| `cache.test.mjs` | 34 | 34 | 0 | 0 |
-| `chat-context.test.mjs` | 25 | 25 | 0 | 0 |
-| `competition-platform.test.mjs` | 15 | 15 | 0 | 0 |
-| `delivery-unknown.test.mjs` | 2 | 2 | 0 | 0 |
-| `environment-check.test.mjs` | 19 | 19 | 0 | 0 |
-| `features.test.mjs` | 57 | 57 | 0 | 0 |
-| `group-sign.test.mjs` | 47 | 47 | 0 | 0 |
-| `group-sign-integration.test.mjs` | 8 | 8 | 0 | 0 |
-| `group-sign-scheduling.test.mjs` | 10 | 10 | 0 | 0 |
-| `group-sign-precision.test.mjs` | 11 | 11 | 0 | 0 |
-| `packet-error.test.mjs` | 10 | 10 | 0 | 0 |
-| `packet-transport.test.mjs` | 5 | 5 | 0 | 0 |
-| `message-format.test.mjs` | 7 | 7 | 0 | 0 |
-| `outbox.test.mjs` | 24 | 24 | 0 | 0 |
-| `private-compat.test.mjs` | 2 | 2 | 0 | 0 |
-| `private-privacy.test.mjs` | 32 | 32 | 0 | 0 |
-| `stability.test.mjs` | 27 | 27 | 0 | 0 |
-| `streaming.test.mjs` | 10 | 10 | 0 | 0 |
-| `vision-source.test.mjs` | 17 | 17 | 0 | 0 |
-| `vision.test.mjs` | 14 | 14 | 0 | 0 |
+| ai-api-draft.test.mjs | 17 | 17 | 0 | 0 |
+| ai-auth.test.mjs | 21 | 21 | 0 | 0 |
+| ai-chat.test.mjs | 72 | 72 | 0 | 0 |
+| ai-diagnostics.test.mjs | 16 | 16 | 0 | 0 |
+| ai-network.test.mjs | 29 | 29 | 0 | 0 |
+| ai-observability.test.mjs | 15 | 15 | 0 | 0 |
+| ai-providers.test.mjs | 15 | 15 | 0 | 0 |
+| ai-test-lifecycle.test.mjs | 8 | 8 | 0 | 0 |
+| ai-test-ui.test.mjs | 11 | 11 | 0 | 0 |
+| anonymous-install.test.mjs | 4 | 4 | 0 | 0 |
+| backend-recovery.test.mjs | 32 | 32 | 0 | 0 |
+| cache.test.mjs | 34 | 34 | 0 | 0 |
+| chat-context.test.mjs | 25 | 25 | 0 | 0 |
+| competition-platform.test.mjs | 15 | 15 | 0 | 0 |
+| delivery-unknown.test.mjs | 2 | 2 | 0 | 0 |
+| environment-check.test.mjs | 19 | 19 | 0 | 0 |
+| features.test.mjs | 57 | 57 | 0 | 0 |
+| group-sign-integration.test.mjs | 8 | 8 | 0 | 0 |
+| group-sign-precision.test.mjs | 11 | 11 | 0 | 0 |
+| group-sign-scheduling.test.mjs | 10 | 10 | 0 | 0 |
+| group-sign.test.mjs | 47 | 47 | 0 | 0 |
+| message-format.test.mjs | 7 | 7 | 0 | 0 |
+| outbox.test.mjs | 24 | 24 | 0 | 0 |
+| packet-error.test.mjs | 10 | 10 | 0 | 0 |
+| packet-transport.test.mjs | 5 | 5 | 0 | 0 |
+| private-compat.test.mjs | 2 | 2 | 0 | 0 |
+| private-privacy.test.mjs | 32 | 32 | 0 | 0 |
+| stability.test.mjs | 27 | 27 | 0 | 0 |
+| streaming.test.mjs | 10 | 10 | 0 | 0 |
+| vision-source.test.mjs | 17 | 17 | 0 | 0 |
+| vision.test.mjs | 14 | 14 | 0 | 0 |
 
 ## 证据边界
 
@@ -95,3 +99,13 @@ Windows健康测试曾把URL.pathname当文件路径，形成双盘符；仅改�
 最终冻结候选完整568/568通过，零失败/跳过/取消/守卫拦截，测试期间源文件未变；包含原有549项，未删除或放宽旧断言。快速启动、版本说明、排查指南、匿名示例和本地文档链接另行核对。主程序、UI、打卡调度、AI策略与依赖本轮均未改；此前53项合成浏览器证据仍标为历史，没有伪称本轮重新执行。
 
 历史狭窄实机证据：维护者曾对单个已启用群的一次定时记录做只读核对，在UTC/本地业务日期对齐后正向确认本人当日记录；没有再次打卡。这不是跨群/版本矩阵、打卡排名或服务端精确时刻的证明，私人记录不随公开候选附带。本轮离线回归不访问真实QQ、模型或生产目录。
+
+## 2026-10-29：AI 网络与测试生命周期
+
+新增 29 项网络/协议与脱敏测试、11 项纯页面状态测试、8 项后端截止时间/取消测试。完整回归 616/616，31 文件；原 guard 开启、0 拦截，运行前后源码哈希一致，生产读取/写入、真实模型调用和 QQ 发送均为 0。
+
+另用独立合成浏览器夹具完成 22/22 检查，两协议、HTTP400字段错误、403/429、等待/取消、阻止重复提交、刷新挂起和网络保存均覆盖。控制台三条HTTP400为有意构造的错误；无未预期JavaScript错误。首次浏览器等待误把折叠控件当可见控件，修正测试等待条件后通过，未为此改产品。既有浏览器专项为历史证据，不计入这22项。
+
+三处旧测试原来要求官方地址发送max_tokens，本轮改为max_completion_tokens并增加不发送旧字段断言；第三方兼容端点的max_tokens断言保留。首轮默认执行沙箱拒绝了测试自建回环服务，原失败报告保留；宿主执行仍带相同offline guard后通过，没有放开外网或生产目录。
+
+真实代理CONNECT/TLS、供应商模型权限/计费、创建Key时原始超时、真实QQ与模型联调均未验证。取消只确认本机发出中止请求，不证明远端停止或退费。详见 [网络与测试说明](docs/AI-NETWORK-AND-TEST.md)。

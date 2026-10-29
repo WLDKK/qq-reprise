@@ -21,7 +21,7 @@ test('ChatGPT sends direct public Responses with arrays, store false, streaming 
 test('ordinary API Responses uses API token and configured token cap', async () => { const f = setup([delta('ok'), complete], { api_format: 'responses' }); await f.provider.generate(f.config, [], 'new'); assert.equal(f.calls[0].body.max_output_tokens, 512); assert.equal(f.calls[0].options.headers.Authorization, 'Bearer mock-api-key'); });
 test('Chat Completions finishes only on stop and sends configured system instructions', async () => {
   const f = setup([{ choices: [{ index: 0, delta: { content: 'ok' }, finish_reason: null }] }, { choices: [{ index: 0, delta: {}, finish_reason: 'stop' }] }, '[DONE]']);
-  assert.equal(await f.provider.generate(f.config, [], 'new'), 'ok'); assert.equal(f.calls[0].body.messages[0].role, 'system'); assert.equal(f.calls[0].body.max_tokens, 512);
+  assert.equal(await f.provider.generate(f.config, [], 'new'), 'ok'); assert.equal(f.calls[0].body.messages[0].role, 'system'); assert.equal(f.calls[0].body.max_completion_tokens, 512); assert.equal(f.calls[0].body.max_tokens, undefined);
 });
 for (const [name, events] of Object.entries({ interrupted: [delta('partial')], incomplete: [delta('partial'), { type: 'response.incomplete' }], quota: [delta('partial'), { type: 'error', error: { code: 'subscription_sharing_usage_limit_exceeded' } }] })) {
   test('no partial output on ' + name, async () => { const f = setup(events, { backend: 'chatgpt' }); await assert.rejects(f.provider.generate(f.config, [], 'new')); assert.equal(f.calls.length, 1); });

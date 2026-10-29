@@ -3,7 +3,7 @@
   "sourceProject": "QQ local assistant",
   "sourceHasGitHistory": false,
   "sourceRemoteAvailable": false,
-  "sourceVersion": "recall-rich-flow-v1-20261021; backend_recovery_version=2; group_sign_version=1; group_sign_scheduler_version=2; upstream_observation_version=1",
+  "sourceVersion": "recall-rich-flow-v1-20261021; backend_recovery_version=2; group_sign_version=1; group_sign_scheduler_version=2; upstream_observation_version=1; ai_network_version=1; api_test_lifecycle_version=1",
   "licenseDecision": "MIT_owner_approved",
   "privateProductionDataIncluded": false,
   "originalEvidenceRetainedOutsideCandidate": true,
@@ -35,10 +35,11 @@
     {
       "file": "ai-chat.mjs",
       "sourceSHA256": "b0c8d981755d37492cf8924875b084346f9d0f31e625bc9a99415c5bd9dcf2e6",
-      "candidateSHA256": "4d6f7561f57452f9831e482b5ca7c05b611478615da6b41e536a498f5262c975",
+      "candidateSHA256": "f816350181e93fd60e11b97540e88336ea38f0deda489e3c9bb23fa9a0c810ec",
       "changes": [
         "backend_recovery_memory_v2",
-        "unknown_delivery_retention_candidate_fix"
+        "unknown_delivery_retention_candidate_fix",
+        "isolated_ai_network_and_test_lifecycle_v1"
       ]
     },
     {
@@ -53,10 +54,11 @@
     {
       "file": "ai-diagnostics.mjs",
       "sourceSHA256": "5cdb0d5d4b2353de3965736795846a481a7b41194603d2e0d0ce2eabe922f268",
-      "candidateSHA256": "32d7ff73176e98cffbac114b9342cca844ede1a914ebfac52b0b31d7361a3347",
+      "candidateSHA256": "a0cf7bb5337b163f6676d865487d01802f4f16e16714055b99578b0470b7f1e3",
       "changes": [
         "normalize_utf8_newlines",
-        "historical_observation_and_confirmation_display_only"
+        "historical_observation_and_confirmation_display_only",
+        "isolated_ai_network_and_test_lifecycle_v1"
       ]
     },
     {
@@ -70,9 +72,10 @@
     {
       "file": "ai-providers.mjs",
       "sourceSHA256": "e1cbff716d6b7e6ff910a0ebd30107a637dca42e162cf3ddb1edd2774eb182c9",
-      "candidateSHA256": "e1cbff716d6b7e6ff910a0ebd30107a637dca42e162cf3ddb1edd2774eb182c9",
+      "candidateSHA256": "9fdc642054158ace4202a935676780eb0132d89c40355e1358432e4a53794bab",
       "changes": [
-        "normalize_utf8_newlines"
+        "normalize_utf8_newlines",
+        "isolated_ai_network_and_test_lifecycle_v1"
       ]
     },
     {
@@ -322,10 +325,11 @@
     {
       "file": "qq-recall.mjs",
       "sourceSHA256": "91b5429270ca3f159d218af0a78efb85f16f4178e9cefcc9ae58f60a571c30ea",
-      "candidateSHA256": "0e49b4d726f7fa280dfb02e9e357beb95260046d8fe5d460e2e78021c9abf7ba",
+      "candidateSHA256": "c5b573b2142756d73b1efe4e428d3a3bf76ed07d3f471a1eee7e51579dda0911",
       "changes": [
         "normalize_utf8_newlines",
-        "group_sign_v1"
+        "group_sign_v1",
+        "isolated_ai_network_and_test_lifecycle_v1"
       ]
     },
     {
@@ -411,12 +415,13 @@
     {
       "file": "ui.html",
       "sourceSHA256": "aacc21a987ad7aea510797a8390b279fa008c647b4fb774e30b666906fed938c",
-      "candidateSHA256": "f2b511516b4f3140e5390e415c61ad3da1bfc8340df2a0d32299f652396dd947",
+      "candidateSHA256": "ee8fe8a3c2813d67329bac939e9be8f079f765568e2141ab8510e9741e9375c8",
       "changes": [
         "normalize_utf8_newlines",
         "group_sign_v1",
         "scheduler_precision_and_counters_ui",
-        "historical_observation_and_confirmation_display_only"
+        "historical_observation_and_confirmation_display_only",
+        "isolated_ai_network_and_test_lifecycle_v1"
       ]
     },
     {
@@ -442,6 +447,22 @@
       "changes": [
         "normalize_utf8_newlines"
       ]
+    },
+    {
+      "file": "ai-network.mjs",
+      "sourceSHA256": null,
+      "candidateSHA256": "85935df8b4002a7d6cab7fd8793538cf52cddacedba5e85547aa5eb48e0a72dd",
+      "changes": [
+        "new_candidate_ai_network_or_test_implementation"
+      ]
+    },
+    {
+      "file": "ai-test-ui.mjs",
+      "sourceSHA256": null,
+      "candidateSHA256": "a141defac68546f5f6d30a96509a3af494dbaa5f9be75460183d6d37f472aaa6",
+      "changes": [
+        "new_candidate_ai_network_or_test_implementation"
+      ]
     }
   ],
   "tests": [
@@ -465,15 +486,21 @@
     },
     {
       "file": "ai-diagnostics.test.mjs",
-      "candidateSHA256": "8418c2f91fbfa7d8de3d0c9b88472fb595c1b260db10f5b10aee7f6ea1dd2f7b",
+      "candidateSHA256": "24c3a1fc689ff8b142a88cec37578b7bccec814b69a4df61f087eb7aeec026bc",
       "sourceSHA256": "8418c2f91fbfa7d8de3d0c9b88472fb595c1b260db10f5b10aee7f6ea1dd2f7b",
-      "syntheticOnly": true
+      "syntheticOnly": true,
+      "changes": [
+        "isolated_ai_network_and_test_lifecycle_v1"
+      ]
     },
     {
       "file": "ai-providers.test.mjs",
-      "candidateSHA256": "39c9f0c1b0ba131ba2b1c7028e1100b44717a9b1c2e9b61bb3835e302e97ce1d",
+      "candidateSHA256": "e73d23cf06a604677943fbadae4d1bf67b718cb44a7baa3abad6a5d947c6ab0e",
       "sourceSHA256": "fe1fc0b350c11553f780dc587d0dcbdc7f6ee201d30bae6513c781dc07a95c0a",
-      "syntheticOnly": true
+      "syntheticOnly": true,
+      "changes": [
+        "isolated_ai_network_and_test_lifecycle_v1"
+      ]
     },
     {
       "file": "anonymous-install.test.mjs",
@@ -585,9 +612,12 @@
     },
     {
       "file": "streaming.test.mjs",
-      "candidateSHA256": "00d94c442f03b933e821338c4df8245f9f52f1158d1ba2461d4cae4a14cab673",
+      "candidateSHA256": "5aa7bc4ea4277ee274154cdd256e64ea14f1a2813314df193bc90247af03c43c",
       "sourceSHA256": "290b4e84703a24a96cfed679b12c777de62991575d39580781520e0bc1591ffd",
-      "syntheticOnly": true
+      "syntheticOnly": true,
+      "changes": [
+        "isolated_ai_network_and_test_lifecycle_v1"
+      ]
     },
     {
       "file": "vision-source.test.mjs",
@@ -614,6 +644,30 @@
       "sourceSHA256": null,
       "syntheticOnly": true,
       "origin": "Original offline prerequisite tests for this project"
+    },
+    {
+      "file": "ai-network.test.mjs",
+      "sourceSHA256": null,
+      "candidateSHA256": "44fb1f7c47233d969ab0cfaca661411b1eb5b450dd3f62561069eebf235d91ba",
+      "changes": [
+        "new_candidate_ai_network_or_test_implementation"
+      ]
+    },
+    {
+      "file": "ai-test-ui.test.mjs",
+      "sourceSHA256": null,
+      "candidateSHA256": "92063b5884d4d6adcb01da8539937b2d8f078fc9e400ad08f82b13b1319921bc",
+      "changes": [
+        "new_candidate_ai_network_or_test_implementation"
+      ]
+    },
+    {
+      "file": "ai-test-lifecycle.test.mjs",
+      "sourceSHA256": null,
+      "candidateSHA256": "cd4397bf97d9090593660ec8b0ad4b026e6ce895bb8d1407fae203f3074675f9",
+      "changes": [
+        "new_candidate_ai_network_or_test_implementation"
+      ]
     }
   ],
   "helpers": [
@@ -648,6 +702,8 @@
   "oauthRegistrationEntrypointVerified": true,
   "bundledPreissuedOAuthClientIds": false,
   "provenanceAudit": "PROVENANCE-AUDIT.json",
-  "featurePreparedAtUTC": "2026-10-28T13:30:18.724837+00:00",
-  "environmentPreflightVersion": 1
+  "featurePreparedAtUTC": "2026-10-29T03:35:53.700656+00:00",
+  "environmentPreflightVersion": 1,
+  "aiNetworkVersion": 1,
+  "apiTestLifecycleVersion": 1
 }

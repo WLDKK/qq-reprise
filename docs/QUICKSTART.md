@@ -7,7 +7,7 @@
 | 组件 | 要求或已验证范围 | 这不能证明什么 |
 | --- | --- | --- |
 | Windows | 本项目使用 Windows PowerShell / .NET 和当前用户 DPAPI；本次离线验证平台为 win32 / x64 | 未验证 macOS、Linux 或全部 Windows 构建 |
-| Node.js | 最低前置边界为 **22.4.0**；本次完整回归使用 **24.14.0** | 版本号达标不等于所有组合已联调 |
+| Node.js | 旧行为最低前置边界为 **22.4.0**；新 AI 网络模式需 **24.14+**；本次完整回归使用 **24.14.0** | 版本号达标不等于所有组合已联调 |
 | QQ + NapCat | 需要可用的 OneBot 11 正向 WebSocket；官方打卡另需 PacketBackend | QQ 已登录不等于 PacketBackend 可用 |
 | 历史兼容样本 | NapCat Shell **4.18.41** 与 QQ 热更新运行构建 **9.9.36-53644-x64** 做过本机兼容检查 | 不保证其他版本或后续 QQ 热更新；这不是要求所有用户升级到该组合 |
 | API / OAuth | AI 由使用者提供受支持的接入、凭据和模型；不启用 AI 时无需配置 | 本项目不附赠额度，也不保证账号资格 |
@@ -88,3 +88,7 @@ Copy-Item -LiteralPath 'examples\ai-settings.example.json' -Destination 'ai-sett
 在运行终端中用 `Ctrl+C` 退出。先核对生成、待发送与结果未知的任务；RAM 聊天/缓存不等于持久备份。升级时备份并保留原有私有配置、绑定、用量和账本，只更新经核对的源码。已有运行目录与公开源码包应分开，不能把本机配置打包上传。
 
 源码发布、某个供应商可用、某台电脑部署和真实群业务成功是不同状态。测试覆盖与缺口见 [TESTING](../TESTING.md)；发布前检查见 [PUBLISHING](../PUBLISHING.md)。
+
+## 单独配置 AI 网络
+
+浏览器可访问供应商不等于助手进程使用了相同代理。不要把代理地址填进 API Base URL。在本机页面选择独立的 AI 网络方式，先用合成草稿测试，再按需单独保存；默认不会更换原路由。匿名示例为 [ai-network.example.json](../examples/ai-network.example.json)，保持旧行为且没有代理地址。详细步骤见 [AI 网络与测试](AI-NETWORK-AND-TEST.md)。

@@ -919,6 +919,7 @@ export async function startApp(options = {}) {
         response.end(bytes);
         return;
       }
+      if(request.method==='GET'&&request.url==='/ai-test-ui.mjs')return send(200,await readFile(join(ROOT,'ai-test-ui.mjs'),'utf8'),'text/javascript; charset=utf-8');
       if (request.headers['x-qq-recall-session'] !== app.session) {
         return send(403, { error: '请刷新控制页面。' });
       }
@@ -988,12 +989,14 @@ export async function startApp(options = {}) {
           else if (request.url === '/api/ai/sign-out') await app.ai.auth.signOut(value.profile_id);
           else if (request.url === '/api/ai/models') return send(200, { models: value.target ? await app.ai.draftModels(value) : await app.ai.provider.models(app.ai.config) });
           else if (request.url === '/api/ai/test-api') return send(200, await app.ai.testAPI(value));
+          else if(request.url==='/api/ai/cancel-test')return send(200,app.ai.cancelTest(value));
+          else if(request.url==='/api/ai/network-settings')return send(200,await app.ai.network.configure(value));
             else if (request.url === '/api/ai/resume-backend') await app.ai.resumeBackendAfterProbe(value);
           else if (request.url === '/api/ai/reset') app.ai.reset();
           else if (request.url === '/api/ai/private-clear') app.ai.clearPrivateReviews();
           else return send(404, { error: 'AI操作不存在。' });
           return send(200, app.state());
-        } catch (error) { if (request.url === '/api/ai/test-api' && error.testResult) return send(200, error.testResult); return send(400, { error: publicAIError(error), ...(error instanceof SettingsFieldError?{field:error.field,message:error.userMessage}:{}) }); }
+        } catch (error) { if (request.url === '/api/ai/test-api' && error.testResult) return send(200, error.testResult); return send(400, { error: error instanceof SettingsFieldError?'invalid_ai_settings':publicAIError(error), ...(error instanceof SettingsFieldError?{field:error.field,message:error.userMessage}:{}) }); }
       }
       if (request.url === '/api/start') {
         const selection = JSON.parse(body || '{}');

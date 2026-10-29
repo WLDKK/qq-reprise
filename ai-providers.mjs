@@ -23,7 +23,7 @@ function parseSSEBlock(block) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new AIError('invalid_upstream_response');
   return value;
 }
-async function withAbort(promise, signal) {
+export async function withAbort(promise, signal) {
   signal.throwIfAborted(); let cancel;
   const interrupted = new Promise((_, reject) => { cancel = () => reject(signal.reason); signal.addEventListener('abort', cancel, { once: true }); });
   try { return await Promise.race([promise, interrupted]); } finally { signal.removeEventListener('abort', cancel); }
@@ -64,7 +64,7 @@ export class AIProviders {
   }
   async models(config, options = {}) {
     const detail = await this.details(config, options);
-    const body = await readJSONResponse(await this.fetcher(detail.base + '/models', { headers: { Authorization: 'Bearer ' + detail.key }, redirect: 'error', signal: AbortSignal.timeout(15000) }));
+    const body = await readJSONResponse(await this.fetcher(detail.base + '/models', { aiNetwork:options.network, headers: { Authorization: 'Bearer ' + detail.key }, redirect: 'error', signal: AbortSignal.timeout(15000) }));
     const models = config.backend === 'chatgpt' ? (body.models || []).filter(m => m.visibility === 'list').map(m => ({ id: m.slug, name: m.display_name || m.slug }))
       : (body.data || []).map(m => ({ id: m.id, name: m.id }));
     return models.filter(m => typeof m.id === 'string' && /^[\w.\-:/]{1,160}$/.test(m.id)).slice(0, 200);
@@ -89,7 +89,7 @@ export class AIProviders {
         input: messages.map(m => ({ role: m.role, content: m.content })) };
       if (outputMode==='custom') body.max_output_tokens = config.api_max_output_tokens;
     } else {
-      const tokenField = config.api_platform === 'openai' && detail.base === 'https://api.openai.com/v1' ? 'max_completion_tokens' : 'max_tokens';
+      const tokenField = detail.base === 'https://api.openai.com/v1' ? 'max_completion_tokens' : 'max_tokens';
       body = { model: detail.model, stream: true, messages: [{ role: 'system', content: config.instructions }, ...messages] };
       if(outputMode==='custom')body[tokenField]=config.api_max_output_tokens;
     }
@@ -98,7 +98,7 @@ export class AIProviders {
     const submission=await options.beforeSubmit?.();try{combined.throwIfAborted();}catch(error){await options.onNotSubmitted?.(submission);throw error;}
     progress({phase:'http_request'});
     let responsePromise;try{responsePromise=Promise.resolve(this.fetcher(detail.base + (detail.responses ? '/responses' : '/chat/completions'), {
-      method: 'POST', redirect: 'error', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + detail.key }, body: JSON.stringify(body), signal: combined
+      method: 'POST', redirect: 'error', aiNetwork:options.network, headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + detail.key }, body: JSON.stringify(body), signal: combined
     }));}catch(error){responsePromise=Promise.reject(error);}responsePromise.catch(()=>{});
     await options.onSubmitted?.(submission);
     const response=await withAbort(responsePromise,combined);

@@ -266,8 +266,14 @@ body{padding:30px 32px 60px;background:radial-gradient(ellipse at 90% 0,#e4eee5 
         <label class="exemption-field">API基础地址<input id="ai-api_base_url" autocomplete="off"></label>
         <label class="exemption-field">本次草稿的密钥来源<select id="ai-credential-source"><option value="new">使用本次输入的新密钥（未保存）</option><option value="saved" id="ai-saved-credential-option" disabled>使用已绑定当前目标的保存密钥</option></select></label>
         <div class="command-fields" id="ai-new-key-fields"><label>本次输入的API密钥<input type="password" id="ai-key" autocomplete="new-password" spellcheck="false" placeholder="填写当前平台自己的密钥"></label><button id="ai-toggle-key" type="button" aria-controls="ai-key" aria-pressed="false">显示本次输入</button></div><p id="ai-key-state"></p>
-        <div class="login-actions"><button id="ai-test-api" type="button">测试当前草稿（不保存、不发QQ）</button><button id="ai-models" type="button">用当前草稿读取模型</button><button id="ai-clear-key" type="button">删除已保存密钥</button></div>
+        <div class="login-actions"><button id="ai-test-api" type="button">测试当前草稿（不保存、不发QQ）</button><button id="ai-cancel-test" type="button" disabled>取消本次测试</button><button id="ai-models" type="button">用当前草稿读取模型</button><button id="ai-clear-key" type="button">删除已保存密钥</button></div>
         <p>OpenAI Chat 基础地址填写到 /v1，不重复填写 /chat/completions；Anthropic/SystemOne 协议当前未实现，请使用平台的 OpenAI Chat 组合。测试只发固定英文检查，不带QQ私聊或历史，不自动重试；使用当前草稿的模型、Token上限和超时。新密钥仅用于本次请求，点击保存前不会写入凭据文件。实际回复仅留在本页，刷新后清除；脱敏阶段和HTTP结果会保存。额度及费用以平台为准。</p>
+        <details id="ai-network-settings"><summary>AI 请求网络（独立于 QQ / NapCat）</summary>
+          <label>连接方式<select id="ai-network-mode"><option value="legacy">保持旧行为（默认）</option><option value="direct">明确直连</option><option value="environment">环境变量代理</option><option value="manual">手动 HTTP / HTTPS 代理</option></select></label>
+          <label>手动代理地址<input id="ai-network-proxy" type="password" autocomplete="off" spellcheck="false" placeholder="http://代理主机:HTTP或Mixed端口；不是API地址"></label>
+          <p>新网络模式需要 Node 24.14+。仅影响 AI 模型与模型列表请求，不改系统、QQ 或 NapCat。手动模式只支持 HTTP/HTTPS；拒绝带用户名、密码、查询参数的地址。环境模式读取助手进程的 HTTP_PROXY / HTTPS_PROXY / NO_PROXY，系统代理开关不等于环境代理。新模式始终直连本机回环地址。测试使用本页网络草稿，不保存；下面按钮才保存网络设置。</p>
+          <button id="ai-save-network" type="button">仅保存 AI 网络设置</button><p id="ai-network-status" role="status"></p>
+        </details>
         <div class="diagnostic-box"><h3>本页草稿测试结果</h3><div id="ai-test-target">本页尚未测试当前草稿。</div><div id="ai-test-summary" role="status">保存 ≠ 认证成功。测试成功后仍需手动保存，再开启顶部QQ AI开关。</div><pre id="ai-test-reply" hidden></pre></div>
       </details>
 
@@ -294,7 +300,8 @@ body{padding:30px 32px 60px;background:radial-gradient(ellipse at 90% 0,#e4eee5 
       <div class="login-actions"><button class="action" id="ai-save" type="button">保存当前草稿（AI保持关闭）</button><button id="ai-discard" type="button">放弃草稿，载入已保存配置</button><button id="ai-reset" type="button">取消全部并清空AI上下文</button></div><p id="ai-save-status" role="status"></p><p id="ai-model-list"></p>
     </section></section>
   </main>
-  <script nonce="__SESSION_TOKEN__">
+  <script type="module" nonce="__SESSION_TOKEN__">
+    import { APITestController } from './ai-test-ui.mjs';
     const session = '__SESSION_TOKEN__';
     const element = (name) => document.getElementById(name);
     function showFeature(name){for(const feature of ['recall','ai']){const active=feature===name;element(feature+'-workspace').hidden=!active;element('feature-'+feature).setAttribute('aria-pressed',String(active));element('feature-'+feature+'-card').classList.toggle('active',active);}}
@@ -320,7 +327,7 @@ body{padding:30px 32px 60px;background:radial-gradient(ellipse at 90% 0,#e4eee5 
         signal,
       });
       const value = await response.json();
-      if (!response.ok){const error=new Error(value.message||value.error||'操作失败，请重试。');error.code=value.error;error.field=value.field;throw error;}
+      if (!response.ok){const error=new Error(value.message||value.error||'操作失败，请重试。');error.code=value.error;error.field=value.field;error.status=response.status;throw error;}
       return value;
     }
     function resetRecallNameEditor() {
@@ -628,16 +635,17 @@ body{padding:30px 32px 60px;background:radial-gradient(ellipse at 90% 0,#e4eee5 
       renderRecalls(state.recalls || []);
       updateButtons();
     }
-    async function refresh() {
+    async function refresh({signal,quiet=false}={}) {
       try {
-        const state = await api('/api/state');
+        const state = await api('/api/state',undefined,signal);
         display(state);
         if (state.connected && !loaded) {
-          [friends, groups] = await Promise.all([api('/api/friends'), api('/api/groups')]);
+          [friends, groups] = await Promise.all([api('/api/friends',undefined,signal), api('/api/groups',undefined,signal)]);
           loaded = true; renderFriends(); renderPermissionSources();
         }
         if (!state.connected) loaded = false;
       } catch {
+        if(quiet||signal?.aborted)return;
         element('connection').textContent = '页面与程序已断开';
         element('connection').className = 'tag wait';
         element('error').textContent = '请保持启动窗口开启；程序退出后，重新双击 start.cmd。';
@@ -836,6 +844,7 @@ body{padding:30px 32px 60px;background:radial-gradient(ellipse at 90% 0,#e4eee5 
     function backendPanels(){element('ai-api-settings').hidden=false;element('ai-siwc-settings').hidden=false;}
     element('ai-backend').addEventListener('change',backendPanels);
     const diagnosticErrors={authorization_required:'接口认证未通过，请在平台核对密钥及权限',invalid_api_key:'平台拒绝密钥',access_denied:'平台拒绝访问，请核对权限',rate_limit_exceeded:'平台限流或额度限制',insufficient_quota:'平台报告额度不足',model_not_found:'模型名称或可用权限不匹配',generation_incomplete:'模型未完整结束',stream_interrupted:'流式返回中断',stream_required:'平台没有返回要求的事件流',empty_response:'完成后没有正文',cancelled_or_timeout:'已取消或超过保存的超时时间',network_timeout:'网络连接或读取超时，不能据此判断密钥无效',network_connection_lost:'网络连接中途断开',network_dns_error:'域名解析失败',network_connection_refused:'连接被拒绝',tls_verification_failed:'HTTPS证书验证失败，未绕过验证',network_or_provider_error:'网络或平台请求失败',api_key_required:'本机尚未保存API密钥',model_required:'尚未保存模型名称',unexpected_test_reply:'接口完成，但未匹配固定测试回复',daily_request_limit:'达到本机每日次数上限',secure_storage_invalid:'本机凭据存储无法解析，请在本机重新保存',secure_storage_unavailable:'本机加密存储暂不可用',interrupted_by_restart:'上次操作被助手重载中断，结果未确认'};
+    Object.assign(diagnosticErrors,{local_request_failed:'本机测试请求失败，请核对页面连接',invalid_test_result:'本机返回了无效的测试结果',local_test_deadline:'本机测试等待超时',request_timeout:'本次请求已达到设置的超时',test_cancelled:'已取消本次测试',ai_network_invalid:'代理设置无效；请检查方式、协议及地址',ai_network_busy:'AI 请求或设置保存进行中，网络设置未更改',ai_network_runtime_unsupported:'新网络模式需要 Node 24.14 或更高版本',ai_network_load_failed:'AI 网络配置无法读取，已阻止请求；请修正网络设置',ai_network_save_failed:'网络设置保存失败',proxy_credentials_not_supported:'代理地址不能包含用户名或密码；请使用可信本机代理的无认证HTTP/Mixed入口',proxy_protocol_unsupported:'只支持HTTP/HTTPS代理，不能使用SOCKS专用端口',proxy_environment_missing:'助手进程未获得HTTP_PROXY或HTTPS_PROXY；未静默改为直连',proxy_connection_failed:'代理连接或隧道建立失败',proxy_authentication_required:'代理要求认证，本版不保存代理认证信息',network_access_denied:'系统拒绝了本机进程的网络连接，未绕过限制',network_encoding_unsupported:'上游返回了不支持的压缩格式'});
     Object.assign(diagnosticErrors,{authorization_required:'HTTP认证被拒绝；需核对当前平台的凭据、权限或网关，不能只据此断言密钥无效',api_key_required:'请在本机输入当前平台密钥，或明确选择已绑定此目标的凭据',model_required:'请填写当前草稿的模型ID',cancelled_or_timeout:'已取消或超过本次草稿的超时时间',api_credential_target_mismatch:'已保存凭据与草稿的平台、地址或协议不匹配；请重新输入当前平台密钥',api_credential_selection_required:'请明确选择本次草稿的密钥来源',api_credential_target_required:'保存密钥时必须同时绑定平台、地址和协议',api_draft_required:'请刷新页面，使用完整草稿发起请求',invalid_ai_settings:'草稿设置无效，请检查地址、协议和各项范围',configuration_busy:'正在保存配置，请稍后再操作'});
     Object.assign(diagnosticErrors,{ai_safety_blocked:'AI仍处于安全暂停，口令不会清除此暂停；联合开启未成功',qq_verification_required:'尚未确认QQ在线，联合开启未成功',local_review_unavailable:'本机语义审查模型未就绪，本条不会外发；不会使用云端审查代替',context_recipient_changed:'当前API接收方已改变，请重新确认附近消息外发范围'});
     Object.assign(diagnosticErrors,{request_timeout:'请求达到本次配置的总时限，已释放生成队列；未自动重试'});
@@ -919,6 +928,8 @@ body{padding:30px 32px 60px;background:radial-gradient(ellipse at 90% 0,#e4eee5 
       element('ai-recent-request-diagnostics').textContent='进行中及最近20项已结束请求（独立编号，不含正文）：'+(ai.diagnostics?.recent_generation||[]).slice(-80).map(r=>r.id.slice(0,8)+' '+new Date(r.startedAt).toLocaleTimeString()+' '+({queued:'排队中（未调用模型）',rejected:'本地拒绝',expired:'等待过期（未调用模型）',running:'进行中',completed:'完成',failed:'失败',cancelled:'取消'}[r.status]||r.status)+(r.errorCode?' / '+(diagnosticErrors[r.errorCode]||r.errorCode):'')+(r.privacyReason?' / '+(inputPrivacyLabels[r.privacyReason]||r.privacyReason):'')+inputLengthSummary(r)+(r.delivery?' / QQ '+r.delivery:'')).join('；');
       const code=aiLocalError||ai.error||ai.combined_control_error;element('ai-error').textContent=[diagnosticErrors[code]||code,ai.auth.notice].filter(Boolean).join('；');
       element('ai-group-summary').textContent=ai.config.groups.length?'群聊设置 · 已授权 '+ai.config.groups.length+' 个群（普通私聊不使用）':'群聊设置 · 未启用（普通私聊无需填写）';
+      if(ai.network&&!networkDirty){element('ai-network-mode').value=ai.network.config?.mode||ai.network.mode||'legacy';element('ai-network-proxy').value=ai.network.config?.proxy_url||'';networkLoaded=true;}
+      testUI.observe(ai.test_operation_id,ai.diagnostics?.test?.phase);
       updateDraftState();if(aiDirty&&aiLoaded)return;
       const select=element('ai-active_profile');select.replaceChildren(new Option('选择已授权账户',''));
       for(const p of ai.auth.profiles)select.add(new Option(p.label+(p.needs_sign_in?'（需登录）':p.plan_authorized?'（套餐已授权）':'（仅身份）'),p.id));
@@ -930,7 +941,11 @@ body{padding:30px 32px 60px;background:radial-gradient(ellipse at 90% 0,#e4eee5 
     function aiDraft(){const value={...aiLast.config};for(const name of aiNames){const input=element('ai-'+name);value[name]=input.type==='checkbox'?input.checked:Object.hasOwn(aiLimits,name)?(input.value.trim()===''?null:Number(input.value)):name==='chat_display_overrides'?(()=>{try{return JSON.parse(input.value);}catch{return input.value;}})():name==='participation_group_overrides'?parseGroupOverrides(input.value):input.value;}if(['api_base_url','api_model','api_format','backend'].some(k=>value[k]!==aiLast.config[k]))Object.assign(value,{vision_enabled:false,vision_target:'',vision_model:'',vision_verified_at:0,vision_reference_enabled:false,vision_recent_enabled:false});return value;}
     async function aiAction(path,body={},resetDraft=false){aiLocalError='';element('ai-error').textContent='';try{const result=await api('/api/ai/'+path,body);if(resetDraft)aiDirty=false;await refresh();return result;}catch(error){aiLocalError=error.message;element('ai-error').textContent=diagnosticErrors[aiLocalError]||aiLocalError;return null;}}
     element('ai-enabled').addEventListener('change',async()=>{const input=element('ai-enabled');const enabled=input.checked;if(enabled&&aiDirty){input.checked=aiLast?.enabled||false;aiLocalError='请先保存或放弃草稿，再开启QQ AI。开关只使用已保存配置。';element('ai-error').textContent=aiLocalError;return;}aiToggleBusy=true;input.disabled=true;try{display(await api('/api/ai/enabled',{enabled}));}catch(error){aiLocalError=error.message;input.checked=aiLast?.enabled||false;element('ai-error').textContent=diagnosticErrors[aiLocalError]||aiLocalError;}finally{aiToggleBusy=false;input.disabled=false;await refresh();}});
-    function apiDraftRequest(){const source=element('ai-credential-source').value;const credential={source};if(source==='new'){credential.key=element('ai-key').value;if(!credential.key.trim())throw new Error('api_key_required');if(aiKeyBinding!==targetIdentity())throw new Error('api_credential_target_mismatch');}else if(!matchesSavedCredential())throw new Error('api_credential_target_mismatch');return {target:apiFormTarget(),credential};}
+    let networkDirty=false,networkLoaded=false;
+    function networkDraft(){return{version:1,mode:element('ai-network-mode').value,proxy_url:element('ai-network-proxy').value};}
+    for(const id of ['ai-network-mode','ai-network-proxy'])element(id).addEventListener('input',()=>{networkDirty=true;aiDraftRevision++;element('ai-network-status').textContent='网络草稿未保存；测试将只使用该草稿。';updateDraftState();});
+    element('ai-save-network').onclick=async()=>{const button=element('ai-save-network');button.disabled=true;try{await api('/api/ai/network-settings',networkDraft());networkDirty=false;element('ai-network-status').textContent='已保存，仅用于后续 AI 请求；未发起上游测试。';await refresh({quiet:true});}catch(error){element('ai-network-status').textContent='未保存：'+(diagnosticErrors[error.code]||error.code||'本机请求失败');}finally{button.disabled=false;}};
+    function apiDraftRequest(){const source=element('ai-credential-source').value;const credential={source};if(source==='new'){credential.key=element('ai-key').value;if(!credential.key.trim())throw new Error('api_key_required');if(aiKeyBinding!==targetIdentity())throw new Error('api_credential_target_mismatch');}else if(!matchesSavedCredential())throw new Error('api_credential_target_mismatch');return {target:apiFormTarget(),credential,network:networkDraft()};}
     function sameDraftField(key,value,saved){if(key==='chat_display_overrides'){try{return JSON.stringify(typeof value==='string'?JSON.parse(value):value)===JSON.stringify(saved);}catch{return false;}}if(saved&&typeof saved==='object'&&!Array.isArray(saved)){const parsed=typeof value==='string'?parseGroupOverrides(value):value;return JSON.stringify(parsed)===JSON.stringify(saved);}if(Array.isArray(saved)){const parts=String(value).split(key==='bot_aliases'?/[\n,，;；]+/u:/[\s,，;；]+/u).map(v=>key==='bot_aliases'?v.normalize('NFKC').trim():v.trim()).filter(Boolean);return JSON.stringify([...new Set(parts)])===JSON.stringify(saved);}return value===saved;}
     const personaFields=['bot_name','bot_address','bot_identity','bot_persona','instructions'];
     const chatIdentityFields=['chat_owner_qq','chat_owner_address','chat_address_mode','chat_mention_mode','chat_display_overrides'];
@@ -964,7 +979,17 @@ body{padding:30px 32px 60px;background:radial-gradient(ellipse at 90% 0,#e4eee5 
     element('ai-save').onclick=async()=>{const button=element('ai-save');button.disabled=true;let request;try{const settings={...aiDraft(),enabled:false};request=settings.backend==='api'?{settings,credential:apiDraftRequest().credential}:settings;const result=await aiAction(settings.backend==='api'?'api-save':'settings',request,true);if(result){clearNewKey();aiCredentialInitialized=false;await refresh();element('ai-save-status').textContent='草稿已保存，QQ AI保持关闭。需要自动回复时，再打开顶部AI开关；保存不代表认证成功。';}}catch(error){aiLocalError=error.message;element('ai-error').textContent=diagnosticErrors[aiLocalError]||aiLocalError;}finally{if(request?.credential)request.credential.key='';button.disabled=false;}};
     element('ai-discard').onclick=async()=>{clearNewKey();aiDirty=false;aiCredentialInitialized=false;aiDraftRevision++;await refresh();element('ai-save-status').textContent='已放弃本页草稿并载入已保存配置；QQ开关未改变。';};
     element('ai-clear-key').onclick=()=>aiAction('key',{key:''});
-    element('ai-test-api').onclick=async()=>{const button=element('ai-test-api');button.disabled=true;let request;const revision=aiDraftRevision;try{request=apiDraftRequest();element('ai-test-target').textContent='测试发起时的草稿：'+describeTarget(request.target)+' · '+(request.credential.source==='new'?'本次输入的新密钥（未保存）':'明确选择的同平台已保存密钥');element('ai-test-summary').textContent='正在测试；不保存配置、不发QQ。';element('ai-test-reply').hidden=true;const result=await aiAction('test-api',request);if(result){aiTestRevision=revision;element('ai-test-summary').textContent=(result.ok?'请求和完整回复成功':'测试失败')+' · '+result.elapsed_ms+' ms · '+(result.http_status?'HTTP '+result.http_status:'未取得HTTP响应')+' · 阶段 '+result.phase+(result.finish_reason?' · finish_reason='+result.finish_reason:'')+(result.error_code?' · '+(diagnosticErrors[result.error_code]||result.error_code):result.expected_reply_matched?' · 收到预期 OK':' · 回复未匹配固定 OK，请看实际回复')+'。未保存、未发送QQ。'+(revision!==aiDraftRevision?' 当前草稿已更改，此结果不能代表新草稿。':result.ok?'可点击保存，再手动开启QQ AI。':'');element('ai-test-reply').textContent=(result.reply_complete?'实际回复：\n':'未完整的回复（仅供诊断）：\n')+(result.reply||'（没有收到正文）');element('ai-test-reply').hidden=false;}}catch(error){aiLocalError=error.message;element('ai-error').textContent=diagnosticErrors[aiLocalError]||aiLocalError;}finally{if(request?.credential)request.credential.key='';button.disabled=false;}};
+    let activeTestRevision=-1;
+    const testPhase={local_request:'等待本机测试响应',preparing:'准备',budget:'检查本地任务预算',credentials:'准备凭据',request_ready:'请求已准备',http_request:'等待上游响应',http_response:'收到HTTP响应',streaming:'读取流式内容',reasoning:'模型推理中',completed:'完成',local_deadline:'本机等待已到截止时间',cancel_requested:'已请求取消'};
+    const testUI=new APITestController({post:(path,body,signal)=>api('/api/ai/'+path,body,signal),refresh:signal=>refresh({signal,quiet:true}),render:state=>{
+      element('ai-test-api').disabled=state.busy;element('ai-cancel-test').disabled=!state.busy;
+      if(state.status==='running'){element('ai-test-summary').textContent='正在测试 · '+(testPhase[state.phase]||state.phase)+' · 已等 '+(state.elapsed_ms/1000).toFixed(1)+' 秒；不保存、不发QQ。';return;}
+      const result=state.result;
+      if(result){aiTestRevision=activeTestRevision;element('ai-test-summary').textContent=(result.ok?'请求和完整回复成功':'测试失败')+' · '+result.elapsed_ms+' ms · '+(result.http_status?'HTTP '+result.http_status:'未取得上游HTTP响应')+' · 阶段 '+(testPhase[result.phase]||result.phase)+(result.finish_reason?' · finish_reason='+result.finish_reason:'')+(result.error_code?' · '+(diagnosticErrors[result.error_code]||result.error_code):result.expected_reply_matched?' · 收到预期 OK':' · 回复未匹配固定 OK，请看实际回复')+'。未保存、未发送QQ。'+(activeTestRevision!==aiDraftRevision?' 当前草稿已更改，此结果不能代表新草稿。':'');element('ai-test-reply').textContent=(result.reply_complete?'实际回复：\n':'未完整回复（仅供诊断）：\n')+(result.reply||'（没有收到正文）');element('ai-test-reply').hidden=false;}
+      else{const code=state.error_code||'local_request_failed';element('ai-test-summary').textContent=(state.status==='cancelled'?'已取消本机等待':'测试未完成')+' · '+(diagnosticErrors[code]||code)+(state.field?' · 字段 '+state.field:'')+' · '+(state.elapsed_ms/1000).toFixed(1)+' 秒。'+(['test_cancelled','local_test_deadline'].includes(code)?'已请求停止本机请求；远端是否停止及是否计费未知，不会自动重试。':'本机请求或前置校验失败，不能据此判断密钥或模型无效。')+' 未保存、未发QQ。';}
+    }});
+    element('ai-cancel-test').onclick=()=>testUI.cancel();
+    element('ai-test-api').onclick=async()=>{if(testUI.active)return;let request;activeTestRevision=aiDraftRevision;aiTestRevision=-1;try{request=apiDraftRequest();element('ai-test-target').textContent='本次草稿：'+describeTarget(request.target)+' · 网络：'+({legacy:'保持旧行为',direct:'明确直连',environment:'环境变量代理',manual:'手动代理'}[request.network.mode]||request.network.mode)+' · '+(request.credential.source==='new'?'本次输入的新密钥（未保存）':'明确选择的同目标保存密钥');element('ai-test-reply').hidden=true;await testUI.start(request);}catch(error){const code=error.code||error.message;element('ai-test-summary').textContent='未发起测试：'+(diagnosticErrors[code]||'请检查本页草稿和密钥来源')+'。未保存、未发QQ。';}finally{if(request?.credential)request.credential.key='';}};
     element('ai-reset').onclick=()=>aiAction('reset');
     element('ai-clear-private').onclick=()=>aiAction('private-clear');
     element('ai-test-vision').onclick=()=>aiAction('test-vision');

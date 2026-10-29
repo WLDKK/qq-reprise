@@ -1,3 +1,4 @@
+import { NETWORK_ERRORS } from './ai-network.mjs';
 import { join } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { JsonFile } from './ai-storage.mjs';
@@ -7,6 +8,7 @@ const phases=new Set(['input','queue','preparing','privacy','budget','credential
 const finishes=new Set(['stop','length','tool_calls','function_call','content_filter','completed','incomplete']);
 const localErrors=new Set(['api_key_required','model_required','generation_incomplete','generation_failed','stream_interrupted','stream_required','stream_missing','stream_json_invalid','stream_event_too_large','stream_too_large','output_character_limit','empty_response','tools_not_supported','cancelled','test_cancelled','cancelled_or_timeout','api_backend_required','test_in_progress','generation_in_progress','unexpected_test_reply','daily_request_limit','network_or_provider_error','network_dns_error','network_connection_refused','network_connection_lost','network_timeout','tls_verification_failed','secure_storage_invalid','secure_storage_unavailable','interrupted_by_restart','invalid_upstream_response']);
 for (const code of ['api_credential_target_mismatch','api_credential_selection_required','api_credential_target_required','api_credential_changed','api_draft_required','invalid_ai_settings','configuration_busy']) localErrors.add(code);
+for(const code of NETWORK_ERRORS)localErrors.add(code);
 localErrors.add('request_timeout');
 localErrors.add('qq_delivery_uncertain');localErrors.add('qq_not_submitted');
 localErrors.add('group_input_rejected');

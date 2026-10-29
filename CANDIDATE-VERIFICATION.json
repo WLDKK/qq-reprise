@@ -1,8 +1,8 @@
 {
-  "status": "audited_onboarding_source_update",
-  "runtimeFiles": 53,
-  "runtimeMjsFiles": 51,
-  "testFiles": 28,
+  "status": "audited_ai_network_and_test_update",
+  "runtimeFiles": 55,
+  "runtimeMjsFiles": 53,
+  "testFiles": 31,
   "historicalBaseline": {
     "tests": 400,
     "passed": 350,
@@ -20,171 +20,142 @@
   "liveIntegrationVerified": false,
   "licenseFilePresent": true,
   "publicationBlockedUntil": [],
-  "checkedAtUTC": "2026-10-28T14:03:04.524910+00:00",
-  "allMjsSyntaxChecked": 82,
+  "checkedAtUTC": "2026-10-29T03:35:53.700656+00:00",
+  "allMjsSyntaxChecked": 87,
   "syntaxFailures": [],
   "localImportClosureMissing": [],
   "externalPackageImports": [],
-  "publicFiles": 119,
+  "publicFiles": 127,
   "jsonFilesParsed": [
     "CANDIDATE-VERIFICATION.json",
     "PROVENANCE-AUDIT.json",
     "RELEASE-MANIFEST.json",
     "SOURCE-MANIFEST.json",
     "TRIAGE-50.json",
+    "examples/ai-network.example.json",
     "examples/ai-settings.example.json",
     "examples/config.example.json",
     "examples/group-sign-settings.example.json"
   ],
-  "documentationFiles": 19,
-  "localLinksChecked": 94,
+  "documentationFiles": 21,
+  "localLinksChecked": 98,
   "knownPersonalDataMatches": 0,
   "credentialFindingsRequiringReview": 0,
   "explicitSyntheticTestFindings": [
     {
       "file": "ai-api-draft.test.mjs",
-      "line": 34
+      "line": 34,
+      "kind": "bearer"
     },
     {
       "file": "ai-api-draft.test.mjs",
-      "line": 58
+      "line": 58,
+      "kind": "bearer"
     },
     {
       "file": "ai-api-draft.test.mjs",
-      "line": 107
-    },
-    {
-      "file": "ai-auth.test.mjs",
-      "line": 28
-    },
-    {
-      "file": "ai-auth.test.mjs",
-      "line": 94
-    },
-    {
-      "file": "ai-chat.test.mjs",
-      "line": 268
-    },
-    {
-      "file": "ai-chat.test.mjs",
-      "line": 277
-    },
-    {
-      "file": "ai-chat.test.mjs",
-      "line": 296
-    },
-    {
-      "file": "ai-chat.test.mjs",
-      "line": 314
-    },
-    {
-      "file": "ai-chat.test.mjs",
-      "line": 336
+      "line": 107,
+      "kind": "bearer"
     },
     {
       "file": "ai-diagnostics.test.mjs",
-      "line": 19
+      "line": 19,
+      "kind": "bearer"
     },
     {
       "file": "ai-diagnostics.test.mjs",
-      "line": 29
+      "line": 29,
+      "kind": "bearer"
+    },
+    {
+      "file": "ai-network.test.mjs",
+      "line": 37,
+      "kind": "userinfo_proxy"
+    },
+    {
+      "file": "ai-network.test.mjs",
+      "line": 45,
+      "kind": "userinfo_proxy"
+    },
+    {
+      "file": "ai-network.test.mjs",
+      "line": 51,
+      "kind": "bearer"
+    },
+    {
+      "file": "ai-network.test.mjs",
+      "line": 53,
+      "kind": "bearer"
+    },
+    {
+      "file": "ai-observability.test.mjs",
+      "line": 132,
+      "kind": "bearer"
     },
     {
       "file": "ai-providers.test.mjs",
-      "line": 16
+      "line": 16,
+      "kind": "bearer"
     },
     {
       "file": "ai-providers.test.mjs",
-      "line": 21
+      "line": 21,
+      "kind": "bearer"
     },
     {
       "file": "ai-providers.test.mjs",
-      "line": 66
+      "line": 56,
+      "kind": "userinfo_proxy"
     },
     {
-      "file": "chat-context.test.mjs",
-      "line": 44
-    },
-    {
-      "file": "chat-context.test.mjs",
-      "line": 97,
-      "review": "Synthetic adversarial fixture"
-    },
-    {
-      "file": "chat-context.test.mjs",
-      "line": 107
-    },
-    {
-      "file": "chat-context.test.mjs",
-      "line": 152
+      "file": "ai-providers.test.mjs",
+      "line": 66,
+      "kind": "api_key"
     },
     {
       "file": "competition-platform.test.mjs",
-      "line": 13
-    },
-    {
-      "file": "competition-platform.test.mjs",
-      "line": 25
+      "line": 13,
+      "kind": "bearer"
     },
     {
       "file": "docs/TEST-CONTRACT-CHANGES.diff",
-      "line": 51
+      "line": 110,
+      "kind": "userinfo_proxy"
     },
     {
       "file": "docs/TEST-CONTRACT-CHANGES.diff",
-      "line": 52
+      "line": 112,
+      "kind": "userinfo_proxy"
     },
     {
       "file": "docs/TEST-CONTRACT-CHANGES.diff",
-      "line": 61
+      "line": 119,
+      "kind": "api_key"
     },
     {
-      "file": "docs/TEST-CONTRACT-CHANGES.diff",
-      "line": 81
+      "file": "environment-check.test.mjs",
+      "line": 25,
+      "kind": "bearer"
     },
     {
-      "file": "docs/TEST-CONTRACT-CHANGES.diff",
-      "line": 90
+      "file": "packet-error.test.mjs",
+      "line": 5,
+      "kind": "bearer"
     },
     {
-      "file": "docs/TEST-CONTRACT-CHANGES.diff",
-      "line": 99
+      "file": "packet-error.test.mjs",
+      "line": 7,
+      "kind": "userinfo_proxy"
     },
     {
-      "file": "docs/TEST-CONTRACT-CHANGES.diff",
-      "line": 119
+      "file": "packet-error.test.mjs",
+      "line": 9,
+      "kind": "bearer"
     },
     {
-      "file": "docs/TEST-CONTRACT-CHANGES.diff",
-      "line": 130
-    },
-    {
-      "file": "docs/TEST-CONTRACT-CHANGES.diff",
-      "line": 160
-    },
-    {
-      "file": "docs/TEST-CONTRACT-CHANGES.diff",
-      "line": 161
-    },
-    {
-      "file": "docs/TEST-CONTRACT-CHANGES.diff",
-      "line": 216
-    },
-    {
-      "file": "message-format.test.mjs",
-      "line": 27
-    },
-    {
-      "file": "message-format.test.mjs",
-      "line": 41
-    },
-    {
-      "file": "private-privacy.test.mjs",
-      "line": 9
-    },
-    {
-      "file": "private-privacy.test.mjs",
-      "line": 20
+      "file": "packet-error.test.mjs",
+      "line": 10,
+      "kind": "api_key"
     }
   ],
   "reviewedNonliteralSourceExpressions": [
@@ -213,7 +184,7 @@
   },
   "fullReleaseOfflineRegressionComplete": true,
   "runtimeAndExampleIdentityBoundariesVerified": true,
-  "forwardSpecializedSuiteEvidence": "historical 2026-10-21; not counted in current 443 and not fully rerun here",
+  "forwardSpecializedSuiteEvidence": "Historical 2026-10-21 specialized evidence; not fully rerun in current 616 ordinary regression suite",
   "productionReadsDuringOfflineTests": 0,
   "productionWritesDuringOfflineTests": 0,
   "oauthPublicClientOriginVerified": true,
@@ -262,7 +233,7 @@
   "showcaseRealQQConnections": 0,
   "showcaseRealModelRequests": 0,
   "showcaseProductionDataAccess": 0,
-  "documentationUpdate": "2026-10-28; quickstart, symptom troubleshooting, concrete usage examples and optional offline preflight",
+  "documentationUpdate": "2026-10-29; isolated AI networking, draft test lifecycle and cancellation",
   "documentationTests": {
     "tests": 4,
     "passed": 4,
@@ -270,7 +241,7 @@
     "skipped": 0,
     "guardBlocks": 0
   },
-  "functionalTestsEvidence": "568/568 guarded synthetic tests on current source; application/UI unchanged; no new live service verification",
+  "functionalTestsEvidence": "616/616 guarded synthetic tests on current runtime/test/UI source; 22 isolated browser checks; no real provider/proxy/QQ verification",
   "productionBaselineHashCheckIsHistorical": true,
   "functionalTestsBeforeGroupSign": {
     "tests": 443,
@@ -325,8 +296,8 @@
     "guardBlocks": 0
   },
   "functionalTests": {
-    "tests": 568,
-    "passed": 568,
+    "tests": 616,
+    "passed": 616,
     "failed": 0,
     "skipped": 0,
     "cancelled": 0,
@@ -406,5 +377,36 @@
   "displayName": "回响 QQ 助手",
   "englishSubtitle": "QQ Reprise",
   "chineseDisplayNameVerified": true,
-  "chinesePreflightHelpVerified": true
+  "chinesePreflightHelpVerified": true,
+  "reviewedSourceDetectors": [
+    {
+      "file": "vision-privacy.mjs",
+      "line": 5,
+      "kind": "private_key"
+    }
+  ],
+  "aiNetworkAndTest": {
+    "version": 1,
+    "defaultMode": "legacy",
+    "modes": [
+      "legacy",
+      "direct",
+      "environment",
+      "manual"
+    ],
+    "explicitModeMinimumNode": "24.14.0",
+    "proxyProtocols": [
+      "http",
+      "https"
+    ],
+    "authenticatedProxySupported": false,
+    "processGlobalNetworkChanged": false,
+    "newTests": 48,
+    "browserChecks": 22,
+    "browserPassed": 22,
+    "realProxyVerified": false,
+    "originalKeyCreationTimeoutResolved": false,
+    "hardCurrencyCapImplemented": false,
+    "cancellationConfirmsUpstreamStop": false
+  }
 }

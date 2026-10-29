@@ -9,7 +9,8 @@ import { normalizeEvent, parseCQ, id } from './engine.mjs';
 import { CommandConfirmations } from './command-confirmations.mjs';
 import { RetainedOutbox } from './retained-outbox.mjs';
 import { AIAuth, AIError } from './ai-auth.mjs';
-import { AIProviders, publicAIError } from './ai-providers.mjs';
+import { AIProviders, publicAIError, withAbort } from './ai-providers.mjs';
+import { AINetwork, validateNetwork } from './ai-network.mjs';
 import { ConnectionPoolService } from './connection-pool-service.mjs';
 import { formatQQOutput } from './qq-output.mjs';
 import { JsonFile } from './ai-storage.mjs';
@@ -53,8 +54,10 @@ export class AIChat {
     this.usageFile = new JsonFile(join(dir, 'ai-usage.json'), { day: '', count: 0 }); this.usage = { day: '', count: 0 }; this.budgetTask = Promise.resolve();
     this.auth = new AIAuth({ dir, fetcher, secrets, now, onChange: () => this.credentialsChanged() });
     this.diagnostics = new AIDiagnostics(dir,now);this.inputDiagnostics=new InputDiagnostics(now);
-    const originalProvider = provider || new AIProviders({ auth: this.auth, fetcher });
-    this.poolService = new ConnectionPoolService({ dir, fallback: originalProvider, auth:this.auth,getMainConfig:()=>this.config,fetcher, secrets: poolSecrets, now, isBusy: () => !!(this.active || this.queue?.length || this.testController || this.outbox?.snapshot().pending) });
+    this.network = new AINetwork({ dir, fetcher, isBusy:()=>!!(this.active||this.queue?.length||this.testController||this.outbox?.snapshot().pending) });
+    const modelFetcher = this.network.fetch;
+    const originalProvider = provider || new AIProviders({ auth: this.auth, fetcher:modelFetcher });
+    this.poolService = new ConnectionPoolService({ dir, fallback: originalProvider, auth:this.auth,getMainConfig:()=>this.config,fetcher:modelFetcher, secrets: poolSecrets, now, isBusy: () => !!(this.active || this.queue?.length || this.testController || this.outbox?.snapshot().pending) });
     this.provider = this.poolService;
     this.markers = new CommandConfirmations({ now });
     this.seen = new Map(); this.tombstones = new Map(); this.sessions = new Map(); this.jobs = new Map(); this.queue = [];
@@ -70,7 +73,7 @@ export class AIChat {
       inspect: job => this.permission(job), submit: job => this.submit(job), onState: (job, state) => this.deliveryState(job, state) });
   }
   async initialize() {
-    await this.diagnostics.initialize();await this.participation.initialize();
+    await this.diagnostics.initialize();await this.participation.initialize();await this.network.initialize();
     try { const saved=await this.settingsFile.read(),migrate=!Object.hasOwn(saved,'memory_retention_version'),validated=validateAISettings(migrate?{...saved,memory_retention_version:1}:saved);if(migrate){if(!await this.retentionBackupFile.read())await this.retentionBackupFile.write(saved);await this.settingsFile.write(validated);}this.config=validated;this.privateArchive.configure(this.config);await this.privateArchive.initialize();this.recentVisionImages.configure(this.config); await this.auth.initialize(); await this.poolService.initialize();
       const usage = await this.usageFile.read(); if (typeof usage.day === 'string' && Number.isSafeInteger(usage.count) && usage.count >= 0) this.usage = usage;
       this.outbox.byteLimit=this.config.delivery_byte_limit;this.outbox.configure(this.config.delivery_limit, this.config.delivery_ttl_minutes * 60000);
@@ -81,7 +84,7 @@ export class AIChat {
   }
   state(includeConfig = true) {
     this.prune();
-    return { ...(includeConfig?{settings_schema:SETTING_RULES,configuration_boundaries:CONFIGURATION_BOUNDARIES}:{}),configuration_version:2,memory_retention_version:1,chat_error_feedback:'local_only',backend_recovery_version:2,private_all_paused:this.unresolvedPrivateHolds.length>0,rate_limit_recovery:{mode:this.rateLimitRecovery?'temporary_cooldown':this.blocked?'manual':'none',remainingSeconds:this.rateLimitRecovery?Math.max(0,Math.ceil((this.rateLimitRecovery.until-this.now())/1000)):0,recoveries:this.rateLimitRecoveryCount,limit:this.config.temporary_recovery_attempts,backoffSeconds:this.rateLimitRecovery?.seconds??0,strategy:this.rateLimitRecovery?.strategy??null},enabled: this.config.enabled, backend: this.config.backend, error: this.error, paused: this.blocked, testing:!!this.testController,
+    return { ...(includeConfig?{settings_schema:SETTING_RULES,configuration_boundaries:CONFIGURATION_BOUNDARIES}:{}),configuration_version:2,memory_retention_version:1,chat_error_feedback:'local_only',backend_recovery_version:2,private_all_paused:this.unresolvedPrivateHolds.length>0,rate_limit_recovery:{mode:this.rateLimitRecovery?'temporary_cooldown':this.blocked?'manual':'none',remainingSeconds:this.rateLimitRecovery?Math.max(0,Math.ceil((this.rateLimitRecovery.until-this.now())/1000)):0,recoveries:this.rateLimitRecoveryCount,limit:this.config.temporary_recovery_attempts,backoffSeconds:this.rateLimitRecovery?.seconds??0,strategy:this.rateLimitRecovery?.strategy??null},enabled: this.config.enabled, backend: this.config.backend, error: this.error, paused: this.blocked, testing:!!this.testController,test_operation_id:this.testOperationId||null,network:this.network.state(includeConfig),
       ...(includeConfig?{account_pool:this.poolService.state(true),input_diagnostics:this.inputDiagnostics.state()}:{}), diagnostics:this.diagnostics.state(), combined_control_error:this.app.combinedControlError || '',
       private_archive_version:1,vision_intent_version:2,private_archived_count:this.privateArchive.forBinding(this.config.binding_qq).length,private_epoch_since:this.privateArchiveFreshSince||null,...(includeConfig?{archived_private_reviews:this.privateArchive.forBinding(this.config.binding_qq)}:{}),
       group_context: this.groupContext.state(this.config),group_understanding:{version:1,last:this.lastGroupUnderstanding||null},group_participation:{...this.participation.state(this.config),...(includeConfig?{effective:this.participationPolicy()}: {})},...(includeConfig?{persona_suggestion:DEFAULT_PERSONA}:{}), group_sender_policy: this.config.backend === 'api' ? this.config.group_member_policy : 'owner_only',
@@ -696,7 +699,7 @@ export class AIChat {
   draftAPIConfig(input) {
     if (input === undefined) return structuredClone(this.config);
     if (!input?.target || typeof input.target !== 'object' || Array.isArray(input.target) || apiDraftFields.some(key => !Object.hasOwn(input.target, key)) || Object.keys(input.target).some(key => ![...apiDraftFields,...apiDraftOptionalFields].includes(key))) throw new AIError('api_draft_required');
-    try { return validateAISettings({ ...this.config, ...input.target, backend: 'api', enabled: false }); }
+    try { return validateAISettings({ ...this.config, ...input.target, backend:'api',enabled:false,vision_enabled:false,vision_reference_enabled:false,vision_recent_enabled:false,vision_target:'',vision_model:'',vision_verified_at:0,group_context_export:false,group_context_target:'' }); }
     catch(error){if(error instanceof SettingsFieldError)throw error;throw new AIError('invalid_ai_settings');}
   }
   draftCredential(config, credential) {
@@ -723,22 +726,26 @@ export class AIChat {
     } finally { options.key = ''; this.draftSaving = false; }
   }
   async draftModels(input) {
-    const config = this.draftAPIConfig(input), options = this.draftCredential(config, input.credential);
+    const config = this.draftAPIConfig(input), network=input?.network===undefined?undefined:validateNetwork(input.network),options = {...this.draftCredential(config, input.credential),network};
     try { return await this.provider.models(config, options); } finally { options.key = ''; }
   }
   async testAPI(input) {
     if (this.testController) throw new AIError('test_in_progress');
     if (this.draftSaving) throw new AIError('configuration_busy');
     const controller = new AbortController(), generation = this.generation; this.testController = controller;
+    const operationId=input?.test_id??randomUUID();
+    if(typeof operationId!=='string'||!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(operationId)){this.testController=null;throw new AIError('api_draft_required');}
+    this.testOperationId=operationId;
     let config;
     try { config = { ...this.draftAPIConfig(input), instructions: 'This is a connectivity test. Return only OK.', output_chars: 4000 }; }
-    catch (error) { this.testController = null; throw error; }
+    catch (error) { this.testController = null;this.testOperationId=null; throw error; }
+    const deadline=setTimeout(()=>controller.abort(new AIError('request_timeout')),config.timeout_seconds*1000);
     const credential = input === undefined ? { source: 'saved' } : input.credential;
     const began = this.now(); let options = {}, reply = '';this.backendProbe=null;
     const diagnosticId=this.diagnostics.begin('test',config);
     const result = (ok, errorCode = '') => {
       const record = this.diagnostics.state().test;
-      return { ok, reply: redactTestReply(reply, options.key), reply_complete: ok, expected_reply_matched: ok && /^OK[.!。]?$/i.test(reply.trim()),
+      return { ok, test_id:operationId,upstream_cancel_confirmed:false, reply: redactTestReply(reply, options.key), reply_complete: ok, expected_reply_matched: ok && /^OK[.!。]?$/i.test(reply.trim()),
         elapsed_ms: Math.max(0, this.now() - began), http_status: record?.httpStatus ?? null, phase: record?.phase || 'preparing',
         finish_reason: record?.finishReason || null, error_code: errorCode,rate_limit_kind:record?.rateLimitKind||null,retry_after_seconds:record?.retryAfterSeconds??null,output_chars:record?.outputChars||0,reasoning_chars:record?.reasoningChars||0,reported_token_usage:record?.tokenUsage||null, target: apiTarget(config), credential_source: credential?.source || '',
         saved: false, enabled: this.config.enabled, qq_messages: 0, context_messages: 0, backend: 'api', model: config.api_model, output_token_limit: config.api_max_output_tokens };
@@ -747,19 +754,26 @@ export class AIChat {
     try {
       if (this.active) throw new AIError('generation_in_progress');
       if (config.backend !== 'api') throw new AIError('api_backend_required');
-      options = this.draftCredential(config, credential);
+      options = {network:input?.network===undefined?undefined:validateNetwork(input.network),...this.draftCredential(config, credential)};
       if (!config.api_model) throw new AIError('model_required');
       this.diagnostics.progress('test',diagnosticId,{phase:'budget'});
-      await this.reserveBudget(); controller.signal.throwIfAborted();
-      const text = await this.provider.generate(config, [], 'Reply exactly OK.', controller.signal,progress=>this.diagnostics.progress('test',diagnosticId,progress),
-        { ...options, testReply: true, onText: text => { reply = text; } });
+      await withAbort(this.reserveBudget(),controller.signal); controller.signal.throwIfAborted();
+      const current=()=>!controller.signal.aborted&&this.testController===controller&&generation===this.generation;
+      const text = await withAbort(this.provider.generate(config, [], 'Reply exactly OK.', controller.signal,progress=>{if(current())this.diagnostics.progress('test',diagnosticId,progress);},
+        { ...options, testReply: true, onText: text => { if(current())reply = text; } }),controller.signal);
       if (generation !== this.generation || controller.signal.aborted) throw new AIError('test_cancelled');
       reply = text;
-      await this.diagnostics.finish('test',diagnosticId,{status:'completed',phase:'completed',errorCode:'',outputChars:text.length});
+      await withAbort(this.diagnostics.finish('test',diagnosticId,{status:'completed',phase:'completed',errorCode:'',outputChars:text.length}),controller.signal);
       captureProbe();
       return result(true);
-    } catch(error){await this.diagnostics.finish('test',diagnosticId,{status:controller.signal.aborted?'cancelled':'failed',errorCode:publicAIError(error),...(error.status?{httpStatus:error.status}:{}),...(error.rateLimitKind?{rateLimitKind:error.rateLimitKind,retryAfterSeconds:error.retryAfterSeconds}:{})});captureProbe();error.testResult = result(false, publicAIError(error));throw error;
-    } finally { options.key = ''; if (this.testController === controller) this.testController = null; this.kick(); }
+    } catch(error){if(controller.signal.aborted)error=controller.signal.reason?.code==='request_timeout'?controller.signal.reason:new AIError('test_cancelled');const finished=this.diagnostics.finish('test',diagnosticId,{status:controller.signal.aborted?'cancelled':'failed',errorCode:publicAIError(error),...(error.status?{httpStatus:error.status}:{}),...(error.rateLimitKind?{rateLimitKind:error.rateLimitKind,retryAfterSeconds:error.retryAfterSeconds}:{})});if(!controller.signal.aborted)await withAbort(finished,controller.signal).catch(()=>{});captureProbe();error.testResult = result(false, publicAIError(error));throw error;
+    } finally { clearTimeout(deadline);options.key = ''; if (this.testController === controller){this.testController = null;this.testOperationId=null;} this.kick(); }
+  }
+  cancelTest(input){
+    if(!input||Object.keys(input).some(k=>k!=='test_id')||typeof input.test_id!=='string')throw new AIError('api_draft_required');
+    const matching=!!this.testController&&input.test_id===this.testOperationId;
+    if(matching)this.testController.abort(new AIError('test_cancelled'));
+    return{cancel_requested:matching,upstream_cancel_confirmed:false};
   }
   async resumeBackendAfterProbe(input={}){
     if(Object.keys(input).some(key=>key!=='enable')||input.enable!==undefined&&typeof input.enable!=='boolean')throw new AIError('invalid_ai_settings');
@@ -813,5 +827,5 @@ export class AIChat {
   disconnected() {this.cancelParticipation();this.participation.clear(); this.recentVisionImages.clear();for (const job of this.jobs.values()) if (job.running && !job.answer) this.cancelJob(job); }
   reconnected() { if (this.app.client !== this.lastPrivateTransport) { this.privateLiveSince = this.now(); this.lastPrivateTransport = this.app.client; }
     if (this.config.binding_qq && this.config.binding_qq !== this.app.selfId) this.reset(); this.outbox.resume(); this.kick(); }
-  dispose() { this.closed = true; clearInterval(this.maintenance); this.reset(); this.outbox.disposed = true; clearTimeout(this.outbox.timer); }
+  dispose() { this.network.dispose();this.closed = true; clearInterval(this.maintenance); this.reset(); this.outbox.disposed = true; clearTimeout(this.outbox.timer); }
 }
