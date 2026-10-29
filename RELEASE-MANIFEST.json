@@ -4,7 +4,7 @@
   "repository": "WLDKK/qq-reprise",
   "license": "MIT",
   "copyright": "2026 WLDKK",
-  "createdAtUTC": "2026-10-29T11:20:41.242991+00:00",
+  "createdAtUTC": "2026-10-29T11:38:17.135260+00:00",
   "manifestScope": "All 148 other audited source files; manifest excludes itself",
   "fileCountIncludingManifest": 149,
   "files": [
@@ -16,9 +16,9 @@
     },
     {
       "path": "CANDIDATE-VERIFICATION.json",
-      "bytes": 12284,
-      "sha256": "293d8ddbd76d1b5e2b8ea720f015ad1a76b7004c6e73c32d9a3d0b158933b00d",
-      "gitBlobSHA1": "e12513b7f74533088543068b01a1ce4ff9582d73"
+      "bytes": 12366,
+      "sha256": "89e88c795b604ff73be960752386bb9a194285b31336a15b8cf5644b26bd348f",
+      "gitBlobSHA1": "37e5050054e871335c4898f6e3d1be9be2ec5c85"
     },
     {
       "path": "LICENSE",
@@ -53,8 +53,8 @@
     {
       "path": "README.md",
       "bytes": 21003,
-      "sha256": "1cff8fe25ed82c734421bfe8e554826f52e15376f19bed724f8ac12e381dee95",
-      "gitBlobSHA1": "2f61f11d21b26a32c8207abe317bf71306df3782"
+      "sha256": "31a0a0047d0a0467ba3ea13b8228b3eb1861bd939b06e490b260c18b621abf51",
+      "gitBlobSHA1": "2905069ebb7b1d0d617f13b3a08c7dcbbfa6f23e"
     },
     {
       "path": "RELEASE-READINESS.md",
@@ -64,15 +64,15 @@
     },
     {
       "path": "SOURCE-MANIFEST.json",
-      "bytes": 33042,
-      "sha256": "763f664c26e4e9818c0c89f60aafd217d2620b53e44077bede46c45ba23b41e5",
-      "gitBlobSHA1": "916778e9a18bb283bcacf01de75012f95431be3b"
+      "bytes": 33247,
+      "sha256": "c401fc6881eb4503c3344441d6de7b18b1e5c295327b6c8186dc67b991d5e8c2",
+      "gitBlobSHA1": "b0020261880b71406c99fa2b5221092ffc330788"
     },
     {
       "path": "TESTING.md",
-      "bytes": 19403,
-      "sha256": "d9b771677303ea3819a56720cacabd50ca2c42320725d7749621783135a28823",
-      "gitBlobSHA1": "7f1b5b75564b9f3c75d5707a62d1019a9860403d"
+      "bytes": 19698,
+      "sha256": "9c690e916e460c62bd88a05d5d1f17dd03cfd62dc7a8aca0c64a070cb051f279",
+      "gitBlobSHA1": "665ba0c35c750c6cf20009e1bb49820c0eaa4cc2"
     },
     {
       "path": "THIRD-PARTY-NOTES.md",
@@ -346,9 +346,9 @@
     },
     {
       "path": "docs/MEDIA-LIBRARY.md",
-      "bytes": 3162,
-      "sha256": "cd063deb32bd3083a9724e74cf2f6a6a83354ae5fac1ba4d51611638ff82d6d9",
-      "gitBlobSHA1": "bb3e0a24ca29adf5b3121b60135315f39db1d937"
+      "bytes": 3499,
+      "sha256": "a7c2f13e82870162c1c54344f826b2fcfe046ac73c39f83d16f7f222c80844e5",
+      "gitBlobSHA1": "af503800dc941d191ec902cbaff605e3e82fcca3"
     },
     {
       "path": "docs/OAUTH-AUDIT.md",
@@ -610,15 +610,15 @@
     },
     {
       "path": "media-library.mjs",
-      "bytes": 20765,
-      "sha256": "440c172e3d0f3a7955ddf1756569f12949407dce5434fc92706ef2261e3347d1",
-      "gitBlobSHA1": "07fd2b4d786a765d922be5b052000cd52d9c409b"
+      "bytes": 21032,
+      "sha256": "d292c9bcaca410dec8f96de92bf5a3a84d516bb391538a9a252f33346f00e91b",
+      "gitBlobSHA1": "3a17ad28daee0671a0a20b520cb8086356e58743"
     },
     {
       "path": "media-library.test.mjs",
-      "bytes": 12277,
-      "sha256": "50be43c2d41b825fd261ca5573272be17d88f8f84ff835d8f647baae7f59f43e",
-      "gitBlobSHA1": "60e25b85c187ad516dce1e7977cad222313ddef6"
+      "bytes": 14891,
+      "sha256": "3948cab9ae647c45224129e98b7c57eadfe190539ac6f4b3a7ea678fd10172e7",
+      "gitBlobSHA1": "b1cbd4ef18b1c5e0098662f4f8cb15671a5db4a4"
     },
     {
       "path": "media-segments.mjs",
@@ -820,9 +820,9 @@
     },
     {
       "path": "ui.html",
-      "bytes": 245089,
-      "sha256": "be4463e2c0d4d6b94c5769cbe4560b55947f72d73d5d13655d0b2ca36ce0d0c9",
-      "gitBlobSHA1": "17ab64c5bdbb1be3c49fdc62d318a5fba1bd0c99"
+      "bytes": 245170,
+      "sha256": "450e8ef08714da8149046c0267257b36af78bcdde89a0170be09a9ddef2e6dac",
+      "gitBlobSHA1": "05a0076a92c915a1b7bd8b0bfc72a3776e81007b"
     },
     {
       "path": "upstream-limit.mjs",

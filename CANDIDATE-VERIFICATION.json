@@ -20,7 +20,7 @@
   "liveIntegrationVerified": false,
   "licenseFilePresent": true,
   "publicationBlockedUntil": [],
-  "checkedAtUTC": "2026-10-29T11:20:41.242991+00:00",
+  "checkedAtUTC": "2026-10-29T11:38:17.135260+00:00",
   "allMjsSyntaxChecked": 100,
   "syntaxFailures": [],
   "localImportClosureMissing": [],
@@ -236,7 +236,7 @@
     "skipped": 0,
     "guardBlocks": 0
   },
-  "functionalTestsEvidence": "869/869 public and retained-private-default combinations; 40/40 isolated browser checks",
+  "functionalTestsEvidence": "872/872 public and retained-private combinations; 44/44 isolated browser checks",
   "productionBaselineHashCheckIsHistorical": true,
   "functionalTestsBeforeGroupSign": {
     "tests": 443,
@@ -292,8 +292,8 @@
   },
   "functionalTests": {
     "files": 41,
-    "tests": 869,
-    "passed": 869,
+    "tests": 872,
+    "passed": 872,
     "failed": 0,
     "skipped": 0,
     "cancelled": 0,
@@ -324,7 +324,7 @@
     "noRawPayloadsAdded": true
   },
   "browserReview": {
-    "checks": 40,
+    "checks": 44,
     "synthetic": true,
     "realModelRequests": 0,
     "realQQSends": 0
@@ -454,9 +454,11 @@
     "version": 1,
     "defaultEnabled": false,
     "defaultAutoAttach": false,
-    "tests": 20,
+    "tests": 23,
     "realQQSendVerified": false,
-    "nativeStoreStickersSupported": false
+    "nativeStoreStickersSupported": false,
+    "acknowledgedUnknownPreserved": true,
+    "acknowledgementMigrationVerified": true
   },
   "contentScreening": {
     "version": 1,

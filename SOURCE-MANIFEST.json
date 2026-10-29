@@ -437,7 +437,7 @@
     {
       "file": "ui.html",
       "sourceSHA256": "aacc21a987ad7aea510797a8390b279fa008c647b4fb774e30b666906fed938c",
-      "candidateSHA256": "be4463e2c0d4d6b94c5769cbe4560b55947f72d73d5d13655d0b2ca36ce0d0c9",
+      "candidateSHA256": "450e8ef08714da8149046c0267257b36af78bcdde89a0170be09a9ddef2e6dac",
       "changes": [
         "normalize_utf8_newlines",
         "group_sign_v1",
@@ -447,7 +447,8 @@
         "generic_vision_update_or_regression_fixture",
         "qq_plaintext_or_probe_answer_followup",
         "synthetic_probe_safe_evidence",
-        "product_settings_vision_and_media_update"
+        "product_settings_vision_and_media_update",
+        "preserve_acknowledged_unknown_delivery_fact"
       ]
     },
     {
@@ -512,10 +513,11 @@
     {
       "file": "media-library.mjs",
       "sourceSHA256": null,
-      "candidateSHA256": "440c172e3d0f3a7955ddf1756569f12949407dce5434fc92706ef2261e3347d1",
+      "candidateSHA256": "d292c9bcaca410dec8f96de92bf5a3a84d516bb391538a9a252f33346f00e91b",
       "changes": [
         "new_user_managed_local_media_library_default_off",
-        "product_settings_vision_and_media_update"
+        "product_settings_vision_and_media_update",
+        "preserve_acknowledged_unknown_delivery_fact"
       ]
     }
   ],
@@ -798,9 +800,10 @@
     {
       "file": "media-library.test.mjs",
       "sourceSHA256": null,
-      "candidateSHA256": "50be43c2d41b825fd261ca5573272be17d88f8f84ff835d8f647baae7f59f43e",
+      "candidateSHA256": "3948cab9ae647c45224129e98b7c57eadfe190539ac6f4b3a7ea678fd10172e7",
       "changes": [
-        "new_product_settings_vision_consent_or_media_offline_regression"
+        "new_product_settings_vision_consent_or_media_offline_regression",
+        "preserve_acknowledged_unknown_delivery_fact"
       ]
     },
     {
@@ -844,7 +847,7 @@
   "oauthRegistrationEntrypointVerified": true,
   "bundledPreissuedOAuthClientIds": false,
   "provenanceAudit": "PROVENANCE-AUDIT.json",
-  "featurePreparedAtUTC": "2026-10-29T11:20:41.242991+00:00",
+  "featurePreparedAtUTC": "2026-10-29T11:38:17.135260+00:00",
   "environmentPreflightVersion": 1,
   "aiNetworkVersion": 1,
   "apiTestLifecycleVersion": 1,
@@ -854,5 +857,6 @@
   "visionBindingVersion": 3,
   "settingsUIVersion": 2,
   "contentScreeningVersion": 1,
-  "mediaLibraryVersion": 1
+  "mediaLibraryVersion": 1,
+  "mediaAcknowledgementVersion": 2
 }
