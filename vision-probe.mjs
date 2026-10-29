@@ -1,8 +1,9 @@
 // Only fixed color names from our synthetic probe may enter its evaluation.
 // No raw model answer, user image, prompt or credential is returned here.
+import {createHash} from 'node:crypto';
 const colors=new Set(['red','green','blue','yellow']);
 export const PROBE_REPLY_FORMATS=['plain','inline_code','fenced','json_array','json_string','list','unrecognized'];
-export function evaluateVisionProbe(reply,expected){
+export function evaluateVisionProbe(reply,expected,{includeSequences=false}={}){
  const wanted=Array.isArray(expected)?expected:String(expected).trim().split(/\s+/);
  if(!wanted.length||wanted.length>32||!wanted.every(v=>colors.has(v)))throw new Error('invalid_synthetic_probe_spec');
  let text=typeof reply==='string'?reply.trim():'',format='plain',found=null;
@@ -21,5 +22,22 @@ export function evaluateVisionProbe(reply,expected){
   }
  }
  const recognized=found?.length??0,valid=!!found&&found.length===wanted.length,matchedPositions=valid?found.reduce((n,v,i)=>n+Number(v===wanted[i]),0):0,matched=valid&&matchedPositions===wanted.length;
- return{matched,reason:matched?'match':valid?'colors_mismatch':text?'format_unrecognized':'empty_response',format:found?format:'unrecognized',expectedCount:wanted.length,recognizedCount:recognized,matchedPositions};
+ return{matched,reason:matched?'match':valid?'colors_mismatch':text?'format_unrecognized':'empty_response',format:found?format:'unrecognized',expectedCount:wanted.length,recognizedCount:recognized,matchedPositions,...(includeSequences?{expectedColors:[...wanted],observedColors:found?[...found]:null}:{})};
+}
+
+// Only the server-created synthetic probe opts in. Never retain image data,
+// arbitrary model text, URLs, prompts, headers or user-image fingerprints.
+export function safeProbeResponseModel(value,key=''){
+ if(typeof value!=='string'||!value||value.length>160||!/^[A-Za-z0-9][A-Za-z0-9._:/-]*$/.test(value)||/(?:sk-|bearer|secret|token|password)/i.test(value)||key&&value.includes(key))return null;
+ return value;
+}
+export function serializedProbeImages(images){
+ const payload=images.map(image=>{if(typeof image?.dataURL!=='string'||!image.dataURL.startsWith('data:image/png;base64,'))return null;const data=Buffer.from(image.dataURL.split(',')[1],'base64');if(data.length<24||data.subarray(0,8).toString('hex')!=='89504e470d0a1a0a')return null;return{mime:'image/png',bytes:data.length,width:data.readUInt32BE(16),height:data.readUInt32BE(20),sha256:createHash('sha256').update(data).digest('hex'),detail:'auto'};});
+ return payload.length&&payload.every(Boolean)?payload:null;
+}
+export function cleanSyntheticProbeDiagnostic(value){
+ if(value.syntheticVisionProbe!==true)return{};
+ const sequence=a=>Array.isArray(a)&&a.length<=32&&a.every(v=>colors.has(v))?[...a]:null;
+ const payload=Array.isArray(value.probeImagePayload)&&value.probeImagePayload.length>0&&value.probeImagePayload.length<=8&&value.probeImagePayload.every(v=>v&&v.mime==='image/png'&&Number.isSafeInteger(v.bytes)&&v.bytes>0&&v.bytes<=5242880&&Number.isSafeInteger(v.width)&&v.width>0&&v.width<=8192&&Number.isSafeInteger(v.height)&&v.height>0&&v.height<=8192&&typeof v.sha256==='string'&&/^[a-f0-9]{64}$/.test(v.sha256)&&v.detail==='auto')?value.probeImagePayload.map(v=>({mime:v.mime,bytes:v.bytes,width:v.width,height:v.height,sha256:v.sha256,detail:v.detail})):null;
+ return{syntheticVisionProbe:true,probeExpectedSequence:sequence(value.probeExpectedSequence),probeObservedSequence:sequence(value.probeObservedSequence),probeImagePayload:payload,probeResponseModel:safeProbeResponseModel(value.probeResponseModel)};
 }

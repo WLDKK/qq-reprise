@@ -1,8 +1,8 @@
 {
-  "status": "audited_qq_plaintext_and_vision_probe_fix",
+  "status": "audited_synthetic_vision_evidence",
   "runtimeFiles": 56,
   "runtimeMjsFiles": 54,
-  "testFiles": 35,
+  "testFiles": 36,
   "historicalBaseline": {
     "tests": 400,
     "passed": 350,
@@ -20,15 +20,15 @@
   "liveIntegrationVerified": false,
   "licenseFilePresent": true,
   "publicationBlockedUntil": [],
-  "checkedAtUTC": "2026-10-29T08:33:49.467170+00:00",
-  "allMjsSyntaxChecked": 92,
+  "checkedAtUTC": "2026-10-29T09:21:16.183312+00:00",
+  "allMjsSyntaxChecked": 93,
   "syntaxFailures": [],
   "localImportClosureMissing": [],
   "externalPackageImports": [],
-  "publicFiles": 135,
+  "publicFiles": 137,
   "jsonFilesParsed": 9,
   "documentationFiles": 24,
-  "localLinksChecked": 113,
+  "localLinksChecked": 115,
   "knownPersonalDataMatches": 0,
   "credentialFindingsRequiringReview": 0,
   "explicitSyntheticTestFindings": [
@@ -236,7 +236,7 @@
     "skipped": 0,
     "guardBlocks": 0
   },
-  "functionalTestsEvidence": "721/721 public and retained-private-default combinations; 12/12 current synthetic browser checks",
+  "functionalTestsEvidence": "736/736 public and retained-private-default combinations; 16/16 synthetic browser checks",
   "productionBaselineHashCheckIsHistorical": true,
   "functionalTestsBeforeGroupSign": {
     "tests": 443,
@@ -291,9 +291,9 @@
     "guardBlocks": 0
   },
   "functionalTests": {
-    "files": 35,
-    "tests": 721,
-    "passed": 721,
+    "files": 36,
+    "tests": 736,
+    "passed": 736,
     "failed": 0,
     "skipped": 0,
     "cancelled": 0,
@@ -324,7 +324,7 @@
     "noRawPayloadsAdded": true
   },
   "browserReview": {
-    "checks": 12,
+    "checks": 16,
     "synthetic": true,
     "realModelRequests": 0,
     "realQQSends": 0
@@ -449,12 +449,11 @@
     "incomingOrRecallTextChanged": false
   },
   "visionProbe": {
-    "version": 2,
-    "tests": 20,
-    "baselineCorrectFormatCasesPassed": 1,
-    "fixedCorrectFormatCasesPassed": 6,
-    "formatCases": 6,
+    "version": 3,
+    "newEvidenceTests": 15,
     "rawReplyPersisted": false,
-    "realModelRetested": false
+    "realModelRetested": false,
+    "normalImageFingerprintsPersisted": false,
+    "acceptanceStandardChanged": false
   }
 }

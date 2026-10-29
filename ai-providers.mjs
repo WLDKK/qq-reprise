@@ -2,6 +2,7 @@ import { AIError, SIWC, readJSONResponse, safeCode } from './ai-auth.mjs';
 import { redactTestReply } from './ai-api-draft.mjs';
 import {visionTarget,visionEnabled,visionLimits,imageData} from './ai-vision.mjs';
 import{retryAfterSeconds}from'./upstream-limit.mjs';
+import {serializedProbeImages,safeProbeResponseModel} from './vision-probe.mjs';
 
 export function publicAIError(error) {
   if (error?.name === 'TimeoutError') return 'request_timeout';
@@ -110,6 +111,10 @@ export class AIProviders {
     const sentTokenField=['max_tokens','max_completion_tokens','max_output_tokens'].find(key=>Object.hasOwn(body,key))||null;
     progress({format:detail.responses?'responses':'chat_completions',timeoutSeconds:config.timeout_seconds,outputTokenMode:outputMode,outputTokenLimit:outputMode==='custom'?body[sentTokenField]:null,requestedTokenField:sentTokenField,requestedTokenLimit:sentTokenField?body[sentTokenField]:null,outputCharLimit:config.output_chars});
     const submission=await options.beforeSubmit?.();try{combined.throwIfAborted();}catch(error){await options.onNotSubmitted?.(submission);throw error;}
+    if(options.visionProbe===true&&images.length){
+      const payload=serializedProbeImages(images);
+      if(payload)progress({syntheticVisionProbe:true,probeImagePayload:payload,imageMime:'image/png',imageBytes:payload[0].bytes,imageCount:payload.length,imageTotalBytes:payload.reduce((n,v)=>n+v.bytes,0)});
+    }
     progress({phase:'http_request'});
     let responsePromise;try{responsePromise=Promise.resolve(this.fetcher(detail.base + (detail.responses ? '/responses' : '/chat/completions'), {
       method: 'POST', redirect: 'error', aiNetwork:options.network, headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + detail.key }, body: JSON.stringify(body), signal: combined
@@ -125,6 +130,7 @@ export class AIProviders {
       streamEvents++;
       if(firstEvent){progress({phase:'streaming'});firstEvent=false;}
       if (event.type === 'done') break;
+      if(options.visionProbe===true){const model=safeProbeResponseModel(event.response?.model??event.model,detail.key);if(model)progress({syntheticVisionProbe:true,probeResponseModel:model});}
       const usage=event.usage||event.response?.usage;if(usage&&typeof usage==='object'){const count=v=>Number.isSafeInteger(v)&&v>=0&&v<=1000000000?v:null;progress({tokenUsage:{input:count(usage.prompt_tokens??usage.input_tokens),output:count(usage.completion_tokens??usage.output_tokens),total:count(usage.total_tokens),reasoning:count(usage.completion_tokens_details?.reasoning_tokens??usage.output_tokens_details?.reasoning_tokens)}});}
       if (event.error || ['error', 'response.failed', 'response.incomplete'].includes(event.type)) {
         const code = event.error?.code || event.response?.error?.code || event.code;
