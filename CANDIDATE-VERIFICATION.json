@@ -1,8 +1,8 @@
 {
-  "status": "audited_ai_network_and_test_update",
+  "status": "audited_network_error_handoff_followup",
   "runtimeFiles": 55,
   "runtimeMjsFiles": 53,
-  "testFiles": 31,
+  "testFiles": 32,
   "historicalBaseline": {
     "tests": 400,
     "passed": 350,
@@ -20,12 +20,12 @@
   "liveIntegrationVerified": false,
   "licenseFilePresent": true,
   "publicationBlockedUntil": [],
-  "checkedAtUTC": "2026-10-29T03:35:53.700656+00:00",
-  "allMjsSyntaxChecked": 87,
+  "checkedAtUTC": "2026-10-29T04:03:35.713429+00:00",
+  "allMjsSyntaxChecked": 88,
   "syntaxFailures": [],
   "localImportClosureMissing": [],
   "externalPackageImports": [],
-  "publicFiles": 127,
+  "publicFiles": 128,
   "jsonFilesParsed": [
     "CANDIDATE-VERIFICATION.json",
     "PROVENANCE-AUDIT.json",
@@ -111,6 +111,11 @@
       "file": "ai-providers.test.mjs",
       "line": 66,
       "kind": "api_key"
+    },
+    {
+      "file": "ai-state-handoff.test.mjs",
+      "line": 10,
+      "kind": "bearer"
     },
     {
       "file": "competition-platform.test.mjs",
@@ -241,7 +246,7 @@
     "skipped": 0,
     "guardBlocks": 0
   },
-  "functionalTestsEvidence": "616/616 guarded synthetic tests on current runtime/test/UI source; 22 isolated browser checks; no real provider/proxy/QQ verification",
+  "functionalTestsEvidence": "628/628 guarded public-source tests; preserved-private-default production combination separately 628/628; unchanged UI retains 22 mock-browser checks",
   "productionBaselineHashCheckIsHistorical": true,
   "functionalTestsBeforeGroupSign": {
     "tests": 443,
@@ -296,8 +301,8 @@
     "guardBlocks": 0
   },
   "functionalTests": {
-    "tests": 616,
-    "passed": 616,
+    "tests": 628,
+    "passed": 628,
     "failed": 0,
     "skipped": 0,
     "cancelled": 0,
@@ -408,5 +413,14 @@
     "originalKeyCreationTimeoutResolved": false,
     "hardCurrencyCapImplemented": false,
     "cancellationConfirmsUpstreamStop": false
+  },
+  "handoffErrors": {
+    "version": 1,
+    "tests": 12,
+    "beforePassed": 1,
+    "beforeFailed": 11,
+    "afterPassed": 12,
+    "errorsCleared": false,
+    "bindingPrivateHoldAndAgeChecksRetained": true
   }
 }

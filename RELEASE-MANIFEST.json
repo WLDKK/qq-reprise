@@ -4,9 +4,9 @@
   "repository": "WLDKK/qq-reprise",
   "license": "MIT",
   "copyright": "2026 WLDKK",
-  "createdAtUTC": "2026-10-29T03:35:53.700656+00:00",
-  "manifestScope": "All 126 other audited source files; manifest excludes itself",
-  "fileCountIncludingManifest": 127,
+  "createdAtUTC": "2026-10-29T04:03:35.713429+00:00",
+  "manifestScope": "All 127 other audited source files; manifest excludes itself",
+  "fileCountIncludingManifest": 128,
   "files": [
     {
       "path": ".gitignore",
@@ -16,9 +16,9 @@
     },
     {
       "path": "CANDIDATE-VERIFICATION.json",
-      "bytes": 11164,
-      "sha256": "ccdfae2cc4f0963382cbeb19cb74b87991557b0e66a1dd08c47c855fc651fd27",
-      "gitBlobSHA1": "6dae354df661d7f88d3ad5ef3650122f2c7215ce"
+      "bytes": 11505,
+      "sha256": "c7d5dd66d54dbdf27ff6e25e7f34f3d331557d1e98bd6d52f34ca27feeb9422f",
+      "gitBlobSHA1": "11295c408a364d1ede23348376361364cebd0491"
     },
     {
       "path": "LICENSE",
@@ -46,33 +46,33 @@
     },
     {
       "path": "PUBLISHING.md",
-      "bytes": 2675,
-      "sha256": "554c7a7159406f3ea3a974dd8805ace2a90fc3d4ea7432bd06393e30e9184025",
-      "gitBlobSHA1": "dbb354d7d0045edaf9b224c8ce16ed744366399e"
+      "bytes": 2952,
+      "sha256": "83129f47c43ac42095d186bd32f679712a90af4552b13137be3bc75d94c1c024",
+      "gitBlobSHA1": "e5a62df9272fb1abd154b4e138d736200407aee3"
     },
     {
       "path": "README.md",
-      "bytes": 19378,
-      "sha256": "c49b07b6729ecbf2cac13bf89798c7f9d466975b8dcc2d691c5507f320652f12",
-      "gitBlobSHA1": "7ee9461f9b3c93adaa774aa11411e4d5ce47ef0d"
+      "bytes": 19410,
+      "sha256": "ff2638c8baf7680284d4426889ace605060e7f7e8e94d6fb0978e6245125deee",
+      "gitBlobSHA1": "90b6adc428da007ebbe076391b49b0e424d631ce"
     },
     {
       "path": "RELEASE-READINESS.md",
-      "bytes": 2412,
-      "sha256": "f7d01840a472929c194763f483bb91e0d0805c6eae8da518406d30f8a0bc4d3a",
-      "gitBlobSHA1": "c155e0ca6dc7866c49bdbae741ceef4b9ef610e1"
+      "bytes": 2689,
+      "sha256": "d6362e1d66550b017cdd99c13b324d803851127971ff3f4abc776420931a487d",
+      "gitBlobSHA1": "d7d25013f296f192b8b91e0748dcae7a695b9177"
     },
     {
       "path": "SOURCE-MANIFEST.json",
-      "bytes": 27276,
-      "sha256": "92cad2e52354131efa6753673c92ff637723ec10e20283f444c8ce20b428c6ec",
-      "gitBlobSHA1": "a5968497222e5b781b237f1ef62718df09353fed"
+      "bytes": 27639,
+      "sha256": "fff69aa308d1f951138a534858a5fee83019b077c572dcc6ebe8ed87052e74a3",
+      "gitBlobSHA1": "564758922f627ea7b9dc51b7d3af0602c86f37e9"
     },
     {
       "path": "TESTING.md",
-      "bytes": 11483,
-      "sha256": "207753fab47908589e3992543d293aba302c6c9cbd334aaadce12be6ce3293d8",
-      "gitBlobSHA1": "bf756a5c0f82f3191f1aa121977f51354da709f2"
+      "bytes": 12372,
+      "sha256": "f3d2be6176661a55fc33dff75f59c6f0ca863aa6aa40370f04db80f95f0460a2",
+      "gitBlobSHA1": "c47b8c9103903205912e59aff38b8b2a98ecc202"
     },
     {
       "path": "THIRD-PARTY-NOTES.md",
@@ -190,9 +190,15 @@
     },
     {
       "path": "ai-state-handoff.mjs",
-      "bytes": 2098,
-      "sha256": "70cdb322cfa7efb578cd8ace64c6cfd0874aea3ee72c9ff0fde2d38d8b77e5b6",
-      "gitBlobSHA1": "73f5c4650da161164cec5edffddbe9abae10afa8"
+      "bytes": 2409,
+      "sha256": "355b4180f689eea30ac584ec4f8f6105433db66b341f56905963f937bf1254de",
+      "gitBlobSHA1": "bccf94b79ee4c5b23c4a0dd59c3c5985c73ce518"
+    },
+    {
+      "path": "ai-state-handoff.test.mjs",
+      "bytes": 1726,
+      "sha256": "89d5c659367130690c5cc01a1f09192ee78a7f566af3cbb482eb3d6f32c659cd",
+      "gitBlobSHA1": "9f380b4a8c2556ea5c4b3c6ed32c19820e2a9f60"
     },
     {
       "path": "ai-storage.mjs",
@@ -298,9 +304,9 @@
     },
     {
       "path": "docs/AI-NETWORK-AND-TEST.md",
-      "bytes": 5848,
-      "sha256": "3a2da1c24a41a2926d4b1e0b7b71313fa47543a57abacf4b176768b2fed3625f",
-      "gitBlobSHA1": "2400f802861bfa2fde15e331e61a1018b0a80423"
+      "bytes": 6173,
+      "sha256": "bdce8e43d6b8f995fcf31d51d255a7d07ea4f63e1469e4b9835e9ad1dccde86d",
+      "gitBlobSHA1": "9e57cf37fb39f67ccd609c454511e0c76b8ab1f3"
     },
     {
       "path": "docs/BACKEND-RECOVERY-FIX.diff",
@@ -400,9 +406,9 @@
     },
     {
       "path": "docs/UPDATE-20261029-AI-NETWORK.md",
-      "bytes": 1408,
-      "sha256": "8082ba32a21bffd186aba45fc9482dd7b41bad4c1101604593cdfd75d93f6b5b",
-      "gitBlobSHA1": "23c5e9d2d058120de0f84fbbe03b5c5ce1b92cb8"
+      "bytes": 1733,
+      "sha256": "1db3bdde7a12cdccbedae0af72538b2e9c0ee073f76af0b9e7cc621bdf453d8b",
+      "gitBlobSHA1": "e6acbc02ae302ef805fa04bbb3adbc37700f431c"
     },
     {
       "path": "docs/assets/ai-workbench-synthetic.png",

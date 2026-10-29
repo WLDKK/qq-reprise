@@ -3,7 +3,7 @@
   "sourceProject": "QQ local assistant",
   "sourceHasGitHistory": false,
   "sourceRemoteAvailable": false,
-  "sourceVersion": "recall-rich-flow-v1-20261021; backend_recovery_version=2; group_sign_version=1; group_sign_scheduler_version=2; upstream_observation_version=1; ai_network_version=1; api_test_lifecycle_version=1",
+  "sourceVersion": "recall-rich-flow-v1-20261021; backend_recovery_version=2; group_sign_version=1; group_sign_scheduler_version=2; upstream_observation_version=1; ai_network_version=1; api_test_lifecycle_version=1; backend_handoff_errors_version=1",
   "licenseDecision": "MIT_owner_approved",
   "privateProductionDataIncluded": false,
   "originalEvidenceRetainedOutsideCandidate": true,
@@ -89,9 +89,10 @@
     {
       "file": "ai-state-handoff.mjs",
       "sourceSHA256": "70cdb322cfa7efb578cd8ace64c6cfd0874aea3ee72c9ff0fde2d38d8b77e5b6",
-      "candidateSHA256": "70cdb322cfa7efb578cd8ace64c6cfd0874aea3ee72c9ff0fde2d38d8b77e5b6",
+      "candidateSHA256": "355b4180f689eea30ac584ec4f8f6105433db66b341f56905963f937bf1254de",
       "changes": [
-        "normalize_utf8_newlines"
+        "normalize_utf8_newlines",
+        "preserve_known_network_errors_during_controlled_reload"
       ]
     },
     {
@@ -668,6 +669,14 @@
       "changes": [
         "new_candidate_ai_network_or_test_implementation"
       ]
+    },
+    {
+      "file": "ai-state-handoff.test.mjs",
+      "sourceSHA256": null,
+      "candidateSHA256": "89d5c659367130690c5cc01a1f09192ee78a7f566af3cbb482eb3d6f32c659cd",
+      "changes": [
+        "strict_network_error_handoff_regression"
+      ]
     }
   ],
   "helpers": [
@@ -702,7 +711,7 @@
   "oauthRegistrationEntrypointVerified": true,
   "bundledPreissuedOAuthClientIds": false,
   "provenanceAudit": "PROVENANCE-AUDIT.json",
-  "featurePreparedAtUTC": "2026-10-29T03:35:53.700656+00:00",
+  "featurePreparedAtUTC": "2026-10-29T04:03:35.713429+00:00",
   "environmentPreflightVersion": 1,
   "aiNetworkVersion": 1,
   "apiTestLifecycleVersion": 1
