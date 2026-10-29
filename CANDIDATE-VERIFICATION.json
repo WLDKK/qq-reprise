@@ -20,7 +20,7 @@
   "liveIntegrationVerified": false,
   "licenseFilePresent": true,
   "publicationBlockedUntil": [],
-  "checkedAtUTC": "2026-10-29T11:38:17.135260+00:00",
+  "checkedAtUTC": "2026-10-29T12:23:52.522310+00:00",
   "allMjsSyntaxChecked": 100,
   "syntaxFailures": [],
   "localImportClosureMissing": [],
@@ -236,7 +236,7 @@
     "skipped": 0,
     "guardBlocks": 0
   },
-  "functionalTestsEvidence": "872/872 public and retained-private combinations; 44/44 isolated browser checks",
+  "functionalTestsEvidence": "872/872 public and private-default combinations; 44 base + 24 toggle browser cases; 60 layout cases",
   "productionBaselineHashCheckIsHistorical": true,
   "functionalTestsBeforeGroupSign": {
     "tests": 443,
@@ -324,7 +324,10 @@
     "noRawPayloadsAdded": true
   },
   "browserReview": {
-    "checks": 44,
+    "checks": 68,
+    "baseChecks": 44,
+    "singleToggleChecks": 24,
+    "layoutCases": 60,
     "synthetic": true,
     "realModelRequests": 0,
     "realQQSends": 0
@@ -444,11 +447,13 @@
     "sizeAndDetailComparison": true
   },
   "settingsViews": {
-    "version": 2,
+    "version": 3,
     "default": "simple",
     "fullSettingsRetained": true,
     "catalogFields": 212,
-    "individuallyTestedAllCombinations": false
+    "individuallyTestedAllCombinations": false,
+    "singleClickImageConsent": true,
+    "globalSettingsNotOverwritten": true
   },
   "mediaLibrary": {
     "version": 1,

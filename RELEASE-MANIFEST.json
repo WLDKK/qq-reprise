@@ -4,7 +4,7 @@
   "repository": "WLDKK/qq-reprise",
   "license": "MIT",
   "copyright": "2026 WLDKK",
-  "createdAtUTC": "2026-10-29T11:38:17.135260+00:00",
+  "createdAtUTC": "2026-10-29T12:23:52.522310+00:00",
   "manifestScope": "All 148 other audited source files; manifest excludes itself",
   "fileCountIncludingManifest": 149,
   "files": [
@@ -16,9 +16,9 @@
     },
     {
       "path": "CANDIDATE-VERIFICATION.json",
-      "bytes": 12366,
-      "sha256": "89e88c795b604ff73be960752386bb9a194285b31336a15b8cf5644b26bd348f",
-      "gitBlobSHA1": "37e5050054e871335c4898f6e3d1be9be2ec5c85"
+      "bytes": 12545,
+      "sha256": "29feca085ee8df11304505c530ce9501676aa7d83601ea369f8cafca2b10fab7",
+      "gitBlobSHA1": "eba02f666c8c9af850a8f7c88a7521f0438b46eb"
     },
     {
       "path": "LICENSE",
@@ -52,9 +52,9 @@
     },
     {
       "path": "README.md",
-      "bytes": 21003,
-      "sha256": "31a0a0047d0a0467ba3ea13b8228b3eb1861bd939b06e490b260c18b621abf51",
-      "gitBlobSHA1": "2905069ebb7b1d0d617f13b3a08c7dcbbfa6f23e"
+      "bytes": 21273,
+      "sha256": "afbcdcebf3779599a22ed262c085e17c8d454a9da7cb567f6b18579c3f9a3951",
+      "gitBlobSHA1": "b6871386553cde82c3ce911531a640857a38430a"
     },
     {
       "path": "RELEASE-READINESS.md",
@@ -64,15 +64,15 @@
     },
     {
       "path": "SOURCE-MANIFEST.json",
-      "bytes": 33247,
-      "sha256": "c401fc6881eb4503c3344441d6de7b18b1e5c295327b6c8186dc67b991d5e8c2",
-      "gitBlobSHA1": "b0020261880b71406c99fa2b5221092ffc330788"
+      "bytes": 33387,
+      "sha256": "d9e678b95a74eefc7cdbe2b14d3332b69130f2b41fd78cd8a31c1fd9d71fe3c3",
+      "gitBlobSHA1": "7d898a132d6eec491764f265a796b576849ba4ae"
     },
     {
       "path": "TESTING.md",
-      "bytes": 19698,
-      "sha256": "9c690e916e460c62bd88a05d5d1f17dd03cfd62dc7a8aca0c64a070cb051f279",
-      "gitBlobSHA1": "665ba0c35c750c6cf20009e1bb49820c0eaa4cc2"
+      "bytes": 20864,
+      "sha256": "4769d8e9b4c3c56c3a2edc13c974df5c745d339525daa9cc74f3d07c657043b4",
+      "gitBlobSHA1": "dbf8275dc7910e1288d9fc2d109e4ff20d87a744"
     },
     {
       "path": "THIRD-PARTY-NOTES.md",
@@ -334,9 +334,9 @@
     },
     {
       "path": "docs/GENERIC-VISION.md",
-      "bytes": 2840,
-      "sha256": "bf6db52b4aea2005b4d51fb60e6ea790fd1a939056c90508fe6d8ec953978836",
-      "gitBlobSHA1": "02a65a8fdfc1a795e3a3684fe4ae7b85ea75b974"
+      "bytes": 3514,
+      "sha256": "abcf09c2829c7b3551a0a4053891bad455f47cf7b4d18b5e49481abba84745f2",
+      "gitBlobSHA1": "499e813092d749cb7423e068ee5fdb35dd52e7ce"
     },
     {
       "path": "docs/GROUP-SIGN.md",
@@ -370,15 +370,15 @@
     },
     {
       "path": "docs/SETTINGS-MATRIX.json",
-      "bytes": 105641,
-      "sha256": "b9107bf839a505ad758018b035878fd08a310930620cdc97933edf5cbd1a085b",
-      "gitBlobSHA1": "3eb7da49cf1e4b066646a393a88e5537809b2008"
+      "bytes": 109056,
+      "sha256": "dbadc78be9596fd71e1fc19cebef1334f80b3191318f255d5edd6b47c08f25d8",
+      "gitBlobSHA1": "441424a7bbc658d821c98a426075567f05b2bbc0"
     },
     {
       "path": "docs/SETTINGS-VIEWS.md",
-      "bytes": 2751,
-      "sha256": "07b8580bf7829ba397038cd1c122b53c5d31995876db656c5a2b784a12762a00",
-      "gitBlobSHA1": "d6c068c8f4186d20295c537c6b995afedc672c8c"
+      "bytes": 3482,
+      "sha256": "e406a0d2e93355ab25f74e17e9332ca08dd7c00488caccf24ee57ee08aefd9f3",
+      "gitBlobSHA1": "a7f46867608b630a7024a18b2b9b3387a972f896"
     },
     {
       "path": "docs/SHOWCASE.md",
@@ -448,9 +448,9 @@
     },
     {
       "path": "docs/UPDATE-20261029-PRODUCT.md",
-      "bytes": 1127,
-      "sha256": "885f4655fc122a1d660abbb4e0b02824ab0fc8d3b91c695af40e199dc051c890",
-      "gitBlobSHA1": "1b92b457244eecca865b382955393cf97d4ea12a"
+      "bytes": 1599,
+      "sha256": "71884e4048914c208ba37136401633794bc3478239d6296aa28bf712a0642a7a",
+      "gitBlobSHA1": "2f8f7eb2340d36fe70538680a7d79717170b4e8c"
     },
     {
       "path": "docs/UPDATE-20261029-QQ-TEXT-AND-PROBE.md",
@@ -725,8 +725,8 @@
     {
       "path": "qq-recall.mjs",
       "bytes": 69393,
-      "sha256": "4840023e34a21e7623fbdf58139c2f5cb07b019bc0eea4126f4327bba300143f",
-      "gitBlobSHA1": "68e262caaddd21dd73f7ae15edb3de0017e7f146"
+      "sha256": "6e8bbb165d8fde292be2e2b2211c52c7c39c2d396880b3ec8b393e622267b1c5",
+      "gitBlobSHA1": "61cf3210b93e0066b67ec563783a909303dacd72"
     },
     {
       "path": "quick-login.mjs",
@@ -820,9 +820,9 @@
     },
     {
       "path": "ui.html",
-      "bytes": 245170,
-      "sha256": "450e8ef08714da8149046c0267257b36af78bcdde89a0170be09a9ddef2e6dac",
-      "gitBlobSHA1": "05a0076a92c915a1b7bd8b0bfc72a3776e81007b"
+      "bytes": 251827,
+      "sha256": "14d6258c64e33bf4996b3f84b43dafdfaddfa65adfbe5abcd63f621360f87c0e",
+      "gitBlobSHA1": "29f655b570987b0837c86460ab6f96c3901dc31f"
     },
     {
       "path": "upstream-limit.mjs",

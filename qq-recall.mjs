@@ -884,7 +884,7 @@ export async function startApp(options = {}) {
       if (request.url === '/health' && request.method === 'GET') {
         const recovery = app.recovery.snapshot();
         const cache = app.engine?.cacheSnapshot();
-        return send(200, { app: 'qq-recall-private', group_sign_version:1,local_policy_version:'recall-rich-flow-v1-20261021',recall_rich_version:1,input_mentions_version:1,nickname_identity_version:1,structured_ai_mentions:true, display_name:'回响 QQ 助手',settings_ui_version:2,media_library_version:1, dual_ui:true, persistent_diagnostics:true, api_draft_test:true, real_group_mentions:true, unified_commands:true, ui_version:'chat-20261015', pid: process.pid, groups: true, commands: true, pacing: true,
+        return send(200, { app: 'qq-recall-private', group_sign_version:1,local_policy_version:'recall-rich-flow-v1-20261021',recall_rich_version:1,input_mentions_version:1,nickname_identity_version:1,structured_ai_mentions:true, display_name:'回响 QQ 助手',settings_ui_version:3,media_library_version:1, dual_ui:true, persistent_diagnostics:true, api_draft_test:true, real_group_mentions:true, unified_commands:true, ui_version:'chat-20261015', pid: process.pid, groups: true, commands: true, pacing: true,
           recovery: true, command_permissions: true, dynamic_pacing: true, self_recall: true,
           connection_watchdog: true, recovery_error_categories: true, verified_login_resume: true,
           resend_exemptions: true, command_confirmations: true, exact_command_replies: true,

@@ -1035,7 +1035,7 @@
       "editable": true,
       "defaultSource": "AI_DEFAULTS (anonymous public source)",
       "save": "/api/ai/vision-settings",
-      "view": "simple and professional",
+      "view": "simple immediate-save switch; professional full draft",
       "range": null,
       "staticReferences": [
         "ai-chat.mjs",

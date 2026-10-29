@@ -3,7 +3,7 @@
   "sourceProject": "QQ local assistant",
   "sourceHasGitHistory": false,
   "sourceRemoteAvailable": false,
-  "sourceVersion": "recall-rich-flow-v1-20261021; backend_recovery_version=2; group_sign_version=1; group_sign_scheduler_version=2; upstream_observation_version=1; ai_network_version=1; api_test_lifecycle_version=1; backend_handoff_errors_version=1; vision_version=8; vision_binding_version=3; vision_probe_version=4; qq_output_version=2; settings_ui_version=2; content_screening_version=1; media_library_version=1",
+  "sourceVersion": "recall-rich-flow-v1-20261021; backend_recovery_version=2; group_sign_version=1; group_sign_scheduler_version=2; upstream_observation_version=1; ai_network_version=1; api_test_lifecycle_version=1; backend_handoff_errors_version=1; vision_version=8; vision_binding_version=3; vision_probe_version=4; qq_output_version=2; settings_ui_version=3; content_screening_version=1; media_library_version=1",
   "licenseDecision": "MIT_owner_approved",
   "privateProductionDataIncluded": false,
   "originalEvidenceRetainedOutsideCandidate": true,
@@ -344,13 +344,14 @@
     {
       "file": "qq-recall.mjs",
       "sourceSHA256": "91b5429270ca3f159d218af0a78efb85f16f4178e9cefcc9ae58f60a571c30ea",
-      "candidateSHA256": "4840023e34a21e7623fbdf58139c2f5cb07b019bc0eea4126f4327bba300143f",
+      "candidateSHA256": "6e8bbb165d8fde292be2e2b2211c52c7c39c2d396880b3ec8b393e622267b1c5",
       "changes": [
         "normalize_utf8_newlines",
         "group_sign_v1",
         "isolated_ai_network_and_test_lifecycle_v1",
         "generic_vision_update_or_regression_fixture",
-        "product_settings_vision_and_media_update"
+        "product_settings_vision_and_media_update",
+        "single_click_explicit_image_consent_and_frontend_feedback"
       ]
     },
     {
@@ -437,7 +438,7 @@
     {
       "file": "ui.html",
       "sourceSHA256": "aacc21a987ad7aea510797a8390b279fa008c647b4fb774e30b666906fed938c",
-      "candidateSHA256": "450e8ef08714da8149046c0267257b36af78bcdde89a0170be09a9ddef2e6dac",
+      "candidateSHA256": "14d6258c64e33bf4996b3f84b43dafdfaddfa65adfbe5abcd63f621360f87c0e",
       "changes": [
         "normalize_utf8_newlines",
         "group_sign_v1",
@@ -448,7 +449,8 @@
         "qq_plaintext_or_probe_answer_followup",
         "synthetic_probe_safe_evidence",
         "product_settings_vision_and_media_update",
-        "preserve_acknowledged_unknown_delivery_fact"
+        "preserve_acknowledged_unknown_delivery_fact",
+        "single_click_explicit_image_consent_and_frontend_feedback"
       ]
     },
     {
@@ -847,7 +849,7 @@
   "oauthRegistrationEntrypointVerified": true,
   "bundledPreissuedOAuthClientIds": false,
   "provenanceAudit": "PROVENANCE-AUDIT.json",
-  "featurePreparedAtUTC": "2026-10-29T11:38:17.135260+00:00",
+  "featurePreparedAtUTC": "2026-10-29T12:23:52.522310+00:00",
   "environmentPreflightVersion": 1,
   "aiNetworkVersion": 1,
   "apiTestLifecycleVersion": 1,
@@ -855,7 +857,7 @@
   "visionProbeVersion": 4,
   "qqOutputVersion": 2,
   "visionBindingVersion": 3,
-  "settingsUIVersion": 2,
+  "settingsUIVersion": 3,
   "contentScreeningVersion": 1,
   "mediaLibraryVersion": 1,
   "mediaAcknowledgementVersion": 2
