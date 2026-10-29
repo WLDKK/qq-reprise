@@ -49,3 +49,12 @@ vendor/
 !PROVENANCE-AUDIT.json
 
 !RELEASE-MANIFEST.json
+
+# Local media copies, private selection settings and delivery receipts
+/media-library/
+/media-settings.json
+/media-library.json
+/media-deliveries.json
+
+# Anonymous public settings catalog only; runtime JSON remains private.
+!/docs/SETTINGS-MATRIX.json

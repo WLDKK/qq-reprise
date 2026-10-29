@@ -31,13 +31,14 @@ export function safeProbeResponseModel(value,key=''){
  if(typeof value!=='string'||!value||value.length>160||!/^[A-Za-z0-9][A-Za-z0-9._:/-]*$/.test(value)||/(?:sk-|bearer|secret|token|password)/i.test(value)||key&&value.includes(key))return null;
  return value;
 }
-export function serializedProbeImages(images){
- const payload=images.map(image=>{if(typeof image?.dataURL!=='string'||!image.dataURL.startsWith('data:image/png;base64,'))return null;const data=Buffer.from(image.dataURL.split(',')[1],'base64');if(data.length<24||data.subarray(0,8).toString('hex')!=='89504e470d0a1a0a')return null;return{mime:'image/png',bytes:data.length,width:data.readUInt32BE(16),height:data.readUInt32BE(20),sha256:createHash('sha256').update(data).digest('hex'),detail:'auto'};});
+export function serializedProbeImages(images,detail='auto'){
+ if(!['auto','low','high'].includes(detail))return null;
+ const payload=images.map(image=>{if(typeof image?.dataURL!=='string'||!image.dataURL.startsWith('data:image/png;base64,'))return null;const data=Buffer.from(image.dataURL.split(',')[1],'base64');if(data.length<24||data.subarray(0,8).toString('hex')!=='89504e470d0a1a0a')return null;return{mime:'image/png',bytes:data.length,width:data.readUInt32BE(16),height:data.readUInt32BE(20),sha256:createHash('sha256').update(data).digest('hex'),detail};});
  return payload.length&&payload.every(Boolean)?payload:null;
 }
 export function cleanSyntheticProbeDiagnostic(value){
  if(value.syntheticVisionProbe!==true)return{};
  const sequence=a=>Array.isArray(a)&&a.length<=32&&a.every(v=>colors.has(v))?[...a]:null;
- const payload=Array.isArray(value.probeImagePayload)&&value.probeImagePayload.length>0&&value.probeImagePayload.length<=8&&value.probeImagePayload.every(v=>v&&v.mime==='image/png'&&Number.isSafeInteger(v.bytes)&&v.bytes>0&&v.bytes<=5242880&&Number.isSafeInteger(v.width)&&v.width>0&&v.width<=8192&&Number.isSafeInteger(v.height)&&v.height>0&&v.height<=8192&&typeof v.sha256==='string'&&/^[a-f0-9]{64}$/.test(v.sha256)&&v.detail==='auto')?value.probeImagePayload.map(v=>({mime:v.mime,bytes:v.bytes,width:v.width,height:v.height,sha256:v.sha256,detail:v.detail})):null;
+ const payload=Array.isArray(value.probeImagePayload)&&value.probeImagePayload.length>0&&value.probeImagePayload.length<=8&&value.probeImagePayload.every(v=>v&&v.mime==='image/png'&&Number.isSafeInteger(v.bytes)&&v.bytes>0&&v.bytes<=5242880&&Number.isSafeInteger(v.width)&&v.width>0&&v.width<=8192&&Number.isSafeInteger(v.height)&&v.height>0&&v.height<=8192&&typeof v.sha256==='string'&&/^[a-f0-9]{64}$/.test(v.sha256)&&['auto','low','high'].includes(v.detail))?value.probeImagePayload.map(v=>({mime:v.mime,bytes:v.bytes,width:v.width,height:v.height,sha256:v.sha256,detail:v.detail})):null;
  return{syntheticVisionProbe:true,probeExpectedSequence:sequence(value.probeExpectedSequence),probeObservedSequence:sequence(value.probeObservedSequence),probeImagePayload:payload,probeResponseModel:safeProbeResponseModel(value.probeResponseModel)};
 }

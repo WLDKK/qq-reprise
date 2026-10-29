@@ -25,8 +25,8 @@ export class LocalContentReviewer {
   clear(){this.cache.clear();}
   state(){return{transport:'loopback_only',model:'qwen3:4b',status:this.status,cacheEntries:this.cache.size,remoteFallback:false};}
   async probe(){try{const value=await this.probeTransport();const ready=Array.isArray(value.models)&&value.models.some(m=>m.name==='qwen3:4b');this.status=ready?'ready':'model_missing';return ready;}catch{this.status='unavailable';return false;}}
-  async review(text, signal, {context=[]}={}) {
-    const check=inspectLocalContent(text,2000);
+  async review(text, signal, {context=[],identityFilter=true}={}) {
+    const check=inspectLocalContent(text,2000,{identityFilter});
     if(!check.valid||check.reason)return{allowed:false,reason:check.reason||'unreviewed'};
     // Obfuscated payloads are uncertain even if a small language model guesses.
     if(/[A-Za-z0-9+/=_-]{48,}|(?:\\u[0-9a-f]{4}){4,}/iu.test(text))return{allowed:false,reason:'unreviewed'};

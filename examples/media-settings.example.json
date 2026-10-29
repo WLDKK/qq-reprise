@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "enabled": false,
+  "binding_qq": "",
+  "groups": [],
+  "private_peers": [],
+  "auto_attach": false,
+  "selection": "selected",
+  "selected_ids": [],
+  "max_per_message": 1,
+  "cooldown_seconds": 30,
+  "hourly_limit": 0,
+  "daily_limit": 0,
+  "max_asset_bytes": 5242880,
+  "max_total_bytes": 10485760,
+  "asset_limit": 200,
+  "library_bytes": 268435456,
+  "send_timeout_seconds": 20,
+  "queue_limit": 5,
+  "queue_wait_seconds": 60
+}

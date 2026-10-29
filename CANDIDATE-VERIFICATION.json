@@ -1,8 +1,8 @@
 {
-  "status": "audited_synthetic_vision_evidence",
-  "runtimeFiles": 56,
-  "runtimeMjsFiles": 54,
-  "testFiles": 36,
+  "status": "audited_product_settings_vision_media",
+  "runtimeFiles": 58,
+  "runtimeMjsFiles": 56,
+  "testFiles": 41,
   "historicalBaseline": {
     "tests": 400,
     "passed": 350,
@@ -20,15 +20,15 @@
   "liveIntegrationVerified": false,
   "licenseFilePresent": true,
   "publicationBlockedUntil": [],
-  "checkedAtUTC": "2026-10-29T09:21:16.183312+00:00",
-  "allMjsSyntaxChecked": 93,
+  "checkedAtUTC": "2026-10-29T11:20:41.242991+00:00",
+  "allMjsSyntaxChecked": 100,
   "syntaxFailures": [],
   "localImportClosureMissing": [],
   "externalPackageImports": [],
-  "publicFiles": 137,
+  "publicFiles": 149,
   "jsonFilesParsed": 9,
   "documentationFiles": 24,
-  "localLinksChecked": 115,
+  "localLinksChecked": 119,
   "knownPersonalDataMatches": 0,
   "credentialFindingsRequiringReview": 0,
   "explicitSyntheticTestFindings": [
@@ -236,7 +236,7 @@
     "skipped": 0,
     "guardBlocks": 0
   },
-  "functionalTestsEvidence": "736/736 public and retained-private-default combinations; 16/16 synthetic browser checks",
+  "functionalTestsEvidence": "869/869 public and retained-private-default combinations; 40/40 isolated browser checks",
   "productionBaselineHashCheckIsHistorical": true,
   "functionalTestsBeforeGroupSign": {
     "tests": 443,
@@ -291,9 +291,9 @@
     "guardBlocks": 0
   },
   "functionalTests": {
-    "files": 36,
-    "tests": 736,
-    "passed": 736,
+    "files": 41,
+    "tests": 869,
+    "passed": 869,
     "failed": 0,
     "skipped": 0,
     "cancelled": 0,
@@ -324,7 +324,7 @@
     "noRawPayloadsAdded": true
   },
   "browserReview": {
-    "checks": 16,
+    "checks": 40,
     "synthetic": true,
     "realModelRequests": 0,
     "realQQSends": 0
@@ -414,23 +414,12 @@
     "guardBlocks": 0
   },
   "genericVision": {
-    "version": 7,
-    "bindingVersion": 2,
-    "protocols": [
-      "responses",
-      "chat_completions"
-    ],
-    "newSyntheticTests": 36,
-    "browserChecks": 22,
-    "liveModelImageVerified": false,
-    "realUserImagesUploaded": 0,
-    "defaultImageExport": false,
-    "defaultImageCount": 1,
-    "defaultReferenceExport": false,
-    "defaultRecentImageExport": false,
-    "maxCount": 8,
-    "providerFailoverForImages": false,
-    "existingNetworkSettingsPreserved": true
+    "version": 8,
+    "bindingVersion": 3,
+    "consentRequired": true,
+    "syntheticProbeIsFeatureGate": false,
+    "realModelVerified": false,
+    "defaultImageExport": false
   },
   "functionalTestsBeforeQQTextAndProbe": {
     "files": 33,
@@ -449,11 +438,29 @@
     "incomingOrRecallTextChanged": false
   },
   "visionProbe": {
-    "version": 3,
-    "newEvidenceTests": 15,
+    "version": 4,
     "rawReplyPersisted": false,
-    "realModelRetested": false,
-    "normalImageFingerprintsPersisted": false,
-    "acceptanceStandardChanged": false
+    "acceptanceStandardChanged": false,
+    "sizeAndDetailComparison": true
+  },
+  "settingsViews": {
+    "version": 2,
+    "default": "simple",
+    "fullSettingsRetained": true,
+    "catalogFields": 212,
+    "individuallyTestedAllCombinations": false
+  },
+  "mediaLibrary": {
+    "version": 1,
+    "defaultEnabled": false,
+    "defaultAutoAttach": false,
+    "tests": 20,
+    "realQQSendVerified": false,
+    "nativeStoreStickersSupported": false
+  },
+  "contentScreening": {
+    "version": 1,
+    "optionalDefaultsOff": true,
+    "credentialGuardAlwaysOn": true
   }
 }

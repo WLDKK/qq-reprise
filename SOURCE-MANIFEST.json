@@ -3,7 +3,7 @@
   "sourceProject": "QQ local assistant",
   "sourceHasGitHistory": false,
   "sourceRemoteAvailable": false,
-  "sourceVersion": "recall-rich-flow-v1-20261021; backend_recovery_version=2; group_sign_version=1; group_sign_scheduler_version=2; upstream_observation_version=1; ai_network_version=1; api_test_lifecycle_version=1; backend_handoff_errors_version=1; vision_version=7; vision_binding_version=2; vision_probe_version=3; qq_output_version=2",
+  "sourceVersion": "recall-rich-flow-v1-20261021; backend_recovery_version=2; group_sign_version=1; group_sign_scheduler_version=2; upstream_observation_version=1; ai_network_version=1; api_test_lifecycle_version=1; backend_handoff_errors_version=1; vision_version=8; vision_binding_version=3; vision_probe_version=4; qq_output_version=2; settings_ui_version=2; content_screening_version=1; media_library_version=1",
   "licenseDecision": "MIT_owner_approved",
   "privateProductionDataIncluded": false,
   "originalEvidenceRetainedOutsideCandidate": true,
@@ -36,14 +36,15 @@
     {
       "file": "ai-chat.mjs",
       "sourceSHA256": "b0c8d981755d37492cf8924875b084346f9d0f31e625bc9a99415c5bd9dcf2e6",
-      "candidateSHA256": "b6979956fb925406163939fc718766e24eda341c0c420e424927398ae62e5d33",
+      "candidateSHA256": "1704944bcda310ec35a70e5aceb3cb3137cd1faddc99cfe997ec0cb58b0190a8",
       "changes": [
         "backend_recovery_memory_v2",
         "unknown_delivery_retention_candidate_fix",
         "isolated_ai_network_and_test_lifecycle_v1",
         "generic_vision_update_or_regression_fixture",
         "qq_plaintext_or_probe_answer_followup",
-        "synthetic_probe_safe_evidence"
+        "synthetic_probe_safe_evidence",
+        "product_settings_vision_and_media_update"
       ]
     },
     {
@@ -80,12 +81,13 @@
     {
       "file": "ai-providers.mjs",
       "sourceSHA256": "e1cbff716d6b7e6ff910a0ebd30107a637dca42e162cf3ddb1edd2774eb182c9",
-      "candidateSHA256": "e167e340aba3e0cd63ca44d299e0c5869b690d7df9130be361bfd775cf7acdff",
+      "candidateSHA256": "1723b9da63fc96e31d044ab32fd18cf1f5ea0fb3eb51af6d7bb1e8f5855c9ae6",
       "changes": [
         "normalize_utf8_newlines",
         "isolated_ai_network_and_test_lifecycle_v1",
         "generic_vision_update_or_regression_fixture",
-        "synthetic_probe_safe_evidence"
+        "synthetic_probe_safe_evidence",
+        "product_settings_vision_and_media_update"
       ]
     },
     {
@@ -117,10 +119,11 @@
     {
       "file": "ai-vision.mjs",
       "sourceSHA256": "94cad23b80e285e6a76e0f9f6362ad4749b1ce9490916b471ad31cb44e289902",
-      "candidateSHA256": "df511e654c589dc36d8d5a4b364643b78be743e6748ca82ff7a07d9c3f55c672",
+      "candidateSHA256": "153768f7a0b7079922b990615e7daace4ff9b7833a4aa724a50c415555f74b2f",
       "changes": [
         "normalize_utf8_newlines",
-        "generic_vision_update_or_regression_fixture"
+        "generic_vision_update_or_regression_fixture",
+        "product_settings_vision_and_media_update"
       ]
     },
     {
@@ -242,9 +245,10 @@
     {
       "file": "local-content-review.mjs",
       "sourceSHA256": "b9cb6860b461ece517ae2dc1cab38f8eca3aa05724a4752f7269bdf17e6b9efb",
-      "candidateSHA256": "b9cb6860b461ece517ae2dc1cab38f8eca3aa05724a4752f7269bdf17e6b9efb",
+      "candidateSHA256": "7062fd1e17a62faf0c98345057e67baa4d059f0f4ade351b5ce241a050dbafc8",
       "changes": [
-        "normalize_utf8_newlines"
+        "normalize_utf8_newlines",
+        "product_settings_vision_and_media_update"
       ]
     },
     {
@@ -340,12 +344,13 @@
     {
       "file": "qq-recall.mjs",
       "sourceSHA256": "91b5429270ca3f159d218af0a78efb85f16f4178e9cefcc9ae58f60a571c30ea",
-      "candidateSHA256": "58c48df024c05c6dbf5de7bc59bd1630af00ac0552731a2b20db0fc0c2eb76f9",
+      "candidateSHA256": "4840023e34a21e7623fbdf58139c2f5cb07b019bc0eea4126f4327bba300143f",
       "changes": [
         "normalize_utf8_newlines",
         "group_sign_v1",
         "isolated_ai_network_and_test_lifecycle_v1",
-        "generic_vision_update_or_regression_fixture"
+        "generic_vision_update_or_regression_fixture",
+        "product_settings_vision_and_media_update"
       ]
     },
     {
@@ -432,7 +437,7 @@
     {
       "file": "ui.html",
       "sourceSHA256": "aacc21a987ad7aea510797a8390b279fa008c647b4fb774e30b666906fed938c",
-      "candidateSHA256": "92125bf753a4d83a8084f117fc64d181c9dbd2f49c0f8e9d6e3d73e23c160ddd",
+      "candidateSHA256": "be4463e2c0d4d6b94c5769cbe4560b55947f72d73d5d13655d0b2ca36ce0d0c9",
       "changes": [
         "normalize_utf8_newlines",
         "group_sign_v1",
@@ -441,7 +446,8 @@
         "isolated_ai_network_and_test_lifecycle_v1",
         "generic_vision_update_or_regression_fixture",
         "qq_plaintext_or_probe_answer_followup",
-        "synthetic_probe_safe_evidence"
+        "synthetic_probe_safe_evidence",
+        "product_settings_vision_and_media_update"
       ]
     },
     {
@@ -488,10 +494,28 @@
     {
       "file": "vision-probe.mjs",
       "sourceSHA256": null,
-      "candidateSHA256": "a073b1c49bcd1d3202f5dbc8c0fc2d716dbd29443acc43cfaa091fb3e2dd6e23",
+      "candidateSHA256": "27167ddc395dbb0d36f4a3ec135999586af3066e804404a3f2f727d91fb07c8a",
       "changes": [
         "new_bounded_synthetic_color_answer_parser",
-        "synthetic_probe_safe_evidence"
+        "synthetic_probe_safe_evidence",
+        "product_settings_vision_and_media_update"
+      ]
+    },
+    {
+      "file": "vision-test-options.mjs",
+      "sourceSHA256": null,
+      "candidateSHA256": "b80da037667d06c516bda4ca9e672be0524ba239dcfab4b67fa64b76c4430bc8",
+      "changes": [
+        "new_per_operation_synthetic_controls_no_export_permission"
+      ]
+    },
+    {
+      "file": "media-library.mjs",
+      "sourceSHA256": null,
+      "candidateSHA256": "440c172e3d0f3a7955ddf1756569f12949407dce5434fc92706ef2261e3347d1",
+      "changes": [
+        "new_user_managed_local_media_library_default_off",
+        "product_settings_vision_and_media_update"
       ]
     }
   ],
@@ -716,9 +740,10 @@
     {
       "file": "vision-generic.test.mjs",
       "sourceSHA256": null,
-      "candidateSHA256": "e7a8b99d25913f067ca73adfecc2d11f061aa810177d4e85cbfe004e2f628478",
+      "candidateSHA256": "60fcad1078512df89b8223e9d824a6b3eb8df90854e99d7462ed729519f8eeca",
       "changes": [
-        "new_36_synthetic_generic_vision_regressions"
+        "new_36_synthetic_generic_vision_regressions",
+        "product_settings_vision_and_media_update"
       ]
     },
     {
@@ -740,9 +765,50 @@
     {
       "file": "vision-probe-evidence.test.mjs",
       "sourceSHA256": null,
-      "candidateSHA256": "af70399aa64f4034ae5699b5a875a77b90af7b119d5db25f923a0dbfb1dc8cc4",
+      "candidateSHA256": "9e0c42dd8fdecdf99d442dba28fa17d4e525d339dfc9feb442b44cf932c9784d",
       "changes": [
-        "new_synthetic_probe_privacy_and_evidence_regression"
+        "new_synthetic_probe_privacy_and_evidence_regression",
+        "product_settings_vision_and_media_update"
+      ]
+    },
+    {
+      "file": "vision-controls.test.mjs",
+      "sourceSHA256": null,
+      "candidateSHA256": "de5d170084f0e517f17f3950cbdb696aca38ccc9c61e3b02ca290d59323307af",
+      "changes": [
+        "new_product_settings_vision_consent_or_media_offline_regression"
+      ]
+    },
+    {
+      "file": "content-screening.test.mjs",
+      "sourceSHA256": null,
+      "candidateSHA256": "f9a5df1c754f1742873563ff7bce410bb2bb1451cf35b06512d2ed9283625b23",
+      "changes": [
+        "new_product_settings_vision_consent_or_media_offline_regression"
+      ]
+    },
+    {
+      "file": "vision-consent.test.mjs",
+      "sourceSHA256": null,
+      "candidateSHA256": "8bfb391696436b75971b7e2fbe620e24d378dcdae8d33cba3bfaef527b054e5b",
+      "changes": [
+        "new_product_settings_vision_consent_or_media_offline_regression"
+      ]
+    },
+    {
+      "file": "media-library.test.mjs",
+      "sourceSHA256": null,
+      "candidateSHA256": "50be43c2d41b825fd261ca5573272be17d88f8f84ff835d8f647baae7f59f43e",
+      "changes": [
+        "new_product_settings_vision_consent_or_media_offline_regression"
+      ]
+    },
+    {
+      "file": "product-settings.test.mjs",
+      "sourceSHA256": null,
+      "candidateSHA256": "f26ebff18ec4f9d45c2fedee245a52bbb3b147bb424f7474751ebf08cee54010",
+      "changes": [
+        "new_product_settings_vision_consent_or_media_offline_regression"
       ]
     }
   ],
@@ -778,11 +844,15 @@
   "oauthRegistrationEntrypointVerified": true,
   "bundledPreissuedOAuthClientIds": false,
   "provenanceAudit": "PROVENANCE-AUDIT.json",
-  "featurePreparedAtUTC": "2026-10-29T09:21:16.183312+00:00",
+  "featurePreparedAtUTC": "2026-10-29T11:20:41.242991+00:00",
   "environmentPreflightVersion": 1,
   "aiNetworkVersion": 1,
   "apiTestLifecycleVersion": 1,
-  "genericVisionVersion": 2,
-  "visionProbeVersion": 3,
-  "qqOutputVersion": 2
+  "genericVisionVersion": 8,
+  "visionProbeVersion": 4,
+  "qqOutputVersion": 2,
+  "visionBindingVersion": 3,
+  "settingsUIVersion": 2,
+  "contentScreeningVersion": 1,
+  "mediaLibraryVersion": 1
 }

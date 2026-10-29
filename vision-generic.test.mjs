@@ -56,7 +56,7 @@ for(const field of ['api_base_url','api_format','api_model'])test('proof cannot 
  const c=config(),other={...c,[field]:field==='api_base_url'?'https://vision-b.example.invalid/other':field==='api_format'?'chat_completions':'other-model'};
  assert.equal(visionEnabled(other),false);assert.throws(()=>validateAISettings(other));
 });
-test('larger picture count requires a new count-bound proof',()=>{const c=config('responses',1);assert.equal(visionEnabled({...c,vision_max_images:2}),false);assert.throws(()=>validateAISettings({...c,vision_max_images:2}));});
+test('larger picture count preserves consent without inventing broader test coverage',()=>{const c=config('responses',1),next=validateAISettings({...c,vision_max_images:2});assert.equal(visionEnabled(next),true);assert.equal(next.vision_max_images,2);assert.equal(next.vision_verified_images,1);});
 for(const format of ['responses','chat_completions'])test(format+' synthetic verification uses the saved target and does not enable image export',async t=>{
  let calls=0;const f=await fixture(t,{format,enabled:false,fetcher:async(u,o)=>{calls++;const b=JSON.parse(o.body),parts=(format==='responses'?b.input:b.messages).at(-1).content;const urls=parts.slice(1).map(v=>format==='responses'?v.image_url:v.image_url.url);assert.equal(urls.length,2);return sse(format,urls.map(probeWords).join(' '));}});
  const before=structuredClone(f.ai.config),r=await f.ai.testVision();assert.equal(r.ok,true);assert.equal(r.imageCount,2);assert.equal(calls,1);assert.equal(f.ai.config.vision_enabled,false);assert.deepEqual(f.ai.config,before);assert.equal(f.sends.length,0);
@@ -104,9 +104,9 @@ test('image redirect, authenticated URL and local file cannot be followed',async
 test('cancelling a stalled second picture never submits a partial bundle',async t=>{
  let signal;const f=await fixture(t,{imageFetcher:async(u,o)=>{signal=o.signal;return u.includes('-1.png')?new Response(png):new Promise(()=>{});}});f.offer(message(50,[at,img(1),img(2),text('比较这些图片')]));await until(()=>f.downloads.length===2);f.ai.fastRecall({post_type:'notice',notice_type:'group_recall',self_id:90001,group_id:50001,user_id:60001,operator_id:60001,message_id:50});await until(()=>f.ai.active===0);assert.equal(signal.aborted,true);assert.equal(f.calls.length,0);assert.equal(f.sends.length,0);
 });
-test('vision limits save is narrow, survives reload and a larger count disables old permission',async t=>{
+test('vision limits save is narrow, survives reload and a larger count keeps consent separate from test coverage',async t=>{
  const f=await fixture(t,{count:1}),before=structuredClone(f.ai.config);await f.ai.network.configure({mode:'manual',proxy_url:'http://synthetic-proxy.invalid:8123'});const net=structuredClone(f.ai.network.config);
- await f.ai.configureVisionLimits({...visionLimits(f.ai.config),vision_max_images:2,vision_download_timeout_seconds:7});assert.equal(f.ai.config.enabled,before.enabled);assert.equal(f.ai.config.vision_enabled,false);assert.deepEqual(f.ai.config.groups,before.groups);assert.deepEqual(f.ai.network.config,net);const saved=JSON.parse(await readFile(join(f.dir,'ai-settings.json'),'utf8'));assert.equal(validateAISettings(saved).vision_max_images,2);assert.equal(f.calls.length,0);
+ await f.ai.configureVisionLimits({...visionLimits(f.ai.config),vision_max_images:2,vision_download_timeout_seconds:7});assert.equal(f.ai.config.enabled,before.enabled);assert.equal(f.ai.config.vision_enabled,true);assert.equal(f.ai.config.vision_verified_images,1);assert.deepEqual(f.ai.config.groups,before.groups);assert.deepEqual(f.ai.network.config,net);const saved=JSON.parse(await readFile(join(f.dir,'ai-settings.json'),'utf8'));assert.equal(validateAISettings(saved).vision_max_images,2);assert.equal(f.calls.length,0);
 });
 for(const format of ['responses','chat_completions'])test(format+' images reuse the saved AI-only manual proxy without global mutation',async t=>{
  const dir=await mkdtemp(join(tmpdir(),'vision-network-mock-')),agents=[],calls=[],beforeFetch=globalThis.fetch;

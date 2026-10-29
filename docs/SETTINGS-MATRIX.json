@@ -1,0 +1,3385 @@
+{
+  "schema": 1,
+  "scope": "Anonymous public settings only; no production configuration read",
+  "interpretation": "Static references identify consumers, not proof of executing every branch. External API and real QQ delivery are not verified by this matrix.",
+  "fields": 212,
+  "aiFields": 124,
+  "mediaFields": 19,
+  "validationRanges": 66,
+  "rows": [
+    {
+      "module": "AI",
+      "field": "enabled",
+      "type": "boolean",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/settings or /api/ai/api-save",
+      "view": "simple and professional",
+      "range": null,
+      "staticReferences": [
+        "account-pool-service.mjs",
+        "ai-chat.mjs",
+        "ai-vision.mjs",
+        "api-account-pool.mjs",
+        "connection-pool-service.mjs",
+        "engine.mjs",
+        "group-context.mjs",
+        "group-sign.mjs",
+        "media-library.mjs",
+        "participation-ledger.mjs",
+        "qq-recall.mjs",
+        "quick-login.mjs",
+        "rate-limit-cooldown.mjs",
+        "recovery.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "backend",
+      "type": "string",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/settings or /api/ai/api-save",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "account-pool-service.mjs",
+        "ai-chat.mjs",
+        "ai-diagnostics.mjs",
+        "ai-providers.mjs",
+        "ai-vision.mjs",
+        "api-account-pool.mjs",
+        "connection-pool-service.mjs",
+        "group-context.mjs",
+        "group-understanding.mjs",
+        "participation-ledger.mjs",
+        "qq-recall.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "api_platform",
+      "type": "string",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/settings or /api/ai/api-save",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "account-pool-service.mjs",
+        "ai-api-draft.mjs",
+        "ai-auth.mjs",
+        "connection-pool-service.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "api_format",
+      "type": "string",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/settings or /api/ai/api-save",
+      "view": "simple and professional",
+      "range": null,
+      "staticReferences": [
+        "account-pool-service.mjs",
+        "ai-api-draft.mjs",
+        "ai-auth.mjs",
+        "ai-chat.mjs",
+        "ai-diagnostics.mjs",
+        "ai-providers.mjs",
+        "ai-vision.mjs",
+        "connection-pool-service.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "api_base_url",
+      "type": "string",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/settings or /api/ai/api-save",
+      "view": "simple and professional",
+      "range": null,
+      "staticReferences": [
+        "account-pool-service.mjs",
+        "ai-api-draft.mjs",
+        "ai-auth.mjs",
+        "ai-chat.mjs",
+        "ai-providers.mjs",
+        "ai-vision.mjs",
+        "connection-pool-service.mjs",
+        "group-context.mjs",
+        "group-understanding.mjs",
+        "participation-ledger.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "api_model",
+      "type": "string",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/settings or /api/ai/api-save",
+      "view": "simple and professional",
+      "range": null,
+      "staticReferences": [
+        "account-pool-service.mjs",
+        "ai-api-draft.mjs",
+        "ai-chat.mjs",
+        "ai-providers.mjs",
+        "ai-vision.mjs",
+        "api-account-pool.mjs",
+        "connection-pool-service.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "siwc_model",
+      "type": "string",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/settings or /api/ai/api-save",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs",
+        "ai-providers.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "active_profile",
+      "type": "string",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/settings or /api/ai/api-save",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs",
+        "ai-providers.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "binding_qq",
+      "type": "string",
+      "editable": false,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "derived/bound metadata; no direct editor",
+      "view": "read-only status",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs",
+        "ai-vision.mjs",
+        "chat-display.mjs",
+        "chat-identity.mjs",
+        "group-sign.mjs",
+        "input-mentions.mjs",
+        "media-library.mjs",
+        "participation-ledger.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "groups",
+      "type": "array",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/group-settings",
+      "view": "simple and professional",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs",
+        "ai-vision.mjs",
+        "chat-display.mjs",
+        "group-context.mjs",
+        "group-sign.mjs",
+        "group-understanding.mjs",
+        "input-mentions.mjs",
+        "media-library.mjs",
+        "onebot-diagnostics.mjs",
+        "participation-ledger.mjs",
+        "qq-recall.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "private_peers",
+      "type": "array",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/private-settings",
+      "view": "simple and professional",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs",
+        "media-library.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "private_blacklist",
+      "type": "array",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/private-settings",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs",
+        "ai-vision.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "group_blacklist",
+      "type": "array",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/group-settings",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs",
+        "ai-vision.mjs",
+        "chat-display.mjs",
+        "group-context.mjs",
+        "group-understanding.mjs",
+        "input-mentions.mjs",
+        "participation-ledger.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "users",
+      "type": "array",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/settings or /api/ai/api-save",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs",
+        "chat-display.mjs",
+        "input-mentions.mjs",
+        "participation-ledger.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "allow_self",
+      "type": "boolean",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/group-settings",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs",
+        "ai-vision.mjs",
+        "group-context.mjs",
+        "group-understanding.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "trigger",
+      "type": "string",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/settings or /api/ai/api-save",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs",
+        "ai-persona.mjs",
+        "qq-recall.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "prefix",
+      "type": "string",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/group-settings",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs",
+        "ai-persona.mjs",
+        "engine.mjs",
+        "group-understanding.mjs",
+        "qq-recall.mjs",
+        "settings-field-error.mjs",
+        "vision-probe.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "instructions",
+      "type": "string",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/settings or /api/ai/api-save",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "account-pool-service.mjs",
+        "ai-chat.mjs",
+        "ai-persona.mjs",
+        "ai-providers.mjs",
+        "connection-pool-service.mjs",
+        "local-content-review.mjs",
+        "media-library.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "chat_address_mode",
+      "type": "string",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/persona or /api/ai/chat-identity",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "chat-display.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "chat_display_overrides",
+      "type": "array",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/persona or /api/ai/chat-identity",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "chat-display.mjs",
+        "chat-identity.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "chat_mention_mode",
+      "type": "string",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/persona or /api/ai/chat-identity",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "chat-display.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "bot_name",
+      "type": "string",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/persona or /api/ai/chat-identity",
+      "view": "simple and professional",
+      "range": null,
+      "staticReferences": [
+        "ai-persona.mjs",
+        "input-mentions.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "bot_address",
+      "type": "string",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/persona or /api/ai/chat-identity",
+      "view": "simple and professional",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs",
+        "ai-persona.mjs",
+        "chat-display.mjs",
+        "chat-identity.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "bot_persona",
+      "type": "string",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/persona or /api/ai/chat-identity",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "ai-persona.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "bot_aliases",
+      "type": "array",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/persona or /api/ai/chat-identity",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "ai-persona.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "chat_owner_qq",
+      "type": "string",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/persona or /api/ai/chat-identity",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "chat-identity.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "chat_owner_address",
+      "type": "string",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/persona or /api/ai/chat-identity",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "chat-identity.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "group_name_trigger",
+      "type": "boolean",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/persona or /api/ai/chat-identity",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "ai-persona.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "name_trigger_position",
+      "type": "string",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/persona or /api/ai/chat-identity",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "ai-persona.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "group_trigger_mode",
+      "type": "string",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/group-settings",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "plan_allow_self",
+      "type": "boolean",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/settings or /api/ai/api-save",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "group_cache_limit",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/context-settings",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "ai-chat.mjs",
+        "group-context.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "group_cache_ttl_minutes",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/context-settings",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 0,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "ai-chat.mjs",
+        "group-context.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "group_context_chars",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/context-settings",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "ai-chat.mjs",
+        "group-context.mjs",
+        "group-understanding.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "group_context_export",
+      "type": "boolean",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/settings or /api/ai/api-save",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs",
+        "group-context.mjs",
+        "group-understanding.mjs",
+        "participation-ledger.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "group_context_target",
+      "type": "string",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/settings or /api/ai/api-save",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs",
+        "group-context.mjs",
+        "group-understanding.mjs",
+        "participation-ledger.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "participation_enabled",
+      "type": "boolean",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/participation",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs",
+        "participation-ledger.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "participation_cooldown_seconds",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/participation",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 0,
+        "max": 2147483
+      },
+      "staticReferences": [
+        "participation-ledger.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "participation_hourly_limit",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/participation",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 0,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "participation-ledger.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "participation_daily_limit",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/participation",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 0,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "ai-chat.mjs",
+        "participation-ledger.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "participation_activity_min_messages",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/participation",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 0,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "participation-ledger.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "participation_activity_window_seconds",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/participation",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "participation-ledger.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "participation_group_blacklist",
+      "type": "array",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/participation",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs",
+        "participation-ledger.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "participation_min_text_chars",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/participation",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 0,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "participation-ledger.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "participation_min_speakers",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/participation",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 0,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "participation-ledger.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "participation_topic_min_messages",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/participation",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 0,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "participation-ledger.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "participation_topic_min_speakers",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/participation",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 0,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "participation-ledger.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "participation_quiet_seconds",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/participation",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 0,
+        "max": 2147483
+      },
+      "staticReferences": [
+        "participation-ledger.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "participation_output_tokens",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/participation",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "ai-chat.mjs",
+        "participation-ledger.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "participation_output_chars",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/participation",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "ai-chat.mjs",
+        "participation-ledger.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "participation_timeout_seconds",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/participation",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1,
+        "max": 2147483
+      },
+      "staticReferences": [
+        "ai-chat.mjs",
+        "participation-ledger.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "participation_stale_seconds",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/participation",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1,
+        "max": 2147483
+      },
+      "staticReferences": [
+        "ai-chat.mjs",
+        "participation-ledger.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "participation_max_model_calls",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/participation",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "ai-chat.mjs",
+        "participation-ledger.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "participation_hourly_model_calls",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/participation",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 0,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "ai-chat.mjs",
+        "participation-ledger.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "private_local_review",
+      "type": "boolean",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/content-screening",
+      "view": "simple and professional",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs",
+        "ai-queue-policy.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "vision_enabled",
+      "type": "boolean",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/vision-settings",
+      "view": "simple and professional",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs",
+        "ai-vision.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "vision_target",
+      "type": "string",
+      "editable": false,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "derived/bound metadata; no direct editor",
+      "view": "read-only status",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs",
+        "ai-vision.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "vision_model",
+      "type": "string",
+      "editable": false,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "derived/bound metadata; no direct editor",
+      "view": "read-only status",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs",
+        "ai-diagnostics.mjs",
+        "ai-vision.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "vision_format",
+      "type": "string",
+      "editable": false,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "derived/bound metadata; no direct editor",
+      "view": "read-only status",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs",
+        "ai-vision.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "vision_verified_images",
+      "type": "number",
+      "editable": false,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "derived/bound metadata; no direct editor",
+      "view": "read-only status",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs",
+        "ai-vision.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "vision_verified_at",
+      "type": "number",
+      "editable": false,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "derived/bound metadata; no direct editor",
+      "view": "read-only status",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "vision_max_images",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/vision-limits",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1,
+        "max": 8
+      },
+      "staticReferences": [
+        "ai-chat.mjs",
+        "ai-providers.mjs",
+        "ai-vision.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "vision_max_image_bytes",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/vision-limits",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1024,
+        "max": 5242880
+      },
+      "staticReferences": [
+        "ai-providers.mjs",
+        "ai-vision.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "vision_max_total_bytes",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/vision-limits",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1024,
+        "max": 20971520
+      },
+      "staticReferences": [
+        "ai-providers.mjs",
+        "ai-vision.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "vision_download_timeout_seconds",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/vision-limits",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1,
+        "max": 120
+      },
+      "staticReferences": [
+        "ai-vision.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "vision_request_timeout_seconds",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/vision-limits",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1,
+        "max": 600
+      },
+      "staticReferences": [
+        "ai-chat.mjs",
+        "ai-vision.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "vision_reference_enabled",
+      "type": "boolean",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/vision-settings",
+      "view": "simple and professional",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs",
+        "ai-vision.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "vision_recent_enabled",
+      "type": "boolean",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/vision-settings",
+      "view": "simple and professional",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs",
+        "ai-vision.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "concurrency",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/runtime-settings",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "account-pool-service.mjs",
+        "ai-chat.mjs",
+        "ai-diagnostics.mjs",
+        "api-account-pool.mjs",
+        "group-sign.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "queue_limit",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/runtime-settings",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "ai-chat.mjs",
+        "engine.mjs",
+        "media-library.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "queue_wait_seconds",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/runtime-settings",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 0,
+        "max": 2147483
+      },
+      "staticReferences": [
+        "ai-chat.mjs",
+        "ai-queue-policy.mjs",
+        "media-library.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "timeout_seconds",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/output-budget",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1,
+        "max": 2147483
+      },
+      "staticReferences": [
+        "account-pool-service.mjs",
+        "ai-api-draft.mjs",
+        "ai-chat.mjs",
+        "ai-diagnostics.mjs",
+        "ai-providers.mjs",
+        "ai-queue-policy.mjs",
+        "ai-test-ui.mjs",
+        "ai-vision.mjs",
+        "connection-pool-service.mjs",
+        "media-library.mjs",
+        "participation-ledger.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "cooldown_seconds",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/runtime-settings",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 0,
+        "max": 2147483
+      },
+      "staticReferences": [
+        "ai-chat.mjs",
+        "ai-queue-policy.mjs",
+        "media-library.mjs",
+        "participation-ledger.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "daily_requests",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/runtime-settings",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 0,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "ai-chat.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "input_chars",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/runtime-settings",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "ai-chat.mjs",
+        "group-understanding.mjs",
+        "participation-ledger.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "output_chars",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/runtime-settings",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "ai-chat.mjs",
+        "ai-diagnostics.mjs",
+        "ai-providers.mjs",
+        "group-context.mjs",
+        "group-understanding.mjs",
+        "participation-ledger.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "api_max_output_tokens",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/output-budget",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "account-pool-service.mjs",
+        "ai-api-draft.mjs",
+        "ai-chat.mjs",
+        "ai-diagnostics.mjs",
+        "ai-providers.mjs",
+        "connection-pool-service.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "api_output_token_mode",
+      "type": "string",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/output-budget",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "account-pool-service.mjs",
+        "ai-api-draft.mjs",
+        "ai-chat.mjs",
+        "ai-diagnostics.mjs",
+        "ai-providers.mjs",
+        "connection-pool-service.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "context_turns",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/context-settings",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 0,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "ai-chat.mjs",
+        "group-understanding.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "context_chars",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/context-settings",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "ai-chat.mjs",
+        "group-context.mjs",
+        "group-understanding.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "context_ttl_minutes",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/context-settings",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 0,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "ai-chat.mjs",
+        "ai-vision.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "sessions_limit",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/context-settings",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "ai-chat.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "memory_retention_version",
+      "type": "number",
+      "editable": false,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "derived/bound metadata; no direct editor",
+      "view": "read-only status",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "delivery_limit",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/runtime-settings",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "ai-chat.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "delivery_ttl_minutes",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/runtime-settings",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1,
+        "max": 35791
+      },
+      "staticReferences": [
+        "ai-chat.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "local_identity_filter",
+      "type": "boolean",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/content-screening",
+      "view": "simple and professional",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs",
+        "group-context.mjs",
+        "group-understanding.mjs",
+        "participation-ledger.mjs",
+        "vision-followup.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "vision_instruction_grace_ms",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/context-settings",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 0,
+        "max": 2147483647
+      },
+      "staticReferences": [
+        "ai-chat.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "temporary_recovery_enabled",
+      "type": "boolean",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/runtime-settings",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "rate-limit-cooldown.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "temporary_recovery_attempts",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/runtime-settings",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 0,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "ai-chat.mjs",
+        "rate-limit-cooldown.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "temporary_recovery_min_seconds",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/runtime-settings",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 0,
+        "max": 2147483
+      },
+      "staticReferences": [
+        "rate-limit-cooldown.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "temporary_recovery_max_retry_after_seconds",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/runtime-settings",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 0,
+        "max": 2147483
+      },
+      "staticReferences": [
+        "rate-limit-cooldown.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "account_capacity_wait_seconds",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/runtime-settings",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 0,
+        "max": 2147483
+      },
+      "staticReferences": [
+        "connection-pool-service.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "account_capacity_wait_rounds",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/runtime-settings",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 0,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "connection-pool-service.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "private_review_limit",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/runtime-settings",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "ai-chat.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "private_archive_limit",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/runtime-settings",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "private-review-archive.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "bot_identity",
+      "type": "string",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/persona or /api/ai/chat-identity",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "ai-persona.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "daily_reset_timezone",
+      "type": "string",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/runtime-settings",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "group_member_policy",
+      "type": "string",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/group-settings",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs",
+        "chat-display.mjs",
+        "input-mentions.mjs",
+        "participation-ledger.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "group_allowed_users",
+      "type": "array",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/group-settings",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs",
+        "chat-display.mjs",
+        "input-mentions.mjs",
+        "participation-ledger.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "private_reply_mode",
+      "type": "string",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/private-settings",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "vision_cache_limit",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/context-settings",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "ai-vision.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "vision_cache_bytes",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/context-settings",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "ai-vision.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "vision_overflow_limit",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/context-settings",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "ai-vision.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "delivery_byte_limit",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/runtime-settings",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "ai-chat.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "group_cache_total_messages",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/context-settings",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "group-context.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "group_cache_total_bytes",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/context-settings",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "group-context.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "group_cache_message_chars",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/context-settings",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "group-context.mjs",
+        "group-understanding.mjs",
+        "participation-ledger.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "context_reference_hops",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/context-settings",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 0,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "group-context.mjs",
+        "group-understanding.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "context_empty_window_seconds",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/context-settings",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "group-context.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "context_empty_lookback",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/context-settings",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "group-context.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "participation_global_hourly_limit",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/participation",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 0,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "ai-chat.mjs",
+        "participation-ledger.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "participation_group_daily_limit",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/participation",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 0,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "participation-ledger.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "participation_group_hourly_sent_limit",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/participation",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 0,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "participation-ledger.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "participation_group_daily_sent_limit",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/participation",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 0,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "participation-ledger.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "participation_global_hourly_sent_limit",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/participation",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 0,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "ai-chat.mjs",
+        "participation-ledger.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "participation_global_daily_sent_limit",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/participation",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 0,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "ai-chat.mjs",
+        "participation-ledger.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "participation_daily_model_calls",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/participation",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 0,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "ai-chat.mjs",
+        "participation-ledger.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "participation_topic_required",
+      "type": "boolean",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/participation",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "participation-ledger.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "participation_filter_smalltalk",
+      "type": "boolean",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/participation",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "participation-ledger.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "participation_filter_commands",
+      "type": "boolean",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/participation",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "participation-ledger.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "participation_topic_seed_limit",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/participation",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "participation-ledger.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "participation_topic_chars",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/participation",
+      "view": "professional or collapsed editor",
+      "range": {
+        "min": 1,
+        "max": 9007199254740991
+      },
+      "staticReferences": [
+        "ai-chat.mjs"
+      ],
+      "evidence": "product-settings.test.mjs validation plus module regressions",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "participation_group_overrides",
+      "type": "object",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/participation",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs",
+        "participation-ledger.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "AI",
+      "field": "participation_instructions",
+      "type": "string",
+      "editable": true,
+      "defaultSource": "AI_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/participation",
+      "view": "professional or collapsed editor",
+      "range": null,
+      "staticReferences": [
+        "ai-chat.mjs",
+        "settings-field-error.mjs"
+      ],
+      "evidence": "module regressions; see TESTING.md",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "Media",
+      "field": "version",
+      "type": "number",
+      "editable": false,
+      "save": "/api/media-library/settings",
+      "view": "professional",
+      "staticReferences": [
+        "media-library.mjs"
+      ],
+      "evidence": "media-library.test.mjs and product-settings.test.mjs; UI browser report",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "Media",
+      "field": "enabled",
+      "type": "boolean",
+      "editable": true,
+      "save": "/api/media-library/settings",
+      "view": "simple and professional",
+      "staticReferences": [
+        "media-library.mjs"
+      ],
+      "evidence": "media-library.test.mjs and product-settings.test.mjs; UI browser report",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "Media",
+      "field": "binding_qq",
+      "type": "string",
+      "editable": false,
+      "save": "/api/media-library/settings",
+      "view": "professional",
+      "staticReferences": [
+        "media-library.mjs"
+      ],
+      "evidence": "media-library.test.mjs and product-settings.test.mjs; UI browser report",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "Media",
+      "field": "groups",
+      "type": "array",
+      "editable": true,
+      "save": "/api/media-library/settings",
+      "view": "simple and professional",
+      "staticReferences": [
+        "media-library.mjs"
+      ],
+      "evidence": "media-library.test.mjs and product-settings.test.mjs; UI browser report",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "Media",
+      "field": "private_peers",
+      "type": "array",
+      "editable": true,
+      "save": "/api/media-library/settings",
+      "view": "simple and professional",
+      "staticReferences": [
+        "media-library.mjs"
+      ],
+      "evidence": "media-library.test.mjs and product-settings.test.mjs; UI browser report",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "Media",
+      "field": "auto_attach",
+      "type": "boolean",
+      "editable": true,
+      "save": "/api/media-library/settings",
+      "view": "simple and professional",
+      "staticReferences": [
+        "media-library.mjs"
+      ],
+      "evidence": "media-library.test.mjs and product-settings.test.mjs; UI browser report",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "Media",
+      "field": "selection",
+      "type": "string",
+      "editable": true,
+      "save": "/api/media-library/settings",
+      "view": "simple and professional",
+      "staticReferences": [
+        "media-library.mjs"
+      ],
+      "evidence": "media-library.test.mjs and product-settings.test.mjs; UI browser report",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "Media",
+      "field": "selected_ids",
+      "type": "array",
+      "editable": true,
+      "save": "/api/media-library/settings",
+      "view": "simple and professional",
+      "staticReferences": [
+        "media-library.mjs"
+      ],
+      "evidence": "media-library.test.mjs and product-settings.test.mjs; UI browser report",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "Media",
+      "field": "max_per_message",
+      "type": "number",
+      "editable": true,
+      "save": "/api/media-library/settings",
+      "view": "simple and professional",
+      "staticReferences": [
+        "media-library.mjs"
+      ],
+      "evidence": "media-library.test.mjs and product-settings.test.mjs; UI browser report",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "Media",
+      "field": "cooldown_seconds",
+      "type": "number",
+      "editable": true,
+      "save": "/api/media-library/settings",
+      "view": "simple and professional",
+      "staticReferences": [
+        "media-library.mjs"
+      ],
+      "evidence": "media-library.test.mjs and product-settings.test.mjs; UI browser report",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "Media",
+      "field": "hourly_limit",
+      "type": "number",
+      "editable": true,
+      "save": "/api/media-library/settings",
+      "view": "professional",
+      "staticReferences": [
+        "media-library.mjs"
+      ],
+      "evidence": "media-library.test.mjs and product-settings.test.mjs; UI browser report",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "Media",
+      "field": "daily_limit",
+      "type": "number",
+      "editable": true,
+      "save": "/api/media-library/settings",
+      "view": "professional",
+      "staticReferences": [
+        "media-library.mjs"
+      ],
+      "evidence": "media-library.test.mjs and product-settings.test.mjs; UI browser report",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "Media",
+      "field": "max_asset_bytes",
+      "type": "number",
+      "editable": true,
+      "save": "/api/media-library/settings",
+      "view": "professional",
+      "staticReferences": [
+        "media-library.mjs"
+      ],
+      "evidence": "media-library.test.mjs and product-settings.test.mjs; UI browser report",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "Media",
+      "field": "max_total_bytes",
+      "type": "number",
+      "editable": true,
+      "save": "/api/media-library/settings",
+      "view": "professional",
+      "staticReferences": [
+        "media-library.mjs"
+      ],
+      "evidence": "media-library.test.mjs and product-settings.test.mjs; UI browser report",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "Media",
+      "field": "asset_limit",
+      "type": "number",
+      "editable": true,
+      "save": "/api/media-library/settings",
+      "view": "professional",
+      "staticReferences": [
+        "media-library.mjs"
+      ],
+      "evidence": "media-library.test.mjs and product-settings.test.mjs; UI browser report",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "Media",
+      "field": "library_bytes",
+      "type": "number",
+      "editable": true,
+      "save": "/api/media-library/settings",
+      "view": "professional",
+      "staticReferences": [
+        "media-library.mjs"
+      ],
+      "evidence": "media-library.test.mjs and product-settings.test.mjs; UI browser report",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "Media",
+      "field": "send_timeout_seconds",
+      "type": "number",
+      "editable": true,
+      "save": "/api/media-library/settings",
+      "view": "professional",
+      "staticReferences": [
+        "media-library.mjs"
+      ],
+      "evidence": "media-library.test.mjs and product-settings.test.mjs; UI browser report",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "Media",
+      "field": "queue_limit",
+      "type": "number",
+      "editable": true,
+      "save": "/api/media-library/settings",
+      "view": "professional",
+      "staticReferences": [
+        "media-library.mjs"
+      ],
+      "evidence": "media-library.test.mjs and product-settings.test.mjs; UI browser report",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "Media",
+      "field": "queue_wait_seconds",
+      "type": "number",
+      "editable": true,
+      "save": "/api/media-library/settings",
+      "view": "professional",
+      "staticReferences": [
+        "media-library.mjs"
+      ],
+      "evidence": "media-library.test.mjs and product-settings.test.mjs; UI browser report",
+      "individuallyRuntimeVaried": false
+    },
+    {
+      "module": "Group sign",
+      "field": "version",
+      "type": "number",
+      "editable": false,
+      "save": "/api/group-sign/settings",
+      "view": "professional or expanded plan",
+      "staticReferences": [
+        "group-sign.mjs"
+      ],
+      "evidence": "group-sign.test.mjs, group-sign-scheduling.test.mjs, group-sign-precision.test.mjs, group-sign-integration.test.mjs"
+    },
+    {
+      "module": "Group sign",
+      "field": "enabled",
+      "type": "boolean",
+      "editable": true,
+      "save": "/api/group-sign/settings",
+      "view": "simple and professional",
+      "staticReferences": [
+        "group-sign.mjs"
+      ],
+      "evidence": "group-sign.test.mjs, group-sign-scheduling.test.mjs, group-sign-precision.test.mjs, group-sign-integration.test.mjs"
+    },
+    {
+      "module": "Group sign",
+      "field": "binding_qq",
+      "type": "string",
+      "editable": false,
+      "save": "/api/group-sign/settings",
+      "view": "professional or expanded plan",
+      "staticReferences": [
+        "group-sign.mjs"
+      ],
+      "evidence": "group-sign.test.mjs, group-sign-scheduling.test.mjs, group-sign-precision.test.mjs, group-sign-integration.test.mjs"
+    },
+    {
+      "module": "Group sign",
+      "field": "timezone",
+      "type": "string",
+      "editable": true,
+      "save": "/api/group-sign/settings",
+      "view": "simple and professional",
+      "staticReferences": [
+        "group-sign.mjs"
+      ],
+      "evidence": "group-sign.test.mjs, group-sign-scheduling.test.mjs, group-sign-precision.test.mjs, group-sign-integration.test.mjs"
+    },
+    {
+      "module": "Group sign",
+      "field": "default_time",
+      "type": "string",
+      "editable": true,
+      "save": "/api/group-sign/settings",
+      "view": "simple and professional",
+      "staticReferences": [
+        "group-sign.mjs"
+      ],
+      "evidence": "group-sign.test.mjs, group-sign-scheduling.test.mjs, group-sign-precision.test.mjs, group-sign-integration.test.mjs"
+    },
+    {
+      "module": "Group sign",
+      "field": "missed_policy",
+      "type": "string",
+      "editable": true,
+      "save": "/api/group-sign/settings",
+      "view": "professional or expanded plan",
+      "staticReferences": [
+        "group-sign.mjs"
+      ],
+      "evidence": "group-sign.test.mjs, group-sign-scheduling.test.mjs, group-sign-precision.test.mjs, group-sign-integration.test.mjs"
+    },
+    {
+      "module": "Group sign",
+      "field": "catch_up_minutes",
+      "type": "number",
+      "editable": true,
+      "save": "/api/group-sign/settings",
+      "view": "professional or expanded plan",
+      "staticReferences": [
+        "group-sign.mjs"
+      ],
+      "evidence": "group-sign.test.mjs, group-sign-scheduling.test.mjs, group-sign-precision.test.mjs, group-sign-integration.test.mjs"
+    },
+    {
+      "module": "Group sign",
+      "field": "retry_attempts",
+      "type": "number",
+      "editable": true,
+      "save": "/api/group-sign/settings",
+      "view": "professional or expanded plan",
+      "staticReferences": [
+        "group-sign.mjs"
+      ],
+      "evidence": "group-sign.test.mjs, group-sign-scheduling.test.mjs, group-sign-precision.test.mjs, group-sign-integration.test.mjs"
+    },
+    {
+      "module": "Group sign",
+      "field": "retry_base_seconds",
+      "type": "number",
+      "editable": true,
+      "save": "/api/group-sign/settings",
+      "view": "professional or expanded plan",
+      "staticReferences": [
+        "group-sign.mjs"
+      ],
+      "evidence": "group-sign.test.mjs, group-sign-scheduling.test.mjs, group-sign-precision.test.mjs, group-sign-integration.test.mjs"
+    },
+    {
+      "module": "Group sign",
+      "field": "retry_max_seconds",
+      "type": "number",
+      "editable": true,
+      "save": "/api/group-sign/settings",
+      "view": "professional or expanded plan",
+      "staticReferences": [
+        "group-sign.mjs"
+      ],
+      "evidence": "group-sign.test.mjs, group-sign-scheduling.test.mjs, group-sign-precision.test.mjs, group-sign-integration.test.mjs"
+    },
+    {
+      "module": "Group sign",
+      "field": "confirmation_mode",
+      "type": "string",
+      "editable": true,
+      "save": "/api/group-sign/settings",
+      "view": "professional or expanded plan",
+      "staticReferences": [
+        "group-sign.mjs"
+      ],
+      "evidence": "group-sign.test.mjs, group-sign-scheduling.test.mjs, group-sign-precision.test.mjs, group-sign-integration.test.mjs"
+    },
+    {
+      "module": "Group sign",
+      "field": "confirmation_delay_seconds",
+      "type": "number",
+      "editable": true,
+      "save": "/api/group-sign/settings",
+      "view": "professional or expanded plan",
+      "staticReferences": [
+        "group-sign.mjs"
+      ],
+      "evidence": "group-sign.test.mjs, group-sign-scheduling.test.mjs, group-sign-precision.test.mjs, group-sign-integration.test.mjs"
+    },
+    {
+      "module": "Group sign",
+      "field": "confirmation_checks",
+      "type": "number",
+      "editable": true,
+      "save": "/api/group-sign/settings",
+      "view": "professional or expanded plan",
+      "staticReferences": [
+        "group-sign.mjs"
+      ],
+      "evidence": "group-sign.test.mjs, group-sign-scheduling.test.mjs, group-sign-precision.test.mjs, group-sign-integration.test.mjs"
+    },
+    {
+      "module": "Group sign",
+      "field": "confirmation_interval_seconds",
+      "type": "number",
+      "editable": true,
+      "save": "/api/group-sign/settings",
+      "view": "professional or expanded plan",
+      "staticReferences": [
+        "group-sign.mjs"
+      ],
+      "evidence": "group-sign.test.mjs, group-sign-scheduling.test.mjs, group-sign-precision.test.mjs, group-sign-integration.test.mjs"
+    },
+    {
+      "module": "Group sign",
+      "field": "previous_unknown_policy",
+      "type": "string",
+      "editable": true,
+      "save": "/api/group-sign/settings",
+      "view": "professional or expanded plan",
+      "staticReferences": [
+        "group-sign.mjs"
+      ],
+      "evidence": "group-sign.test.mjs, group-sign-scheduling.test.mjs, group-sign-precision.test.mjs, group-sign-integration.test.mjs"
+    },
+    {
+      "module": "Group sign",
+      "field": "retention_days",
+      "type": "number",
+      "editable": true,
+      "save": "/api/group-sign/settings",
+      "view": "professional or expanded plan",
+      "staticReferences": [
+        "group-sign.mjs"
+      ],
+      "evidence": "group-sign.test.mjs, group-sign-scheduling.test.mjs, group-sign-precision.test.mjs, group-sign-integration.test.mjs"
+    },
+    {
+      "module": "Group sign",
+      "field": "record_limit",
+      "type": "number",
+      "editable": true,
+      "save": "/api/group-sign/settings",
+      "view": "professional or expanded plan",
+      "staticReferences": [
+        "group-sign.mjs"
+      ],
+      "evidence": "group-sign.test.mjs, group-sign-scheduling.test.mjs, group-sign-precision.test.mjs, group-sign-integration.test.mjs"
+    },
+    {
+      "module": "Group sign",
+      "field": "dispatch_concurrency",
+      "type": "number",
+      "editable": true,
+      "save": "/api/group-sign/settings",
+      "view": "professional or expanded plan",
+      "staticReferences": [
+        "group-sign.mjs"
+      ],
+      "evidence": "group-sign.test.mjs, group-sign-scheduling.test.mjs, group-sign-precision.test.mjs, group-sign-integration.test.mjs"
+    },
+    {
+      "module": "Group sign",
+      "field": "dispatch_interval_ms",
+      "type": "number",
+      "editable": true,
+      "save": "/api/group-sign/settings",
+      "view": "professional or expanded plan",
+      "staticReferences": [
+        "group-sign.mjs"
+      ],
+      "evidence": "group-sign.test.mjs, group-sign-scheduling.test.mjs, group-sign-precision.test.mjs, group-sign-integration.test.mjs"
+    },
+    {
+      "module": "Group sign",
+      "field": "scheduler_interval_ms",
+      "type": "number",
+      "editable": true,
+      "save": "/api/group-sign/settings",
+      "view": "professional or expanded plan",
+      "staticReferences": [
+        "group-sign.mjs"
+      ],
+      "evidence": "group-sign.test.mjs, group-sign-scheduling.test.mjs, group-sign-precision.test.mjs, group-sign-integration.test.mjs"
+    },
+    {
+      "module": "Group sign",
+      "field": "groups",
+      "type": "array",
+      "editable": true,
+      "save": "/api/group-sign/settings",
+      "view": "simple and professional",
+      "staticReferences": [
+        "group-sign.mjs"
+      ],
+      "evidence": "group-sign.test.mjs, group-sign-scheduling.test.mjs, group-sign-precision.test.mjs, group-sign-integration.test.mjs"
+    },
+    {
+      "module": "Group sign row",
+      "field": "groups[].group_id",
+      "editable": true,
+      "save": "/api/group-sign/settings",
+      "staticReferences": [
+        "group-sign.mjs"
+      ],
+      "evidence": "group-sign*.test.mjs; browser configuration only"
+    },
+    {
+      "module": "Group sign row",
+      "field": "groups[].enabled",
+      "editable": true,
+      "save": "/api/group-sign/settings",
+      "staticReferences": [
+        "group-sign.mjs"
+      ],
+      "evidence": "group-sign*.test.mjs; browser configuration only"
+    },
+    {
+      "module": "Group sign row",
+      "field": "groups[].time",
+      "editable": true,
+      "save": "/api/group-sign/settings",
+      "staticReferences": [
+        "group-sign.mjs"
+      ],
+      "evidence": "group-sign*.test.mjs; browser configuration only"
+    },
+    {
+      "module": "Group sign row",
+      "field": "groups[].timezone",
+      "editable": true,
+      "save": "/api/group-sign/settings",
+      "staticReferences": [
+        "group-sign.mjs"
+      ],
+      "evidence": "group-sign*.test.mjs; browser configuration only"
+    },
+    {
+      "module": "AI proxy",
+      "field": "version",
+      "type": "number",
+      "editable": false,
+      "save": "/api/ai/network-settings",
+      "view": "simple and professional",
+      "staticReferences": [
+        "ai-network.mjs"
+      ],
+      "evidence": "ai-network.test.mjs; actual upstream routing not paid-tested"
+    },
+    {
+      "module": "AI proxy",
+      "field": "mode",
+      "type": "string",
+      "editable": true,
+      "save": "/api/ai/network-settings",
+      "view": "simple and professional",
+      "staticReferences": [
+        "ai-network.mjs"
+      ],
+      "evidence": "ai-network.test.mjs; actual upstream routing not paid-tested"
+    },
+    {
+      "module": "AI proxy",
+      "field": "proxy_url",
+      "type": "string",
+      "editable": true,
+      "save": "/api/ai/network-settings",
+      "view": "simple and professional",
+      "staticReferences": [
+        "ai-network.mjs"
+      ],
+      "evidence": "ai-network.test.mjs; actual upstream routing not paid-tested"
+    },
+    {
+      "module": "Recall",
+      "field": "target_type",
+      "editable": true,
+      "save": "dedicated recall controls",
+      "view": "simple or professional",
+      "staticReferences": [
+        "qq-recall.mjs",
+        "engine.mjs"
+      ],
+      "evidence": "features.test.mjs, cache.test.mjs, outbox.test.mjs, recovery tests; browser save/readback"
+    },
+    {
+      "module": "Recall",
+      "field": "group_id",
+      "editable": true,
+      "save": "dedicated recall controls",
+      "view": "simple or professional",
+      "staticReferences": [
+        "qq-recall.mjs",
+        "engine.mjs"
+      ],
+      "evidence": "features.test.mjs, cache.test.mjs, outbox.test.mjs, recovery tests; browser save/readback"
+    },
+    {
+      "module": "Recall",
+      "field": "group_name",
+      "editable": false,
+      "save": "dedicated recall controls",
+      "view": "simple or professional",
+      "staticReferences": [
+        "qq-recall.mjs",
+        "engine.mjs"
+      ],
+      "evidence": "features.test.mjs, cache.test.mjs, outbox.test.mjs, recovery tests; browser save/readback"
+    },
+    {
+      "module": "Recall",
+      "field": "friend_id",
+      "editable": true,
+      "save": "dedicated recall controls",
+      "view": "simple or professional",
+      "staticReferences": [
+        "qq-recall.mjs",
+        "engine.mjs"
+      ],
+      "evidence": "features.test.mjs, cache.test.mjs, outbox.test.mjs, recovery tests; browser save/readback"
+    },
+    {
+      "module": "Recall",
+      "field": "friend_name",
+      "editable": false,
+      "save": "dedicated recall controls",
+      "view": "simple or professional",
+      "staticReferences": [
+        "qq-recall.mjs",
+        "engine.mjs"
+      ],
+      "evidence": "features.test.mjs, cache.test.mjs, outbox.test.mjs, recovery tests; browser save/readback"
+    },
+    {
+      "module": "Recall",
+      "field": "auto_start",
+      "editable": true,
+      "save": "dedicated recall controls",
+      "view": "simple or professional",
+      "staticReferences": [
+        "qq-recall.mjs",
+        "engine.mjs"
+      ],
+      "evidence": "features.test.mjs, cache.test.mjs, outbox.test.mjs, recovery tests; browser save/readback"
+    },
+    {
+      "module": "Recall",
+      "field": "auto_resend",
+      "editable": true,
+      "save": "dedicated recall controls",
+      "view": "simple or professional",
+      "staticReferences": [
+        "qq-recall.mjs",
+        "engine.mjs"
+      ],
+      "evidence": "features.test.mjs, cache.test.mjs, outbox.test.mjs, recovery tests; browser save/readback"
+    },
+    {
+      "module": "Recall",
+      "field": "resend_self",
+      "editable": true,
+      "save": "dedicated recall controls",
+      "view": "simple or professional",
+      "staticReferences": [
+        "qq-recall.mjs",
+        "engine.mjs"
+      ],
+      "evidence": "features.test.mjs, cache.test.mjs, outbox.test.mjs, recovery tests; browser save/readback"
+    },
+    {
+      "module": "Recall",
+      "field": "resend_exempt_qq_ids",
+      "editable": true,
+      "save": "/api/resend-exemptions",
+      "view": "simple or professional",
+      "staticReferences": [
+        "qq-recall.mjs",
+        "engine.mjs"
+      ],
+      "evidence": "features.test.mjs, cache.test.mjs, outbox.test.mjs, recovery tests; browser save/readback"
+    },
+    {
+      "module": "Recall",
+      "field": "cache_messages_per_chat",
+      "editable": true,
+      "save": "/api/cache-settings",
+      "view": "simple or professional",
+      "staticReferences": [
+        "qq-recall.mjs",
+        "engine.mjs"
+      ],
+      "evidence": "features.test.mjs, cache.test.mjs, outbox.test.mjs, recovery tests; browser save/readback"
+    },
+    {
+      "module": "Recall",
+      "field": "cache_ttl_minutes",
+      "editable": true,
+      "save": "/api/cache-settings",
+      "view": "simple or professional",
+      "staticReferences": [
+        "qq-recall.mjs",
+        "engine.mjs"
+      ],
+      "evidence": "features.test.mjs, cache.test.mjs, outbox.test.mjs, recovery tests; browser save/readback"
+    },
+    {
+      "module": "Recall",
+      "field": "outbox_limit",
+      "editable": true,
+      "save": "/api/delivery-settings",
+      "view": "simple or professional",
+      "staticReferences": [
+        "qq-recall.mjs",
+        "engine.mjs"
+      ],
+      "evidence": "features.test.mjs, cache.test.mjs, outbox.test.mjs, recovery tests; browser save/readback"
+    },
+    {
+      "module": "Recall",
+      "field": "outbox_ttl_minutes",
+      "editable": true,
+      "save": "/api/delivery-settings",
+      "view": "simple or professional",
+      "staticReferences": [
+        "qq-recall.mjs",
+        "engine.mjs"
+      ],
+      "evidence": "features.test.mjs, cache.test.mjs, outbox.test.mjs, recovery tests; browser save/readback"
+    },
+    {
+      "module": "Recall",
+      "field": "recall_match_seconds",
+      "editable": true,
+      "save": "/api/delivery-settings",
+      "view": "simple or professional",
+      "staticReferences": [
+        "qq-recall.mjs",
+        "engine.mjs"
+      ],
+      "evidence": "features.test.mjs, cache.test.mjs, outbox.test.mjs, recovery tests; browser save/readback"
+    },
+    {
+      "module": "Recall",
+      "field": "send_interval_seconds",
+      "editable": true,
+      "save": "/api/send-interval",
+      "view": "simple or professional",
+      "staticReferences": [
+        "qq-recall.mjs",
+        "engine.mjs"
+      ],
+      "evidence": "features.test.mjs, cache.test.mjs, outbox.test.mjs, recovery tests; browser save/readback"
+    },
+    {
+      "module": "Recall",
+      "field": "auto_recovery",
+      "editable": true,
+      "save": "dedicated recall controls",
+      "view": "simple or professional",
+      "staticReferences": [
+        "qq-recall.mjs",
+        "engine.mjs"
+      ],
+      "evidence": "features.test.mjs, cache.test.mjs, outbox.test.mjs, recovery tests; browser save/readback"
+    },
+    {
+      "module": "Recall",
+      "field": "recovery_account",
+      "editable": false,
+      "save": "dedicated recall controls",
+      "view": "simple or professional",
+      "staticReferences": [
+        "qq-recall.mjs",
+        "engine.mjs"
+      ],
+      "evidence": "features.test.mjs, cache.test.mjs, outbox.test.mjs, recovery tests; browser save/readback"
+    },
+    {
+      "module": "Recall",
+      "field": "command_allow_others",
+      "editable": true,
+      "save": "/api/commands",
+      "view": "simple or professional",
+      "staticReferences": [
+        "qq-recall.mjs",
+        "engine.mjs"
+      ],
+      "evidence": "features.test.mjs, cache.test.mjs, outbox.test.mjs, recovery tests; browser save/readback"
+    },
+    {
+      "module": "Recall",
+      "field": "command_permissions",
+      "editable": true,
+      "save": "/api/commands",
+      "view": "simple or professional",
+      "staticReferences": [
+        "qq-recall.mjs",
+        "engine.mjs"
+      ],
+      "evidence": "features.test.mjs, cache.test.mjs, outbox.test.mjs, recovery tests; browser save/readback"
+    },
+    {
+      "module": "Recall",
+      "field": "command_account",
+      "editable": false,
+      "save": "/api/commands",
+      "view": "simple or professional",
+      "staticReferences": [
+        "qq-recall.mjs",
+        "engine.mjs"
+      ],
+      "evidence": "features.test.mjs, cache.test.mjs, outbox.test.mjs, recovery tests; browser save/readback"
+    },
+    {
+      "module": "Recall commands",
+      "field": "command_on",
+      "editable": true,
+      "save": "/api/commands",
+      "view": "professional",
+      "staticReferences": [
+        "qq-recall.mjs"
+      ],
+      "evidence": "features.test.mjs and command tests"
+    },
+    {
+      "module": "Recall commands",
+      "field": "command_off",
+      "editable": true,
+      "save": "/api/commands",
+      "view": "professional",
+      "staticReferences": [
+        "qq-recall.mjs"
+      ],
+      "evidence": "features.test.mjs and command tests"
+    },
+    {
+      "module": "Recall commands",
+      "field": "command_reply_on",
+      "editable": true,
+      "save": "/api/commands",
+      "view": "professional",
+      "staticReferences": [
+        "qq-recall.mjs"
+      ],
+      "evidence": "features.test.mjs and command tests"
+    },
+    {
+      "module": "Recall commands",
+      "field": "command_reply_off",
+      "editable": true,
+      "save": "/api/commands",
+      "view": "professional",
+      "staticReferences": [
+        "qq-recall.mjs"
+      ],
+      "evidence": "features.test.mjs and command tests"
+    },
+    {
+      "module": "AI connections",
+      "field": "mode",
+      "editable": true,
+      "save": "/api/ai/connections/config (UI managed connections)",
+      "view": "professional",
+      "staticReferences": [
+        "account-pool-service.mjs",
+        "connection-pool-service.mjs"
+      ],
+      "evidence": "competition-platform.test.mjs and backend recovery tests; credentials are entered only through explicit protected forms"
+    },
+    {
+      "module": "AI connections",
+      "field": "primaryId",
+      "editable": true,
+      "save": "/api/ai/connections/config (UI managed connections)",
+      "view": "professional",
+      "staticReferences": [
+        "account-pool-service.mjs",
+        "connection-pool-service.mjs"
+      ],
+      "evidence": "competition-platform.test.mjs and backend recovery tests; credentials are entered only through explicit protected forms"
+    },
+    {
+      "module": "AI connections",
+      "field": "backupIds",
+      "editable": true,
+      "save": "/api/ai/connections/config (UI managed connections)",
+      "view": "professional",
+      "staticReferences": [
+        "account-pool-service.mjs",
+        "connection-pool-service.mjs"
+      ],
+      "evidence": "competition-platform.test.mjs and backend recovery tests; credentials are entered only through explicit protected forms"
+    },
+    {
+      "module": "AI connections",
+      "field": "connections[].name",
+      "editable": true,
+      "save": "/api/ai/connections/config (UI managed connections)",
+      "view": "professional",
+      "staticReferences": [
+        "account-pool-service.mjs",
+        "connection-pool-service.mjs"
+      ],
+      "evidence": "competition-platform.test.mjs and backend recovery tests; credentials are entered only through explicit protected forms"
+    },
+    {
+      "module": "AI connections",
+      "field": "connections[].accountId",
+      "editable": true,
+      "save": "/api/ai/connections/config (UI managed connections)",
+      "view": "professional",
+      "staticReferences": [
+        "account-pool-service.mjs",
+        "connection-pool-service.mjs"
+      ],
+      "evidence": "competition-platform.test.mjs and backend recovery tests; credentials are entered only through explicit protected forms"
+    },
+    {
+      "module": "AI connections",
+      "field": "connections[].target.platform",
+      "editable": true,
+      "save": "/api/ai/connections/config (UI managed connections)",
+      "view": "professional",
+      "staticReferences": [
+        "account-pool-service.mjs",
+        "connection-pool-service.mjs"
+      ],
+      "evidence": "competition-platform.test.mjs and backend recovery tests; credentials are entered only through explicit protected forms"
+    },
+    {
+      "module": "AI connections",
+      "field": "connections[].target.base_url",
+      "editable": true,
+      "save": "/api/ai/connections/config (UI managed connections)",
+      "view": "professional",
+      "staticReferences": [
+        "account-pool-service.mjs",
+        "connection-pool-service.mjs"
+      ],
+      "evidence": "competition-platform.test.mjs and backend recovery tests; credentials are entered only through explicit protected forms"
+    },
+    {
+      "module": "AI connections",
+      "field": "connections[].target.format",
+      "editable": true,
+      "save": "/api/ai/connections/config (UI managed connections)",
+      "view": "professional",
+      "staticReferences": [
+        "account-pool-service.mjs",
+        "connection-pool-service.mjs"
+      ],
+      "evidence": "competition-platform.test.mjs and backend recovery tests; credentials are entered only through explicit protected forms"
+    },
+    {
+      "module": "AI connections",
+      "field": "connections[].target.model",
+      "editable": true,
+      "save": "/api/ai/connections/config (UI managed connections)",
+      "view": "professional",
+      "staticReferences": [
+        "account-pool-service.mjs",
+        "connection-pool-service.mjs"
+      ],
+      "evidence": "competition-platform.test.mjs and backend recovery tests; credentials are entered only through explicit protected forms"
+    },
+    {
+      "module": "AI connections",
+      "field": "connections[].credential",
+      "editable": true,
+      "save": "/api/ai/connections/config (UI managed connections)",
+      "view": "professional",
+      "staticReferences": [
+        "account-pool-service.mjs",
+        "connection-pool-service.mjs"
+      ],
+      "evidence": "competition-platform.test.mjs and backend recovery tests; credentials are entered only through explicit protected forms"
+    },
+    {
+      "module": "AI connections",
+      "field": "connections[].limits.concurrency",
+      "editable": true,
+      "save": "/api/ai/connections/config (UI managed connections)",
+      "view": "professional",
+      "staticReferences": [
+        "account-pool-service.mjs",
+        "connection-pool-service.mjs"
+      ],
+      "evidence": "competition-platform.test.mjs and backend recovery tests; credentials are entered only through explicit protected forms"
+    },
+    {
+      "module": "AI connections",
+      "field": "connections[].limits.rpm",
+      "editable": true,
+      "save": "/api/ai/connections/config (UI managed connections)",
+      "view": "professional",
+      "staticReferences": [
+        "account-pool-service.mjs",
+        "connection-pool-service.mjs"
+      ],
+      "evidence": "competition-platform.test.mjs and backend recovery tests; credentials are entered only through explicit protected forms"
+    },
+    {
+      "module": "AI connections",
+      "field": "connections[].limits.tpm",
+      "editable": true,
+      "save": "/api/ai/connections/config (UI managed connections)",
+      "view": "professional",
+      "staticReferences": [
+        "account-pool-service.mjs",
+        "connection-pool-service.mjs"
+      ],
+      "evidence": "competition-platform.test.mjs and backend recovery tests; credentials are entered only through explicit protected forms"
+    },
+    {
+      "module": "AI connections",
+      "field": "connections[].limits.tokens5h",
+      "editable": true,
+      "save": "/api/ai/connections/config (UI managed connections)",
+      "view": "professional",
+      "staticReferences": [
+        "account-pool-service.mjs",
+        "connection-pool-service.mjs"
+      ],
+      "evidence": "competition-platform.test.mjs and backend recovery tests; credentials are entered only through explicit protected forms"
+    },
+    {
+      "module": "AI connections",
+      "field": "connections[].limits.tokens7d",
+      "editable": true,
+      "save": "/api/ai/connections/config (UI managed connections)",
+      "view": "professional",
+      "staticReferences": [
+        "account-pool-service.mjs",
+        "connection-pool-service.mjs"
+      ],
+      "evidence": "competition-platform.test.mjs and backend recovery tests; credentials are entered only through explicit protected forms"
+    },
+    {
+      "module": "AI connections",
+      "field": "connections[].maxOutputTokens",
+      "editable": true,
+      "save": "/api/ai/connections/config (UI managed connections)",
+      "view": "professional",
+      "staticReferences": [
+        "account-pool-service.mjs",
+        "connection-pool-service.mjs"
+      ],
+      "evidence": "competition-platform.test.mjs and backend recovery tests; credentials are entered only through explicit protected forms"
+    },
+    {
+      "module": "AI connections",
+      "field": "connections[].timeoutSeconds",
+      "editable": true,
+      "save": "/api/ai/connections/config (UI managed connections)",
+      "view": "professional",
+      "staticReferences": [
+        "account-pool-service.mjs",
+        "connection-pool-service.mjs"
+      ],
+      "evidence": "competition-platform.test.mjs and backend recovery tests; credentials are entered only through explicit protected forms"
+    }
+  ],
+  "otherModules": [
+    {
+      "module": "AI-only proxy",
+      "consumer": "ai-network.mjs",
+      "evidence": "ai-network.test.mjs; browser save/reopen",
+      "save": "/api/ai/network-settings"
+    },
+    {
+      "module": "Recall and bindings",
+      "consumer": "qq-recall.mjs and engine.mjs",
+      "evidence": "features.test.mjs cache/delivery/private tests; browser save/reopen"
+    },
+    {
+      "module": "Group sign",
+      "consumer": "group-sign.mjs",
+      "evidence": "group-sign*.test.mjs; browser settings only; no real sign submission"
+    }
+  ]
+}

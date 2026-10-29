@@ -18,6 +18,8 @@ import { RecoveryWatchdog } from './recovery.mjs';
 import { ConnectionWatchdog } from './connection-watchdog.mjs';
 import { RetainedOutbox, validateDeliverySettings } from './retained-outbox.mjs';
 import { AIChat } from './ai-chat.mjs';
+import {MediaLibrary} from './media-library.mjs';
+import {StringDecoder} from 'node:string_decoder';
 import { publicAIError } from './ai-providers.mjs';
 import { AIError } from './ai-auth.mjs';
 import { OAUTH_DIAGNOSTIC_VERSION, renderOAuthResultPage } from './oauth-diagnostic.mjs';
@@ -141,6 +143,7 @@ export class PrivateRecallApp {
     this.outbox = new RetainedOutbox({ pace: this.sendQueue, inspect: job => this.outboxPermission(job),
       submit: job => this.submitOutbox(job), onState: (job, state) => this.outboxState(job, state) });
     this.ai = new AIChat({ dir: dirname(this.configPath), app: this, fetcher: options.aiFetcher, secrets: options.aiSecrets, poolSecrets: options.aiPoolSecrets, provider: options.aiProvider,initialState:options.initialAIState });
+    this.mediaLibrary=new MediaLibrary({dir:dirname(this.configPath),app:this,now:options.now||Date.now});
     this.groupSign = new GroupSignService({dir:dirname(this.configPath),app:this,now:options.now||Date.now,...options.groupSignOptions});
     this.saveTask = Promise.resolve();
     this.recoveryActions = options.recoveryActions || { inspect: getLoginState, restart: restartWorker, login: quickLogin };
@@ -164,6 +167,7 @@ export class PrivateRecallApp {
     await this.recallNames.initialize();
     await this.ai.initialize();
     await this.groupSign.initialize();
+    await this.mediaLibrary.initialize();
     try {
       const saved = await readJSON(this.configPath);
       this.preferences = {
@@ -243,7 +247,7 @@ export class PrivateRecallApp {
     const cache = this.engine?.cacheSnapshot();
     return {
       ai: this.ai.state(),
-      group_sign: this.groupSign.state(),
+      group_sign: this.groupSign.state(),media_library:this.mediaLibrary.state(),
       recall_name_bindings: this.recallNames.state(),
       recall_cycle_version: 2,
       combined_control_error: this.combinedControlError || '',
@@ -826,6 +830,7 @@ export class PrivateRecallApp {
   }
   async shutdown() {
     await this.groupSign.close();
+    await this.mediaLibrary.close();
     this.ai.dispose();
     this.outbox.dispose();
     this.connectionWatchdog?.stop();
@@ -879,7 +884,7 @@ export async function startApp(options = {}) {
       if (request.url === '/health' && request.method === 'GET') {
         const recovery = app.recovery.snapshot();
         const cache = app.engine?.cacheSnapshot();
-        return send(200, { app: 'qq-recall-private', group_sign_version:1,local_policy_version:'recall-rich-flow-v1-20261021',recall_rich_version:1,input_mentions_version:1,nickname_identity_version:1,structured_ai_mentions:true, display_name:'QQ 双功能助手', dual_ui:true, persistent_diagnostics:true, api_draft_test:true, real_group_mentions:true, unified_commands:true, ui_version:'chat-20261015', pid: process.pid, groups: true, commands: true, pacing: true,
+        return send(200, { app: 'qq-recall-private', group_sign_version:1,local_policy_version:'recall-rich-flow-v1-20261021',recall_rich_version:1,input_mentions_version:1,nickname_identity_version:1,structured_ai_mentions:true, display_name:'回响 QQ 助手',settings_ui_version:2,media_library_version:1, dual_ui:true, persistent_diagnostics:true, api_draft_test:true, real_group_mentions:true, unified_commands:true, ui_version:'chat-20261015', pid: process.pid, groups: true, commands: true, pacing: true,
           recovery: true, command_permissions: true, dynamic_pacing: true, self_recall: true,
           connection_watchdog: true, recovery_error_categories: true, verified_login_resume: true,
           resend_exemptions: true, command_confirmations: true, exact_command_replies: true,
@@ -891,7 +896,7 @@ export async function startApp(options = {}) {
           retained_outbox: true,
           ai_chat: true, ai_dual_auth: true,
           status_summary: { connected: app.connected, active: app.active,
-            group_sign:app.groupSign.state(false),
+            group_sign:app.groupSign.state(false),media_library:app.mediaLibrary.state(false),
             ai: app.ai.state(false),
             auto_resend: app.preferences.auto_resend && !app.exemptionsError,
             resend_exemption_count: app.exemptQQIds.length, resend_exempt_error: app.exemptionsError,
@@ -923,6 +928,12 @@ export async function startApp(options = {}) {
       if (request.headers['x-qq-recall-session'] !== app.session) {
         return send(403, { error: '请刷新控制页面。' });
       }
+      if(request.url==='/api/media-library'&&request.method==='GET')return send(200,app.mediaLibrary.state());
+      const libraryPreview=/^\/api\/media-library\/preview\/([a-f0-9-]{36})$/.exec(request.url||'');
+      if(libraryPreview&&request.method==='GET'){
+        try{const asset=app.mediaLibrary.assets.find(a=>a.id===libraryPreview[1]);if(!asset)return send(404,{error:'media_asset_unknown'});const data=await app.mediaLibrary.bytes(asset);response.writeHead(200,{'Content-Type':asset.mime,'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Content-Security-Policy':"default-src 'none'"});response.end(data);return;}
+        catch{return send(400,{error:'media_asset_unavailable'});}
+      }
       if (request.url === '/api/state' && request.method === 'GET') return send(200, app.state());
       if (request.url === '/api/friends' && request.method === 'GET') return send(200, app.friends);
       if (request.url === '/api/groups' && request.method === 'GET') return send(200, app.groups);
@@ -939,10 +950,24 @@ export async function startApp(options = {}) {
       if (request.headers.origin && request.headers.origin !== 'http://' + host) {
         return send(403, { error: '请从本机控制页面操作。' });
       }
-      let body = '';
+      let body = '';const bodyDecoder=new StringDecoder('utf8');
       for await (const chunk of request) {
-        body += chunk;
-        if (body.length > (request.url.startsWith('/api/group-sign/')?65536:request.url === '/api/commands' || request.url.startsWith('/api/ai/') ? 1048576 : 4096)) return send(413, { error: '请求过大。' });
+        body += bodyDecoder.write(chunk);
+        if (body.length > (request.url==='/api/media-library/import'?7340032:request.url.startsWith('/api/media-library/')?65536:request.url.startsWith('/api/group-sign/')?65536:request.url === '/api/commands' || request.url.startsWith('/api/ai/') ? 1048576 : 4096)) return send(413, { error: '请求过大。' });
+      }
+      body+=bodyDecoder.end();
+      if(request.url.startsWith('/api/media-library/')){
+        try{const value=JSON.parse(body||'{}');let outcome;
+          if(request.url==='/api/media-library/settings')await app.mediaLibrary.configure(value);
+          else if(request.url==='/api/media-library/import')outcome=await app.mediaLibrary.import(value);
+          else if(request.url==='/api/media-library/remove')await app.mediaLibrary.remove(value);
+          else if(request.url==='/api/media-library/rename')await app.mediaLibrary.renameAsset(value);
+          else if(request.url==='/api/media-library/send')outcome=await app.mediaLibrary.send(value);
+          else if(request.url==='/api/media-library/cancel')outcome=app.mediaLibrary.cancel(value);
+          else if(request.url==='/api/media-library/acknowledge')await app.mediaLibrary.acknowledge(value);
+          else return send(404,{error:'media_operation_not_found'});
+          return send(200,{...app.mediaLibrary.state(),outcome});
+        }catch(error){return send(400,{error:/^media_[a-z_]{1,70}$/.test(error?.code||'')?error.code:'media_operation_failed'});}
       }
       if(request.url.startsWith('/api/group-sign/')){
         try{const value=JSON.parse(body||'{}');let outcome;
@@ -968,6 +993,7 @@ export async function startApp(options = {}) {
           else if (request.url === '/api/ai/group-settings') await app.ai.configureGroupSettings(value);
           else if (request.url === '/api/ai/context-permission') await app.ai.configureContextPermission(value);
           else if (request.url === '/api/ai/context-settings') await app.ai.configureContext(value);
+          else if (request.url === '/api/ai/content-screening') await app.ai.configureContentScreening(value);
           else if (request.url === '/api/ai/runtime-settings') await app.ai.configureRuntime(value);
           else if (request.url === '/api/ai/retention') await app.ai.configureRetention(value);
           else if (request.url === '/api/ai/participation') await app.ai.configureParticipation(value);
@@ -1096,7 +1122,7 @@ async function main() {
   const running = await startApp({ initialRecoveryPause: args.includes('--preserve-recovery-pause'),initialAIState });
   if(initialAIState)await unlink(handoffPath).catch(()=>{});
   await writeFile(lockPath, JSON.stringify({ pid: process.pid, url: running.url }), 'utf8');
-  console.log('\nQQ 双功能助手页面：' + running.url);
+  console.log('\n回响 QQ 助手页面：' + running.url);
   console.log('撤回重发与AI聊天可独立运行；在页面顶部选择功能。保持本窗口开启，按 Ctrl+C 退出。\n');
   if (!args.includes('--no-browser')) openBrowser(running.url);
   const stop = async () => {

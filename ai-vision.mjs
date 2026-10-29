@@ -8,7 +8,7 @@ export const VISION_BASE='https://discovery-api.intern-ai.org.cn/v1';
 export const VISION_MODEL='deepseek-v4-flash-vision';
 export const VISION_MAX_BYTES=5*1024*1024;
 export const VISION_MAX_TOTAL_BYTES=20*1024*1024,VISION_MAX_IMAGES=8;
-export const VISION_ERRORS=Object.freeze(['vision_model_unsupported','vision_not_verified','vision_probe_mismatch','vision_image_too_large','vision_image_format_unsupported','vision_image_source_unsupported','vision_image_download_failed','vision_download_timeout','vision_sensitive_result','vision_current_image_only','vision_reference_scope_unknown','vision_image_ambiguous','vision_no_recent_image','vision_reference_unavailable','vision_reference_no_image','vision_animation_unsupported','vision_animation_timeout','vision_reference_before_private_epoch','vision_image_missing','vision_image_count_exceeded','vision_total_bytes_exceeded','vision_limits_invalid','vision_target_changed','vision_request_timeout',...['input','output'].flatMap(stage=>['credentials','identity','format','length'].map(reason=>'vision_'+stage+'_'+reason))]);
+export const VISION_ERRORS=Object.freeze(['vision_probe_options_invalid','vision_probe_replay_unavailable','vision_model_unsupported','vision_not_verified','vision_probe_mismatch','vision_image_too_large','vision_image_format_unsupported','vision_image_source_unsupported','vision_image_download_failed','vision_download_timeout','vision_sensitive_result','vision_current_image_only','vision_reference_scope_unknown','vision_image_ambiguous','vision_no_recent_image','vision_reference_unavailable','vision_reference_no_image','vision_animation_unsupported','vision_animation_timeout','vision_reference_before_private_epoch','vision_image_missing','vision_image_count_exceeded','vision_total_bytes_exceeded','vision_limits_invalid','vision_target_changed','vision_request_timeout',...['input','output'].flatMap(stage=>['credentials','identity','format','length'].map(reason=>'vision_'+stage+'_'+reason))]);
 export const VISION_LIMIT_DEFAULTS=Object.freeze({vision_max_images:1,vision_max_image_bytes:VISION_MAX_BYTES,vision_max_total_bytes:VISION_MAX_BYTES,vision_download_timeout_seconds:10,vision_request_timeout_seconds:60});
 export const VISION_LIMIT_FIELDS=Object.keys(VISION_LIMIT_DEFAULTS);
 export function visionLimits(config={}){
@@ -27,7 +27,7 @@ export const visionFormat=c=>c.vision_format||(c.vision_target===VISION_BASE&&c.
 export const visionVerifiedImages=c=>c.vision_verified_images||(c.vision_target===VISION_BASE&&c.vision_model===VISION_MODEL&&visionFormat(c)==='chat_completions'?1:0);
 export const visionBinding=c=>({base:c.api_base_url,model:c.api_model,format:c.api_format});
 export const sameVisionBinding=(proof,c)=>!!proof&&proof.base===c.api_base_url&&proof.model===c.api_model&&(proof.format|| (proof.protocol==='chat_completions_image_url_data_url'?'chat_completions':''))===c.api_format;
-export function visionEnabled(c){return visionTarget(c)&&c.vision_enabled===true&&c.vision_target===c.api_base_url&&c.vision_model===c.api_model&&visionFormat(c)===c.api_format&&c.vision_verified_at>0&&(c.vision_max_images??1)<=visionVerifiedImages(c);}
+export function visionEnabled(c){return visionTarget(c)&&c.vision_enabled===true&&c.vision_target===c.api_base_url&&c.vision_model===c.api_model&&visionFormat(c)===c.api_format;}
 export const VISION_RECENT_MS=120000,VISION_REFERENCE_MS=600000;
 export const wantsVision=text=>!/^(?:(?:什么是|何谓|介绍一下|请解释|解释一下)\s*OCR\b.*|OCR\s*(?:是什么|如何工作|的原理).*)$/iu.test(text.trim())&&/(?:识图|识别(?:这|一下|图片|照片|图中|文字)|(?:看看|看下|看一下|看一看|请看|分析|描述|解释|读取|提取|辨认).{0,12}(?:这张|图片|照片|图中|图里)|(?:这张|这图|图片|照片|图中|图里).{0,12}(?:什么|啥|内容|文字|识别)|\bOCR\b)/iu.test(text);
 const scope=e=>`${e.self_id}:${e.conversation_type}:${e.peer_id}:`;
@@ -134,10 +134,13 @@ export async function prepareVisionImages(inputs,signal,fetcher=globalThis.fetch
 }
 function crc32(bytes){let c=0xffffffff;for(const byte of bytes){c^=byte;for(let i=0;i<8;i++)c=(c>>>1)^((c&1)?0xedb88320:0);}return(c^0xffffffff)>>>0;}
 function chunk(type,data){const t=Buffer.from(type),out=Buffer.alloc(data.length+12);out.writeUInt32BE(data.length);t.copy(out,4);data.copy(out,8);out.writeUInt32BE(crc32(Buffer.concat([t,data])),data.length+8);return out;}
-export function makeVisionProbe(){
+export function makeVisionProbe({size=64,colors:ordered}={}){
+  if(![64,256,512,1024].includes(size)||ordered!==undefined&&(!Array.isArray(ordered)||ordered.length!==4||new Set(ordered).size!==4||!ordered.every(v=>['red','green','blue','yellow'].includes(v))))throw new AIError('vision_probe_options_invalid');
   const colors=[['red',[255,0,0]],['green',[0,255,0]],['blue',[0,0,255]],['yellow',[255,255,0]]];for(let i=3;i>0;i--){const j=randomInt(i+1);[colors[i],colors[j]]=[colors[j],colors[i]];}
-  const size=64,raw=Buffer.alloc(size*(1+size*3));for(let y=0;y<size;y++){const row=y*(1+size*3);for(let x=0;x<size;x++){const rgb=colors[(y>=32?2:0)+(x>=32?1:0)][1];for(let k=0;k<3;k++)raw[row+1+x*3+k]=rgb[k];}}
+  if(ordered)colors.sort((a,b)=>ordered.indexOf(a[0])-ordered.indexOf(b[0]));
+  const raw=Buffer.alloc(size*(1+size*3));for(let y=0;y<size;y++){const row=y*(1+size*3);for(let x=0;x<size;x++){const rgb=colors[(y>=size/2?2:0)+(x>=size/2?1:0)][1];for(let k=0;k<3;k++)raw[row+1+x*3+k]=rgb[k];}}
   const ihdr=Buffer.alloc(13);ihdr.writeUInt32BE(size);ihdr.writeUInt32BE(size,4);ihdr[8]=8;ihdr[9]=2;
   const png=Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]),chunk('IHDR',ihdr),chunk('IDAT',deflateSync(raw)),chunk('IEND',Buffer.alloc(0))]);
   return{image:imageData(png),expected:colors.map(c=>c[0]).join(' '),prompt:'Name the four solid-color quadrants in this image, in order: top-left, top-right, bottom-left, bottom-right. Use only the words red, green, blue, yellow. Reply only with four English lowercase color names separated by spaces.'};
 }
+

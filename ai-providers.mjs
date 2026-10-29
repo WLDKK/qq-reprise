@@ -3,6 +3,7 @@ import { redactTestReply } from './ai-api-draft.mjs';
 import {visionTarget,visionEnabled,visionLimits,imageData} from './ai-vision.mjs';
 import{retryAfterSeconds}from'./upstream-limit.mjs';
 import {serializedProbeImages,safeProbeResponseModel} from './vision-probe.mjs';
+import {IMAGE_DETAILS} from './vision-test-options.mjs';
 
 export function publicAIError(error) {
   if (error?.name === 'TimeoutError') return 'request_timeout';
@@ -96,7 +97,8 @@ export class AIProviders {
     progress({phase:'request_ready'});
     // Context is text only; previous image parts must never be silently resent.
     const textHistory=history.map(m=>({role:m.role,content:Array.isArray(m.content)?m.content.filter(v=>['text','input_text','output_text'].includes(v?.type)&&typeof v.text==='string').map(v=>v.text).join('\n'):m.content}));
-    const parts=detail.responses?[{type:'input_text',text:prompt},...images.map(image=>({type:'input_image',image_url:image.dataURL,detail:'auto'}))]:[{type:'text',text:prompt},...images.map(image=>({type:'image_url',image_url:{url:image.dataURL}}))];
+    const imageDetail=options.visionProbe===true?(options.imageDetail??'auto'):'auto';if(!IMAGE_DETAILS.includes(imageDetail))throw new AIError('vision_probe_options_invalid');
+    const parts=detail.responses?[{type:'input_text',text:prompt},...images.map(image=>({type:'input_image',image_url:image.dataURL,detail:imageDetail}))]:[{type:'text',text:prompt},...images.map(image=>({type:'image_url',image_url:{url:image.dataURL,...(options.visionProbe===true?{detail:imageDetail}:{})}}))];
     const messages = [...textHistory, { role: 'user', content: images.length?parts:prompt }];
     let body;
     if (detail.responses) {
@@ -112,7 +114,7 @@ export class AIProviders {
     progress({format:detail.responses?'responses':'chat_completions',timeoutSeconds:config.timeout_seconds,outputTokenMode:outputMode,outputTokenLimit:outputMode==='custom'?body[sentTokenField]:null,requestedTokenField:sentTokenField,requestedTokenLimit:sentTokenField?body[sentTokenField]:null,outputCharLimit:config.output_chars});
     const submission=await options.beforeSubmit?.();try{combined.throwIfAborted();}catch(error){await options.onNotSubmitted?.(submission);throw error;}
     if(options.visionProbe===true&&images.length){
-      const payload=serializedProbeImages(images);
+      const payload=serializedProbeImages(images,imageDetail);
       if(payload)progress({syntheticVisionProbe:true,probeImagePayload:payload,imageMime:'image/png',imageBytes:payload[0].bytes,imageCount:payload.length,imageTotalBytes:payload.reduce((n,v)=>n+v.bytes,0)});
     }
     progress({phase:'http_request'});
