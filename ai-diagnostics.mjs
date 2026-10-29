@@ -1,5 +1,6 @@
 import { NETWORK_ERRORS } from './ai-network.mjs';
 import { VISION_ERRORS } from './ai-vision.mjs';
+import { PROBE_REPLY_FORMATS } from './vision-probe.mjs';
 import { join } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { JsonFile } from './ai-storage.mjs';
@@ -73,6 +74,7 @@ export class AIDiagnostics {
     ...Object.fromEntries(INPUT_LENGTH_FIELDS.map(key=>[key,Number.isSafeInteger(value[key])&&value[key]>=0?value[key]:null])),
     imageHTTPStatus:Number.isInteger(value.imageHTTPStatus)&&value.imageHTTPStatus>=100&&value.imageHTTPStatus<=599?value.imageHTTPStatus:null,
     imageMime:['image/png','image/jpeg','image/webp'].includes(value.imageMime)?value.imageMime:null,imageBytes:bounded(value.imageBytes,5242880),imageCount:bounded(value.imageCount,8),imageTotalBytes:bounded(value.imageTotalBytes,20971520),imageStaticFrame:value.imageStaticFrame===true,
+    probeReplyFormat:PROBE_REPLY_FORMATS.includes(value.probeReplyFormat)?value.probeReplyFormat:null,probeExpectedColors:bounded(value.probeExpectedColors,32),probeRecognizedColors:bounded(value.probeRecognizedColors,32),probeMatchedPositions:bounded(value.probeMatchedPositions,32),
     finishReason:finishes.has(value.finishReason)?value.finishReason:null,outputChars:Number.isSafeInteger(value.outputChars)&&value.outputChars>=0?Math.min(value.outputChars,12000):0,
     outputTokenMode:['custom','platform_default','chatgpt_managed'].includes(value.outputTokenMode)?value.outputTokenMode:value.backend==='chatgpt'?'chatgpt_managed':'custom',
     outputTokenLimit:['platform_default','chatgpt_managed'].includes(value.outputTokenMode)||value.backend==='chatgpt'?null:Number.isSafeInteger(value.outputTokenLimit)&&value.outputTokenLimit>=0?value.outputTokenLimit:0,

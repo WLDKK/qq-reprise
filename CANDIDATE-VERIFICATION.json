@@ -1,8 +1,8 @@
 {
-  "status": "audited_generic_vision_candidate",
-  "runtimeFiles": 55,
-  "runtimeMjsFiles": 53,
-  "testFiles": 33,
+  "status": "audited_qq_plaintext_and_vision_probe_fix",
+  "runtimeFiles": 56,
+  "runtimeMjsFiles": 54,
+  "testFiles": 35,
   "historicalBaseline": {
     "tests": 400,
     "passed": 350,
@@ -20,15 +20,15 @@
   "liveIntegrationVerified": false,
   "licenseFilePresent": true,
   "publicationBlockedUntil": [],
-  "checkedAtUTC": "2026-10-29T07:29:29.085651+00:00",
-  "allMjsSyntaxChecked": 89,
+  "checkedAtUTC": "2026-10-29T08:33:49.467170+00:00",
+  "allMjsSyntaxChecked": 92,
   "syntaxFailures": [],
   "localImportClosureMissing": [],
   "externalPackageImports": [],
-  "publicFiles": 131,
+  "publicFiles": 135,
   "jsonFilesParsed": 9,
-  "documentationFiles": 23,
-  "localLinksChecked": 108,
+  "documentationFiles": 24,
+  "localLinksChecked": 113,
   "knownPersonalDataMatches": 0,
   "credentialFindingsRequiringReview": 0,
   "explicitSyntheticTestFindings": [
@@ -236,7 +236,7 @@
     "skipped": 0,
     "guardBlocks": 0
   },
-  "functionalTestsEvidence": "664/664 public source and 664/664 retained-private-default production combination; 22/22 synthetic browser checks",
+  "functionalTestsEvidence": "721/721 public and retained-private-default combinations; 12/12 current synthetic browser checks",
   "productionBaselineHashCheckIsHistorical": true,
   "functionalTestsBeforeGroupSign": {
     "tests": 443,
@@ -291,9 +291,9 @@
     "guardBlocks": 0
   },
   "functionalTests": {
-    "files": 33,
-    "tests": 664,
-    "passed": 664,
+    "files": 35,
+    "tests": 721,
+    "passed": 721,
     "failed": 0,
     "skipped": 0,
     "cancelled": 0,
@@ -324,19 +324,10 @@
     "noRawPayloadsAdded": true
   },
   "browserReview": {
-    "passed": 53,
-    "aiObservationChecks": 17,
-    "groupSignChecks": 36,
-    "unexpectedNetworkAttempts": 0,
-    "pageErrors": 0,
-    "guardBlocks": 0,
-    "mockedSignCalls": 1,
+    "checks": 12,
+    "synthetic": true,
     "realModelRequests": 0,
-    "realQQConnections": 0,
-    "productionReads": 0,
-    "productionWrites": 0,
-    "settingsIsolated": true,
-    "fixtureStopped": true
+    "realQQSends": 0
   },
   "functionalTestsBeforeOnboarding": {
     "tests": 549,
@@ -440,5 +431,30 @@
     "maxCount": 8,
     "providerFailoverForImages": false,
     "existingNetworkSettingsPreserved": true
+  },
+  "functionalTestsBeforeQQTextAndProbe": {
+    "files": 33,
+    "tests": 664,
+    "passed": 664,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "guardBlocks": 0
+  },
+  "qqOutput": {
+    "version": 2,
+    "tests": 37,
+    "aiReplyOnly": true,
+    "codePreserved": true,
+    "incomingOrRecallTextChanged": false
+  },
+  "visionProbe": {
+    "version": 2,
+    "tests": 20,
+    "baselineCorrectFormatCasesPassed": 1,
+    "fixedCorrectFormatCasesPassed": 6,
+    "formatCases": 6,
+    "rawReplyPersisted": false,
+    "realModelRetested": false
   }
 }

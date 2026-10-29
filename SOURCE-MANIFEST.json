@@ -3,7 +3,7 @@
   "sourceProject": "QQ local assistant",
   "sourceHasGitHistory": false,
   "sourceRemoteAvailable": false,
-  "sourceVersion": "recall-rich-flow-v1-20261021; backend_recovery_version=2; group_sign_version=1; group_sign_scheduler_version=2; upstream_observation_version=1; ai_network_version=1; api_test_lifecycle_version=1; backend_handoff_errors_version=1; vision_version=7; vision_binding_version=2",
+  "sourceVersion": "recall-rich-flow-v1-20261021; backend_recovery_version=2; group_sign_version=1; group_sign_scheduler_version=2; upstream_observation_version=1; ai_network_version=1; api_test_lifecycle_version=1; backend_handoff_errors_version=1; vision_version=7; vision_binding_version=2; vision_probe_version=2; qq_output_version=2",
   "licenseDecision": "MIT_owner_approved",
   "privateProductionDataIncluded": false,
   "originalEvidenceRetainedOutsideCandidate": true,
@@ -36,12 +36,13 @@
     {
       "file": "ai-chat.mjs",
       "sourceSHA256": "b0c8d981755d37492cf8924875b084346f9d0f31e625bc9a99415c5bd9dcf2e6",
-      "candidateSHA256": "4484ff6d2d6387dae764404c57deeaa762c8e14989b6748be9b6994972896e3d",
+      "candidateSHA256": "4d643b0da2748e479f451219c5b20a253f906b25ae21e5ece917efc9eb20ee74",
       "changes": [
         "backend_recovery_memory_v2",
         "unknown_delivery_retention_candidate_fix",
         "isolated_ai_network_and_test_lifecycle_v1",
-        "generic_vision_update_or_regression_fixture"
+        "generic_vision_update_or_regression_fixture",
+        "qq_plaintext_or_probe_answer_followup"
       ]
     },
     {
@@ -57,12 +58,13 @@
     {
       "file": "ai-diagnostics.mjs",
       "sourceSHA256": "5cdb0d5d4b2353de3965736795846a481a7b41194603d2e0d0ce2eabe922f268",
-      "candidateSHA256": "0727fe9a6e2a5f63cfb38e25756da9d7cf552f2c36df3c7f7e0d0a60a45cd467",
+      "candidateSHA256": "f98750f0631a4853d1a94b2f6e106ec1988c8336640feaadd2e2c187e34e4e2c",
       "changes": [
         "normalize_utf8_newlines",
         "historical_observation_and_confirmation_display_only",
         "isolated_ai_network_and_test_lifecycle_v1",
-        "generic_vision_update_or_regression_fixture"
+        "generic_vision_update_or_regression_fixture",
+        "qq_plaintext_or_probe_answer_followup"
       ]
     },
     {
@@ -326,9 +328,10 @@
     {
       "file": "qq-output.mjs",
       "sourceSHA256": "7a11506ebc7d71f95182e1900cad2cfb38e6fbb5e9732f8ccbf82dab1b33b6c4",
-      "candidateSHA256": "7a11506ebc7d71f95182e1900cad2cfb38e6fbb5e9732f8ccbf82dab1b33b6c4",
+      "candidateSHA256": "cd3827a004761ef37bcf6484d60ceaf024a0482bb076efa4526b20a4468d392e",
       "changes": [
-        "normalize_utf8_newlines"
+        "normalize_utf8_newlines",
+        "qq_plaintext_or_probe_answer_followup"
       ]
     },
     {
@@ -426,14 +429,15 @@
     {
       "file": "ui.html",
       "sourceSHA256": "aacc21a987ad7aea510797a8390b279fa008c647b4fb774e30b666906fed938c",
-      "candidateSHA256": "134ee355077938bc3e2a0f0f125b255063f2acebb9c06085549b3b7524f0bb18",
+      "candidateSHA256": "ce295c1d368c35ac6898839bd346bbacd26f8515be756d2965468c0b990c5819",
       "changes": [
         "normalize_utf8_newlines",
         "group_sign_v1",
         "scheduler_precision_and_counters_ui",
         "historical_observation_and_confirmation_display_only",
         "isolated_ai_network_and_test_lifecycle_v1",
-        "generic_vision_update_or_regression_fixture"
+        "generic_vision_update_or_regression_fixture",
+        "qq_plaintext_or_probe_answer_followup"
       ]
     },
     {
@@ -475,6 +479,14 @@
       "changes": [
         "new_candidate_ai_network_or_test_implementation",
         "generic_vision_update_or_regression_fixture"
+      ]
+    },
+    {
+      "file": "vision-probe.mjs",
+      "sourceSHA256": null,
+      "candidateSHA256": "f323d11929880bebb5ad841ba77ef09ef41ccd18ac36291fb4d0d24e33d83ca8",
+      "changes": [
+        "new_bounded_synthetic_color_answer_parser"
       ]
     }
   ],
@@ -703,6 +715,22 @@
       "changes": [
         "new_36_synthetic_generic_vision_regressions"
       ]
+    },
+    {
+      "file": "qq-output-plain.test.mjs",
+      "sourceSHA256": null,
+      "candidateSHA256": "c6f508fcfd85590163320e0e5bcbaebe198061c64ddf4c9a7fbcce448536e32f",
+      "changes": [
+        "new_synthetic_regression"
+      ]
+    },
+    {
+      "file": "vision-probe.test.mjs",
+      "sourceSHA256": null,
+      "candidateSHA256": "59245787e0883dca00a41ddb3f95783416d5baca72d2fdbc13c774ba88390b9c",
+      "changes": [
+        "new_synthetic_regression"
+      ]
     }
   ],
   "helpers": [
@@ -737,9 +765,11 @@
   "oauthRegistrationEntrypointVerified": true,
   "bundledPreissuedOAuthClientIds": false,
   "provenanceAudit": "PROVENANCE-AUDIT.json",
-  "featurePreparedAtUTC": "2026-10-29T07:29:29.085651+00:00",
+  "featurePreparedAtUTC": "2026-10-29T08:33:49.467170+00:00",
   "environmentPreflightVersion": 1,
   "aiNetworkVersion": 1,
   "apiTestLifecycleVersion": 1,
-  "genericVisionVersion": 2
+  "genericVisionVersion": 2,
+  "visionProbeVersion": 2,
+  "qqOutputVersion": 2
 }

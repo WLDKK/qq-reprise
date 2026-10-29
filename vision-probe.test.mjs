@@ -1,0 +1,19 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {mkdtemp,rm} from 'node:fs/promises';import {tmpdir} from 'node:os';import {join} from 'node:path';import {inflateSync} from 'node:zlib';
+import {AIChat} from './ai-chat.mjs';import {AI_DEFAULTS} from './ai-config.mjs';import {MemorySecrets} from './ai-storage.mjs';import {ResendQueue} from './send-queue.mjs';
+function answer(image){const b=Buffer.from(image.dataURL.split(',')[1],'base64'),chunks=[];for(let p=8;p+12<=b.length;){const n=b.readUInt32BE(p);if(b.toString('ascii',p+4,p+8)==='IDAT')chunks.push(b.subarray(p+8,p+8+n));p+=n+12;}const raw=inflateSync(Buffer.concat(chunks)),names={'255,0,0':'red','0,255,0':'green','0,0,255':'blue','255,255,0':'yellow'};return[[16,16],[48,16],[16,48],[48,48]].map(([x,y])=>names[[...raw.subarray(y*193+1+x*3,y*193+4+x*3)].join(',')]);}
+const formats={plain:a=>a.join(' '),inline_code:a=>'`'+a.join(' ')+'`',comma:a=>a.join(', '),json:a=>JSON.stringify(a),fence:a=>'```text\n'+a.join(' ')+'\n```',list:a=>a.map((v,i)=>(i+1)+'. '+v).join('\n')};
+import {evaluateVisionProbe} from './vision-probe.mjs';
+for(const [name,wrap]of Object.entries(formats))test('correct synthetic colors with '+name+' formatting',async t=>{
+ const dir=await mkdtemp(join(tmpdir(),'vision-answer-repro-')),app={connected:false,onlineConfirmed:false,selfId:'',sendQueue:new ResendQueue({intervalMs:0,jitterMs:0})};
+ const ai=new AIChat({dir,app,secrets:new MemorySecrets(),poolSecrets:new MemorySecrets(),provider:{generate:async(c,h,p,s,progress,options)=>wrap(answer(options.images[0]))}});await ai.initialize();ai.config={...structuredClone(AI_DEFAULTS),api_base_url:'https://synthetic-probe.example.invalid/v1',api_model:'synthetic-vision',api_format:'responses'};
+ t.after(async()=>{ai.dispose();await ai.budgetTask;await ai.diagnostics.file.task;await rm(dir,{recursive:true,force:true});});const result=await ai.testVision();assert.equal(result.ok,true,'Correct color order must not be rejected solely for harmless answer formatting');assert.equal(ai.config.vision_enabled,false);
+});
+const expected='red green blue yellow';
+for(const wrong of ['blue green red yellow','red green yellow blue','red red blue yellow'])test('correct format never excuses wrong colors: '+wrong,()=>{const e=evaluateVisionProbe(wrong,expected);assert.equal(e.matched,false);assert.equal(e.reason,'colors_mismatch');});
+for(const value of ['The answer is red green blue yellow','I cannot see it, maybe red green blue yellow','red green blue','2. red\n1. green\n3. blue\n4. yellow','["red","green","blue","yellow","red"]','red green blue orange'])test('ambiguous prose/count/order is not visual proof: '+value.length,()=>assert.equal(evaluateVisionProbe(value,expected).matched,false));
+test('two ordered synthetic image answers support a JSON array per image',()=>{const e=evaluateVisionProbe('[ ["red","green","blue","yellow"], ["yellow","blue","green","red"] ]',expected+' yellow blue green red');assert.equal(e.matched,true);assert.equal(e.expectedCount,8);assert.equal(e.matchedPositions,8);});
+test('case and terminal punctuation do not change color semantics',()=>assert.equal(evaluateVisionProbe('Red, Green, Blue, Yellow.',expected).matched,true));
+test('probe evaluation exposes only bounded metadata, never raw response text',()=>{const e=evaluateVisionProbe('Bearer synthetic-private-placeholder',expected);assert.doesNotMatch(JSON.stringify(e),/Bearer|synthetic|placeholder/);assert.equal(e.format,'unrecognized');assert.equal(e.expectedCount,4);});
+test('empty or oversized responses do not create visual proof',()=>{for(const value of ['',null,'red '.repeat(2000)])assert.equal(evaluateVisionProbe(value,expected).matched,false);});
+test('bad internal color specifications cannot produce a successful proof',()=>assert.throws(()=>evaluateVisionProbe('red','not-a-color')));

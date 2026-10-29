@@ -12,7 +12,8 @@ import { AIAuth, AIError } from './ai-auth.mjs';
 import { AIProviders, publicAIError, withAbort } from './ai-providers.mjs';
 import { AINetwork, validateNetwork } from './ai-network.mjs';
 import { ConnectionPoolService } from './connection-pool-service.mjs';
-import { formatQQOutput } from './qq-output.mjs';
+import { formatQQOutput,QQ_PLAINTEXT_INSTRUCTIONS } from './qq-output.mjs';
+import {evaluateVisionProbe} from './vision-probe.mjs';
 import { JsonFile } from './ai-storage.mjs';
 import { AI_DEFAULTS, validateAISettings, GROUP_SECTION_FIELDS, validateGroupPatch } from './ai-config.mjs';
 import { randomUUID } from 'node:crypto';
@@ -89,7 +90,7 @@ export class AIChat {
       private_archive_version:1,vision_intent_version:2,private_archived_count:this.privateArchive.forBinding(this.config.binding_qq).length,private_epoch_since:this.privateArchiveFreshSince||null,...(includeConfig?{archived_private_reviews:this.privateArchive.forBinding(this.config.binding_qq)}:{}),
       group_context: this.groupContext.state(this.config),group_understanding:{version:1,last:this.lastGroupUnderstanding||null},group_participation:{...this.participation.state(this.config),...(includeConfig?{effective:this.participationPolicy()}: {})},...(includeConfig?{persona_suggestion:DEFAULT_PERSONA}:{}), group_sender_policy: this.config.backend === 'api' ? this.config.group_member_policy : 'owner_only',
       input_mentions_version:1,chat_display_version:1,structured_mentions_version:1,message_format_version: 2, private_input_policy: this.config.private_local_review ? 'local_review' : 'ordinary_text',
-      streaming_version: 2, vision_version:7,vision_binding_version:2,vision_followup_version:1,vision_privacy_version:2,conversation_order_version:2,queue_policy_version:2,group_context_version:2,persona_version:2,name_trigger_version:1,capabilities: {text:true,image:visionEnabled(this.config),sticker:visionEnabled(this.config),image_route_available:visionTarget(this.config),image_max_count:visionLimits(this.config).vision_max_images,image_verified_count:visionVerifiedImages(this.config),image_format:visionFormat(this.config),image_limits:visionLimits(this.config),animated_image:'static_frame',face:'metadata_only',audio:false,video:false,image_outbound_enabled:visionEnabled(this.config)},vision_recent:this.recentVisionImages.state(),
+      streaming_version: 2, vision_version:7,vision_binding_version:2,vision_probe_version:2,qq_output_version:2,vision_followup_version:1,vision_privacy_version:2,conversation_order_version:2,queue_policy_version:2,group_context_version:2,persona_version:2,name_trigger_version:1,capabilities: {text:true,image:visionEnabled(this.config),sticker:visionEnabled(this.config),image_route_available:visionTarget(this.config),image_max_count:visionLimits(this.config).vision_max_images,image_verified_count:visionVerifiedImages(this.config),image_format:visionFormat(this.config),image_limits:visionLimits(this.config),animated_image:'static_frame',face:'metadata_only',audio:false,video:false,image_outbound_enabled:visionEnabled(this.config)},vision_recent:this.recentVisionImages.state(),
       vision_verification:this.visionVerification?{...this.visionVerification}:null,
       local_review: {enabled:this.config.private_local_review,...this.localReviewer.state()},
       ...(includeConfig ? { self_messages_reported: typeof this.app.client?.config?.report_self === 'boolean' ? this.app.client.config.report_self : null,
@@ -154,9 +155,9 @@ export class AIChat {
       const prompt='For each supplied image, in the supplied image order, name its four solid-color quadrants: top-left, top-right, bottom-left, bottom-right. Reply only with all '+(probes.length*4)+' lowercase color names separated by spaces. Use only red, green, blue, yellow.';
       const reply=await withAbort(this.provider.generate(config,[],prompt,controller.signal,p=>{if(current())this.diagnostics.progress('test',diagnosticId,p);},{images:probes.map(p=>p.image),visionProbe:true}),controller.signal);
       if(!current())throw new AIError('test_cancelled');
-      const supported=reply.trim().toLowerCase().split(/\s+/).join(' ')===probes.map(p=>p.expected).join(' ');
-      const verification={supported,...visionBinding(config),protocol:config.api_format==='responses'?'responses_input_image_data_url':'chat_completions_image_url_data_url',imageCount:probes.length,checkedAt:this.now()};
-      await withAbort(this.diagnostics.finish('test',diagnosticId,{status:supported?'completed':'failed',phase:'completed',errorCode:supported?'':'vision_probe_mismatch'}),controller.signal);
+      const evaluation=evaluateVisionProbe(reply,probes.map(p=>p.expected).join(' ')),supported=evaluation.matched;
+      const verification={supported,...visionBinding(config),protocol:config.api_format==='responses'?'responses_input_image_data_url':'chat_completions_image_url_data_url',imageCount:probes.length,checkedAt:this.now(),evaluation};
+      await withAbort(this.diagnostics.finish('test',diagnosticId,{status:supported?'completed':'failed',phase:'completed',errorCode:supported?'':'vision_probe_mismatch',probeReplyFormat:evaluation.format,probeExpectedColors:evaluation.expectedCount,probeRecognizedColors:evaluation.recognizedCount,probeMatchedPositions:evaluation.matchedPositions}),controller.signal);
       if(!current())throw new AIError('test_cancelled');this.visionVerification=verification;
       return{...result(supported,supported?'':'vision_probe_mismatch'),...verification};
     }catch(error){if(controller.signal.aborted)error=controller.signal.reason?.code==='request_timeout'?controller.signal.reason:new AIError('test_cancelled');const code=publicAIError(error),finished=this.diagnostics.finish('test',diagnosticId,{status:controller.signal.aborted?'cancelled':'failed',errorCode:code,...(error.status?{httpStatus:error.status}:{})});void finished.catch(()=>{});if(!controller.signal.aborted)await withAbort(finished,controller.signal).catch(()=>{});return result(false,code);}
@@ -709,6 +710,7 @@ export class AIChat {
       job.mentionTargets=[...(job.mentionTargets||[]),...input.targets.filter(v=>!(job.mentionTargets||[]).some(t=>t.id===v.id))];
       payload.prompt=withInputMentions(payload.prompt,input.context);
       job.config.instructions+=mentionInstructions(job);
+      job.config.instructions+='\n'+QQ_PLAINTEXT_INSTRUCTIONS;
       const generation=this.provider.generate(job.config, payload.history, payload.prompt, job.visionSignal??job.controller.signal,progress=>{if(this.valid(job)&&!job.visionSignal?.aborted)this.diagnostics.progress('generation',diagnosticId,progress);},job.images?.length?(job.images.length===1?{image:job.images[0]}:{images:job.images}):{requestId:job.key,...(job.participation?{outputTokenCeiling:job.config.participation_output_tokens,timeoutCeilingSeconds:job.config.participation_timeout_seconds,maxModelCalls:job.config.participation_max_model_calls,beforeSubmit:async()=>{if(!this.valid(job)){job.controller.abort();throw new AIError('cancelled');}return this.participation.modelPrepared(job.participationAttemptId,job.config);},onSubmitted:submission=>this.participation.modelInvoked(job.participationAttemptId,submission),onNotSubmitted:submission=>this.participation.modelNotSubmitted(job.participationAttemptId,submission)}:{})});
       const rawReply = await (job.visionRequest?withAbort(generation,job.visionSignal):job.participation?abortableResult(generation,job.controller.signal):generation);
       const decoded=decodeChatReply(rawReply,job),text=decoded.text;
