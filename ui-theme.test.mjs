@@ -1,0 +1,22 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile,mkdtemp,rm} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import {join} from 'node:path';
+import {tmpdir} from 'node:os';
+import {startApp} from './qq-recall.mjs';
+import {MemorySecrets} from './ai-storage.mjs';
+
+const ui=await readFile(new URL('./ui.html',import.meta.url),'utf8'),css=await readFile(new URL('./ui-theme.css',import.meta.url),'utf8');
+const wallpaper=await readFile(new URL('./ui-assets/workbench-wallpaper.jpg',import.meta.url));
+const digest=b=>createHash('sha256').update(b).digest('hex');
+async function fixture(t){const dir=await mkdtemp(join(tmpdir(),'theme-synthetic-'));let calls=0;const blocked=async()=>{calls++;throw Error('No external requests in theme tests');};const running=await startApp({configPath:join(dir,'config.json'),discover:async()=>[],logger:()=>{},aiSecrets:new MemorySecrets(),aiPoolSecrets:new MemorySecrets(),aiFetcher:blocked,aiImageFetcher:blocked});t.after(async()=>{await running.close();await rm(dir,{recursive:true,force:true});assert.equal(calls,0);});return running;}
+
+test('all 220 existing literal control IDs remain in the themed page',()=>{const ids=[...ui.matchAll(/\bid="([^"]+)"/g)].map(v=>v[1]).filter(v=>v!=='workbench-theme');assert.equal(ids.length,220);assert.equal(new Set(ids).size,220);assert.equal(digest([...ids].sort().join('\n')),'6864d6d2d23c9f66b85478e865bcb5a2e58061e6a680456ec5b6b2d717227982');});
+test('one stylesheet owns foundation, view-mode, mobile and media components',()=>{assert.equal((ui.match(/<style\b/g)||[]).length,1);assert.match(ui,/__WORKBENCH_THEME_CSS__/);assert.doesNotMatch(ui,/const viewStyle=|style\.textContent='\.media-assets/);for(const s of ['.account-tabs','.media-asset','.recall-item','.permission-row','.workbench-nav','body[data-settings-mode=simple] .professional-only','[hidden]{display:none!important}'])assert.ok(css.includes(s),s);});
+test('theme bundles one fixed local wallpaper and never imports remote styles or fonts',()=>{assert.deepEqual([...css.matchAll(/url\(([^)]+)\)/g)].map(v=>v[1]),["'/ui-assets/workbench-wallpaper.jpg'"]);assert.doesNotMatch(css,/@import|backdrop-filter\s*:\s*blur|linear-gradient|radial-gradient/i);assert.ok(wallpaper.length<262144);assert.equal(digest(wallpaper),'e624215031d03e8a2befc7d3cc247bddf9fa4b17fde56dc6b570a0a73c5aaf40');});
+test('served page contains the complete theme and preserves the existing CSP',async t=>{const f=await fixture(t),r=await fetch(f.url),html=await r.text();assert.equal(r.status,200);assert.doesNotMatch(html,/__WORKBENCH_THEME_CSS__|__SESSION_TOKEN__/);assert.ok(html.includes(css));assert.match(r.headers.get('content-security-policy'),/img-src 'self' data:/);assert.doesNotMatch(r.headers.get('content-security-policy'),/https:|\*/);assert.match(html,/dataset\.visualTheme='mountain-slate-v1'/);});
+test('fixed wallpaper route serves only audited jpeg bytes',async t=>{const f=await fixture(t),r=await fetch(new URL('/ui-assets/workbench-wallpaper.jpg',f.url));assert.equal(r.status,200);assert.match(r.headers.get('content-type'),/^image\/jpeg/);assert.equal(r.headers.get('x-content-type-options'),'nosniff');assert.equal(digest(Buffer.from(await r.arrayBuffer())),digest(wallpaper));});
+test('asset route does not become an arbitrary file reader',async t=>{const f=await fixture(t);for(const path of ['/ui-assets/../ai-settings.json','/ui-assets/%2e%2e/ai-settings.json','/ui-assets/workbench-wallpaper.jpg?file=ai-settings.json','/ui-assets/ui-theme.css']){const r=await fetch(new URL(path,f.url));assert.notEqual(r.status,200,path);assert.doesNotMatch(r.headers.get('content-type')||'',/image\/jpeg/);}});
+test('theme GETs preserve all saved settings and expose the new UI version',async t=>{const f=await fixture(t),before=structuredClone(f.app.ai.config);await fetch(f.url);await fetch(new URL('/ui-assets/workbench-wallpaper.jpg',f.url));assert.deepEqual(f.app.ai.config,before);const h=await(await fetch(new URL('/health',f.url))).json();assert.equal(h.settings_ui_version,4);assert.equal(h.visual_theme,'mountain-slate-v1');});
+test('wallpaper attribution preserves its original license independently of MIT',async()=>{const credit=await readFile(new URL('./docs/WALLPAPER-CREDIT.md',import.meta.url),'utf8');assert.match(credit,/camera obscura/);assert.match(credit,/https:\/\/unsplash.com\/license/);assert.match(credit,/MIT不覆盖/);assert.match(credit,/\.\.\/ui-assets\/workbench-wallpaper.jpg/);assert.doesNotMatch(credit,/[A-Za-z]:[\\/]Users[\\/]/);});

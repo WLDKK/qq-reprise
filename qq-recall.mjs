@@ -858,7 +858,8 @@ export async function startApp(options = {}) {
   const app = new PrivateRecallApp(options);
   await app.initialize();
   const template = await readFile(join(ROOT, 'ui.html'), 'utf8');
-  const html = template.replaceAll('__SESSION_TOKEN__', app.session);
+  const theme = await readFile(join(ROOT, 'ui-theme.css'), 'utf8');
+  const html = template.replace('__WORKBENCH_THEME_CSS__', () => theme).replaceAll('__SESSION_TOKEN__', app.session);
   const server = createServer(async (request, response) => {
     const send = (status, value, type = 'application/json; charset=utf-8') => {
       response.writeHead(status, {
@@ -874,6 +875,7 @@ export async function startApp(options = {}) {
       const host = '127.0.0.1:' + server.address().port;
       if (request.headers.host !== host) return send(403, { error: '地址不匹配。' });
       if (request.url === '/' && request.method === 'GET') return send(200, html, 'text/html; charset=utf-8');
+      if(request.method==='GET'&&request.url==='/ui-assets/workbench-wallpaper.jpg')return send(200,await readFile(join(ROOT,'ui-assets','workbench-wallpaper.jpg')),'image/jpeg');
       if (request.method === 'GET' && new URL(request.url, 'http://' + host).pathname === '/auth/callback') {
         try { await app.ai.auth.complete('http://' + host + request.url); }
         catch {} // The sanitized result is retained by AIAuth; never echo callback values.
@@ -884,7 +886,7 @@ export async function startApp(options = {}) {
       if (request.url === '/health' && request.method === 'GET') {
         const recovery = app.recovery.snapshot();
         const cache = app.engine?.cacheSnapshot();
-        return send(200, { app: 'qq-recall-private', group_sign_version:1,local_policy_version:'recall-rich-flow-v1-20261021',recall_rich_version:1,input_mentions_version:1,nickname_identity_version:1,structured_ai_mentions:true, display_name:'回响 QQ 助手',settings_ui_version:3,media_library_version:1, dual_ui:true, persistent_diagnostics:true, api_draft_test:true, real_group_mentions:true, unified_commands:true, ui_version:'chat-20261015', pid: process.pid, groups: true, commands: true, pacing: true,
+        return send(200, { app: 'qq-recall-private', group_sign_version:1,local_policy_version:'recall-rich-flow-v1-20261021',recall_rich_version:1,input_mentions_version:1,nickname_identity_version:1,structured_ai_mentions:true, display_name:'回响 QQ 助手',settings_ui_version:4,visual_theme:'mountain-slate-v1',media_library_version:1, dual_ui:true, persistent_diagnostics:true, api_draft_test:true, real_group_mentions:true, unified_commands:true, ui_version:'chat-20261015', pid: process.pid, groups: true, commands: true, pacing: true,
           recovery: true, command_permissions: true, dynamic_pacing: true, self_recall: true,
           connection_watchdog: true, recovery_error_categories: true, verified_login_resume: true,
           resend_exemptions: true, command_confirmations: true, exact_command_replies: true,

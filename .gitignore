@@ -58,3 +58,9 @@ vendor/
 
 # Anonymous public settings catalog only; runtime JSON remains private.
 !/docs/SETTINGS-MATRIX.json
+
+# Audited public interface artwork only. Other image files remain private.
+!/ui-assets/workbench-wallpaper.jpg
+!/docs/assets/ai-workbench-synthetic.png
+!/docs/assets/recall-records-synthetic.png
+!/docs/assets/mobile-workbench-synthetic.png
