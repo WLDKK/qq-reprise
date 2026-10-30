@@ -2,48 +2,27 @@
 
 *QQ Reprise*
 
-**Windows 自部署 QQ 助手：AI 图文 · 素材发送 · 撤回重发 · 独立官方群打卡**
+**给已有 NapCat 的 Windows 用户，一个中文本机群聊工作台。**
 
-通过 NapCat / OneBot 11 连接 QQ，在自己的 Windows 电脑上分别配置撤回重发、AI 对话和官方群打卡。适合能维护 QQ/NapCat 环境、希望自己控制名单、时间和接收方的使用者。
+用自己的模型参与群聊，管理已缓存消息的撤回重发，并为不同群设置独立的官方打卡计划。
 
-- **撤回重发**：对已收到并成功缓存的消息，在原会话按已配置的开关与权限重建发送。合并转发、媒体和卡片有明确的支持及降级范围。
-- **AI 群聊与识图**：配置自己的 API 或可选 OAuth 接入，在授权范围内使用 @、昵称触发和连续对话；普通 API 的 Responses / Chat Completions 支持接入单图、多图与同会话图片引用，需所选服务和模型实际支持，默认关闭图片外发。群背景外发另需启用。
-- **官方群打卡**：按群设置每日时间、时区或手动执行；持久化去重，可独立设置检查精度、并发与启动间隔，明确区分请求已发送、记录已确认和结果未知。默认关闭、无群启用。
-- **本机管理**：分别查看本地暂停状态与历史上游结果、连接、队列和脱敏诊断；撤回重发、AI、私聊回复、主动参与等功能分别控制。
+[下载预览版](https://github.com/WLDKK/qq-reprise/releases/tag/v0.1.0-rc.1) · [直接下载源码 ZIP](https://github.com/WLDKK/qq-reprise/releases/download/v0.1.0-rc.1/qq-reprise-ui4-9ce384f-windows-source.zip) · [首次启动](docs/QUICKSTART.md) · [界面预览](docs/SHOWCASE.md) · [遇到问题](docs/TROUBLESHOOTING.md)
 
-只能恢复助手实际接收并成功缓存的内容，无法找回启动前或已被淘汰的消息。可选会话缓存支持按会话设置容量，并在输入预算内结合近期与相关较早文字（例如最近 500 条，不全量发送）。[缓存与长代码回复说明](docs/CONVERSATION-CACHE-AND-LONG-OUTPUT.md)。上下文和撤回缓存主要保存在 RAM 中，重启不提供完整历史恢复。本项目不提供完整 QQ 备份或任意历史回看。
+![回响QQ助手桌面工作台：合成数据展示](docs/assets/ai-workbench-synthetic.png)
 
-公开示例默认关闭 AI、自动重发和官方群打卡，需自行安装 QQ / NapCat、配置接收方并明确开启功能。当前已有离线合成测试；真实客户端、供应商、OAuth 和全部媒体组合的验证边界见[测试记录](TESTING.md)。
+[观看54秒界面演示（合成数据，无真实QQ或模型请求）](https://github.com/WLDKK/qq-reprise/releases/download/v0.1.0-rc.1/qq-reprise-ui4-synthetic-demo.mp4) · [安装与升级](https://github.com/WLDKK/qq-reprise/releases/download/v0.1.0-rc.1/INSTALL-UPGRADE-zh-CN.md)
 
-## 日常使用先选简易模式
+### 从你需要的一项开始
 
-常用开关、连接、会话范围、图片与素材都在日常分区；专业模式保留完整参数与高级诊断，切换不丢草稿。
+| 想做什么 | 回响怎样帮助你 |
+| --- | --- |
+| 给允许的群配置AI互动 | 选择自己的服务、模型和参与范围，按需开启文字、图片或素材功能 |
+| 重建刚刚收到的撤回内容 | 对成功缓存的消息按原会话与开关重发，媒体和转发有清楚的支持范围 |
+| 为不同群安排官方打卡 | 独立设置名单、每日时间、时区与策略，分别查看提交、确认和未知状态 |
 
-- **图片输入**：Responses / Chat Completions均有图文路径。简易版阅读接收接口与外传说明后，点一次开关即保存开启；合成样题不作普通功能门槛；这不等于保证任意模型识图准确。
-- **图片/GIF发送**：用户主动添加本地素材，独立选择群或私聊范围，手动发送或在新AI文字回复确认后附图。默认关闭，未接入全部商城原生表情。
-- **可选内容筛查**：号码筛查和本地语义复核默认关闭、独立保存；凭据与会话/文件保护继续保留。
+日常用简易模式，专业模式保留完整参数；群名单、称呼、预算和时间都能分别修改。需要Windows、Node.js 24.14+、PowerShell/.NET及已安装的QQ/NapCat，**无需 npm install**。
 
-参阅[图片输入](docs/GENERIC-VISION.md)、[素材库](docs/MEDIA-LIBRARY.md)、[设置视图](docs/SETTINGS-VIEWS.md)与[本次更新](docs/UPDATE-20261029-PRODUCT.md)。下方展示当前简易/专业工作台的合成数据截图。
-
-## 可以怎样用
-
-| 场景 | 现有功能怎样处理 | 使用条件 |
-| --- | --- | --- |
-| 群里撤回一段“演示文字” | 在原会话按配置重建已成功缓存的内容；转发和媒体按支持矩阵处理 | 助手当时已收到并缓存，且该会话的重发已明确开启 |
-| 在允许群中真实@当前助手：`请解释下面这段代码的时间复杂度` | 把授权输入交给自己配置的模型，分别记录模型完成和QQ投递 | 已绑定本人QQ、允许该群/成员，且API或可选OAuth接入可用 |
-| 群A每天00:00、群B每天08:30打卡 | 各群可覆盖全局时间/时区，按账号、群、日期去重并展示待确认/已确认/未知 | 独立总/分群开关已开启，QQ/NapCat与PacketBackend可用；不保证排名 |
-
-上面是按已实现能力给出的使用例子，不是新发生的真实聊天或演示实拍。先看[明确标注为合成的界面预览](docs/SHOWCASE.md)，再按[快速启动](docs/QUICKSTART.md)选择一项功能；群名单、时间和策略均由使用者决定。
-
-英文副名为 QQ Reprise，源码仓库继续使用 `qq-reprise` 标识。
-
-[快速启动](docs/QUICKSTART.md) · [按症状排查](docs/TROUBLESHOOTING.md) · [配置指南](docs/CONFIGURATION.md) · [支持与降级范围](#支持范围) · [官方群打卡](docs/GROUP-SIGN.md) · [通用识图](docs/GENERIC-VISION.md) · [API / OAuth](#api-与-oauth) · [隐私与本地数据](#隐私与本地数据) · [测试边界](#测试与已知限制) · [MIT](LICENSE)
-
-## 界面预览（合成数据）
-
-下图由当前界面代码在隔离模拟服务中渲染，使用演示账号、称呼和模型，保留“合成界面展示”标识。桌面与手机均可使用简易/专业设置；截图里的连接和发送状态是演示数据。更多页面见[展示说明](docs/SHOWCASE.md)，[查看手机界面](docs/assets/mobile-workbench-synthetic.png)。
-
-![AI工作台：合成数据预览，未连接真实QQ或外部API](docs/assets/ai-workbench-synthetic.png)
+公开示例默认关闭AI、自动重发与打卡，按快速启动逐项开启。撤回重建仅限助手已接收并缓存的内容；它不是完整QQ历史备份。[功能边界与测试](TESTING.md) · [MIT](LICENSE) · [手机界面](docs/assets/mobile-workbench-synthetic.png)
 
 ## 安装与首次运行
 

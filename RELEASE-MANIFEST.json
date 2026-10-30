@@ -4,8 +4,8 @@
   "repository": "WLDKK/qq-reprise",
   "license": "MIT",
   "copyright": "2026 WLDKK",
-  "createdAtUTC": "2026-10-30T09:53:22.975648+00:00",
-  "manifestScope": "All 160 other audited public files; wallpaper retains Unsplash License",
+  "createdAtUTC": "2026-10-30T16:32:08.170542+00:00",
+  "manifestScope": "All 160 other public files in this documentation revision; source ZIP and v0.1.0-rc.1 remain fixed to 9ce384f919e18391f7f390be9b5aa5282b372e22",
   "fileCountIncludingManifest": 161,
   "files": [
     {
@@ -52,9 +52,9 @@
     },
     {
       "path": "README.md",
-      "bytes": 22328,
-      "sha256": "42e7a5e45dc49116cd25920ebdfcea0e5329e83a7188fbd71e5cdf730ed8464a",
-      "gitBlobSHA1": "077dc6e3c6461d19b716d9715df25ec16a2b19a7"
+      "bytes": 19209,
+      "sha256": "fe67d5551565c2bc9fd68972214f3d63f97a5cf633ddec9c82ac55c89ee818c0",
+      "gitBlobSHA1": "944000466539c08c70eeeff03619d05dea717b02"
     },
     {
       "path": "RELEASE-READINESS.md",
@@ -968,5 +968,7 @@
       "sha256": "4a8c330534b8176ba9cbbd702548e4303ce978be4ac1ab66410f7a81be2f5902",
       "gitBlobSHA1": "ca58960b380b913c768d419c165c05ba330388a0"
     }
-  ]
+  ],
+  "sourceReleaseTag": "v0.1.0-rc.1",
+  "sourceReleaseCommit": "9ce384f919e18391f7f390be9b5aa5282b372e22"
 }
