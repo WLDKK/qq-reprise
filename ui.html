@@ -289,7 +289,7 @@ body{padding:30px 32px 60px;background:radial-gradient(ellipse at 90% 0,#e4eee5 
         <p id="ai-group-trigger-status" role="status"></p>
         <div class="command-fields"><label>群聊触发方式<select id="ai-group_trigger_mode"><option value="mention_or_name">真实@或已开启的昵称</option><option value="mention">只用真实@</option><option value="name">只用昵称</option><option value="command">使用聊天口令</option></select></label><label>聊天口令<input id="ai-group-command-prefix" placeholder="/ai"></label></div><button id="ai-save-group-settings" type="button">保存群名单和触发设置（保持AI开关）</button><p id="ai-group-save-status" role="status"></p>
         <h3>本地附近消息缓存</h3><p>仅缓存已授权群的新文字，不持续调用云模型。条数/时长可在下方限额中设置；只留内存，关闭、重配或重启清空，不补读旧消息。</p>
-        <label class="permission-switch"><input type="checkbox" id="ai-group_context_export">允许被@时向当前普通API发送同群附近文字（排除群聊黑名单成员）</label><input id="ai-group_context_target" type="hidden"><p>外发范围使用已保存的缓存条数、保留时间和群背景字符预算（可在高级设置修改）；只含原授权群内未拉黑成员的普通文字，本人另受上方开关限制。接收方改变后须重新选择开关确认；已识别敏感文字不外发；规则不能保证发现所有隐私。不跨群、不混私聊。引用资料不是指令。仅触发时产生模型用量，上下文可能增加Token费用。</p><p id="ai-group-context-status" role="status"></p>
+        <label class="permission-switch"><input type="checkbox" id="ai-group_context_export">允许向当前普通API发送同群背景文字，用于被@时理解与主动参与判断（排除黑名单成员）</label><input id="ai-group_context_target" type="hidden"><p>外发范围使用已保存的缓存条数、保留时间和群背景字符预算（可在高级设置修改）；只含原授权群内未拉黑成员的普通文字，本人另受上方开关限制。接收方改变后须重新选择开关确认；已识别敏感文字不外发；规则不能保证发现所有隐私。不跨群、不混私聊。引用资料不是指令。仅触发时产生模型用量，上下文可能增加Token费用。</p><p id="ai-group-context-status" role="status"></p>
       </details>
       <details id="ai-siwc-settings"><summary>ChatGPT套餐 · 独立本人范围</summary><p id="ai-oauth-stage" role="status"></p><p>需在网页完成授权并回到本机页面，出现已保存账户才算绑定完成。若失败，只反馈下方阶段和错误码，请勿粘贴回调完整链接。</p>
         <p>仅当前验证QQ本人在指定会话明确触发，不扩展为多人套餐服务；身份登录不等于套餐推理授权，不自动换用API计费。</p>
@@ -1155,8 +1155,41 @@ body{padding:30px 32px 60px;background:radial-gradient(ellipse at 90% 0,#e4eee5 
 
 
 // Candidate navigation moves existing controls; their IDs and event handlers remain intact.
+
+// participation-ui-state: pure descriptions of saved settings, never an authorization.
+function participationScopeKey(config){
+  const list=key=>[...(config?.[key]||[])].sort();
+  return JSON.stringify([config?.backend,config?.api_base_url,config?.api_format,config?.api_model,list('groups'),list('participation_group_blacklist'),config?.group_member_policy,list('group_allowed_users'),list('group_blacklist')]);
+}
+function participationHasConsent(ai){
+  const c=ai?.config;
+  return !!(c&&c.group_context_export&&c.group_context_target===c.api_base_url&&ai.group_participation?.effective?.scope?.nearbyConsent!==false);
+}
+function participationStatusView(ai){
+  const c=ai?.config,p=ai?.group_participation,scope=p?.effective?.scope;
+  if(!c)return{kind:'loading',text:'正在读取已保存的主动参与状态…'};
+  if(!c.participation_enabled)return{kind:'off',text:'主动参与已关闭；明确提问仍按原设置处理。'};
+  const blocked=text=>({kind:'blocked',text:'主动参与已启用，但'+text});
+  if(scope?.participationEnabled===false)return blocked('运行开关尚未与配置同步，请重新读取状态。');
+  if(!ai.enabled||scope?.aiEnabled===false)return blocked('AI 总开关关闭，请先开启 AI。');
+  if(c.backend!=='api'||scope?.backendSupported===false)return blocked('当前接入不支持主动参与，请在“模型与 API”核对普通 API 连接。');
+  if(!c.groups?.length)return blocked('尚未配置 AI 群，请在“谁可以使用”保存群范围。');
+  if(c.groups.every(g=>c.participation_group_blacklist?.includes(g)))return blocked('当前 AI 群均已从主动参与中排除。');
+  if(c.group_member_policy==='allowlist'&&!c.group_allowed_users?.length)return blocked('群成员白名单为空，当前没有允许触发的成员。');
+  if(!participationHasConsent(ai))return blocked('缺少背景文字授权。请阅读下方接收方和范围说明，再点击“授权背景文字并保存主动参与”。');
+  if(ai.paused)return blocked('AI 当前暂停，请在连接状态中处理暂停原因。');
+  if(p?.error)return blocked('参与计数不可用，当前不会主动发言；请在专业诊断中核对。');
+  if(scope?.qqReady===false)return blocked('QQ 未在线或账号绑定不一致，请核对连接状态。');
+  if(scope?.sharedQueueIdle===false)return{kind:'waiting',text:'主动参与已启用，正在优先处理已有任务；队列空闲后再判断新群消息。'};
+  if(!p||!scope)return{kind:'loading',text:'主动参与已启用，实际运行条件尚未读回；当前不能确认就绪。'};
+  const reasons={global_hourly_limit:'已达全部群每小时尝试上限',group_daily_limit:'已达同群24小时尝试上限',daily_model_calls:'已达24小时模型调用预算',group_hourly_sent_limit:'已达同群每小时发送上限',group_daily_sent_limit:'已达同群24小时发送上限',global_hourly_sent_limit:'已达全部群每小时发送上限',global_daily_sent_limit:'已达全部群24小时发送上限',waiting_for_activity:'等待符合消息数和成员数设置的讨论',not_human_text:'等待成员的新文字消息，机器人和非文字输入已跳过',waiting_for_gap:'等待设置的发言间隙',activity_expired:'等待新的活跃讨论',not_enough_activity:'讨论消息数或成员数尚未达到设置',no_suitable_topic:'共同话题条件尚未满足',topic_changed:'话题已变化，等待新的合适消息',already_attempted:'本轮讨论已判断，等待新消息',cooldown:'处于同群冷却，结束后再判断新消息',hourly_model_calls:'每小时模型预算不足以覆盖本次预留',hourly_limit:'已达同群每小时尝试上限',daily_limit:'已达全部群24小时尝试上限',ledger_unavailable:'参与计数不可用，当前不会主动发言',candidate:'发现候选话题，正在核对',model_declined:'模型上次选择保持沉默',sent:'最近一次主动发言已收到QQ确认回执',local_check_failed:'上次本地参与检查未完成，请查看专业诊断'};
+  const reason=reasons[p.lastReason];
+  return{kind:'ready',text:reason?'主动参与已就绪 · '+reason+'。':'主动参与已就绪，等待符合当前范围和话题设置的新群消息；不保证每条都插话。'};
+}
+// participation-ui-state:end
+
 function installWorkbench(){
-  document.body.dataset.workbenchVersion='qq-reprise-ui-v2';
+  document.body.dataset.workbenchVersion='qq-reprise-ui-v2';document.body.dataset.participationUiVersion='1';
   const refs=new Map([...document.querySelectorAll('[id]')].map(node=>[node.id,node]));
   const get=id=>refs.get(id)||document.getElementById(id),node=(tag,className,text)=>{const e=document.createElement(tag);if(className)e.className=className;if(text!==undefined)e.textContent=text;return e;};
   const originalAI=[...get('ai-panel').children],originalRecall=[...get('recall-workspace').children];
@@ -1182,10 +1215,87 @@ function installWorkbench(){
   const names=card('最常改的称呼','只保存这两个称呼，其他分区草稿和 AI 开关保持原样。'),nameFields=node('div','quick-fields');mirror('ai-bot_name','AI 名字',nameFields);mirror('ai-bot_address','对提问者的称呼',nameFields);names.append(nameFields);const nameActions=quickSave(names,'保存称呼','quick-save-names','persona',['bot_name','bot_address'],'quick-names-status'),peopleLink=node('button','mini-link','人物设定与更多昵称 →');peopleLink.type='button';peopleLink.onclick=()=>navigate('ai','people');nameActions.append(peopleLink);dailyGrid.append(names);
   const budget=card('原连接的等待与输出','适用于原 API 连接；多 API 的每连接参数在账户页设置。'),budgetFields=node('div','quick-fields');mirror('ai-timeout_seconds','等待超时 / 秒',budgetFields);mirror('ai-api_output_token_mode','输出预算',budgetFields);mirror('ai-api_max_output_tokens','自定义输出 Token',budgetFields);budget.append(budgetFields);quickSave(budget,'保存等待与输出','quick-save-budget','output-budget',['timeout_seconds','api_output_token_mode','api_max_output_tokens'],'quick-budget-status');dailyGrid.append(budget);
   const participationFields=["participation_enabled", "participation_cooldown_seconds", "participation_hourly_limit", "participation_daily_limit", "participation_activity_min_messages", "participation_activity_window_seconds", "participation_group_blacklist", "participation_min_text_chars", "participation_min_speakers", "participation_topic_min_messages", "participation_topic_min_speakers", "participation_quiet_seconds", "participation_output_tokens", "participation_output_chars", "participation_timeout_seconds", "participation_stale_seconds", "participation_max_model_calls", "participation_hourly_model_calls", "participation_global_hourly_limit", "participation_group_daily_limit", "participation_group_hourly_sent_limit", "participation_group_daily_sent_limit", "participation_global_hourly_sent_limit", "participation_global_daily_sent_limit", "participation_topic_seed_limit", "participation_topic_chars", "participation_daily_model_calls", "participation_topic_required", "participation_filter_smalltalk", "participation_filter_commands", "participation_instructions", "participation_group_overrides"];
-  const participationCard=card('群聊主动参与','允许助手在已启用的群里适时参与讨论。需要先授权同群背景文字；提问优先。专业模式可调整全部频率、话题和费用参数。');participationCard.id='group-participation-card';
+  const participationCard=card('群聊主动参与','在已有 AI 群中适时参与讨论，明确提问优先。下方分别显示开关与实际运行条件；专业模式保留完整频率、话题和预算设置。');participationCard.id='group-participation-card';
   const participationAdvanced=node('details','professional-only'),participationControls=node('div','quick-fields');participationAdvanced.id='participation-advanced';participationAdvanced.append(node('summary','','频率、话题与费用参数（均可修改）'),participationControls);for(const name of participationFields){const label=get('ai-'+name).parentElement;if(['participation_enabled','participation_group_blacklist'].includes(name))participationCard.append(label);else participationControls.append(label);}participationCard.append(participationAdvanced);
   const effectivePolicy=node('pre','');effectivePolicy.id='participation-effective-policy';effectivePolicy.style.whiteSpace='pre-wrap';effectivePolicy.style.overflowWrap='anywhere';participationCard.append(node('h3','professional-only','当前生效条件（已保存值）'),effectivePolicy);
-  quickSave(participationCard,'保存主动参与','save-participation','participation',participationFields,'participation-save-status');
+
+  const participationNotice=node('p','permission-notice'),participationReadback=node('button','mini-link','重新读取保存结果');
+  participationNotice.id='participation-consent-notice';participationReadback.id='participation-save-readback';participationReadback.type='button';participationReadback.hidden=true;
+  participationCard.append(participationNotice);
+  const participationActions=quickSave(participationCard,'保存主动参与','save-participation','participation',participationFields,'participation-save-status');participationActions.append(participationReadback);
+  const participationSave=participationCard.querySelector('#save-participation'),participationSaveStatus=participationCard.querySelector('#participation-save-status');
+  participationSave.setAttribute('aria-describedby',participationNotice.id);
+  const participationSaveState={busy:false,unknown:false,operation:null};
+  const participationRequest=(path,body)=>api(path,body,AbortSignal.timeout(10000));
+  function participationError(error){return error?.field?error.message:({configuration_busy:'当前有设置或请求正在处理，请稍后保存。',context_recipient_changed:'接收方已变化，请重新核对当前服务与群范围。',settings_save_failed:'本机文件保存未完成。',participation_scope_changed:'保存前服务或群范围已变化，请核对下方最新说明后重新操作。',participation_setting_changed:'相关参数已在其他页面修改；输入保留，请先核对已保存值。'}[error?.code||error?.message]||'本机保存未完成，请核对助手连接；不会自动重试。');}
+  function renderParticipationSave(){
+    const c=aiLast?.config,wanted=get('ai-participation_enabled').checked,needs=wanted&&!participationHasConsent(aiLast),canGrant=c?.backend==='api'&&!!c.api_base_url&&!!c.groups?.length;
+    const count=c?.groups?.length||0;
+    participationNotice.textContent=!c?'正在读取接收方与范围…':needs?'点击“授权背景文字并保存主动参与”即同意：将当前已保存的 '+count+' 个 AI 群内允许成员的背景文字发送给 '+c.api_base_url+'（模型 '+c.api_model+'），用于理解讨论及判断何时插话。仅保存本区修改，不新增群或私聊；背景可能增加模型用量。首次授权会重建临时上下文，只处理之后的新消息。':participationHasConsent(aiLast)?'背景文字已授权给 '+c.api_base_url+'，当前 AI 群 '+count+' 个。只在原范围内判断；开关开启不代表每次都会发言，频率与话题设置仍生效。':'关闭主动参与不会额外授权背景文字，也不改变其他会话设置。';
+    participationSave.textContent=participationSaveState.busy?'正在保存并核对…':needs?'授权背景文字并保存主动参与':'保存主动参与';
+    participationSave.disabled=participationSaveState.busy||participationSaveState.unknown||!c||needs&&!canGrant;
+    participationSave.setAttribute('aria-busy',String(participationSaveState.busy));
+    participationReadback.hidden=!participationSaveState.unknown;participationReadback.disabled=participationSaveState.busy;
+    if(needs&&!canGrant)participationNotice.textContent+=' 请先保存普通 API 接收方及 AI 群范围；本次不会自动补全。';
+  }
+  function applyParticipationReadback(state,operation,success){
+    const saved=state.ai.config;
+    if(success)for(const key of participationFields){const input=get('ai-'+key);if(sameDraftField(key,sectionValue(key),operation.draft[key])){if(input.type==='checkbox')input.checked=saved[key];else input.value=formatAIValue(key,saved[key]);}}
+    if(operation.consent)for(const key of ['group_context_export','group_context_target']){const input=get('ai-'+key);if(input.type==='checkbox')input.checked=saved[key];else input.value=saved[key];}
+    const draft=aiDraft();aiDirty=aiNames.some(k=>!sameDraftField(k,draft[k],saved[k]))||!!get('ai-key').value;aiDraftRevision++;display(state);
+  }
+  function participationOutcome(state,operation){
+    return participationScopeKey(state.ai.config)===operation.scope&&(!operation.consent||participationHasConsent(state.ai))&&Object.entries(operation.patch).every(([key,value])=>sameDraftField(key,value,state.ai.config[key]));
+  }
+  function lockParticipationControls(locked){
+    for(const key of participationFields)get('ai-'+key).disabled=locked;
+    get('save-context-permission').disabled=locked;get('ai-group_context_export').disabled=locked;
+  }
+  participationSave.onclick=async()=>{
+    if(participationSaveState.busy||participationSaveState.unknown||!aiLast?.config)return;
+    const before=structuredClone(aiLast.config);let draft;
+    for(const key of participationFields)get('ai-'+key).removeAttribute('aria-invalid');
+    try{draft=Object.fromEntries(participationFields.map(k=>[k,sectionValue(k)]));}catch(error){participationSaveStatus.textContent=participationError(error);get('ai-'+error.field)?.setAttribute('aria-invalid','true');return;}
+    const patch=Object.fromEntries(participationFields.filter(k=>!sameDraftField(k,draft[k],before[k])).map(k=>[k,draft[k]]));
+    const operation={scope:participationScopeKey(before),draft,patch,consent:draft.participation_enabled&&!participationHasConsent(aiLast)};
+    participationSaveState.busy=true;participationSaveState.operation=operation;lockParticipationControls(true);renderParticipationSave();participationSaveStatus.textContent='正在核对当前接收方和已保存参数…';let posted=false,lastState;
+    try{
+      let state=await participationRequest('/api/state');lastState=state;
+      if(participationScopeKey(state.ai.config)!==operation.scope)throw Object.assign(Error('participation_scope_changed'),{code:'participation_scope_changed'});
+      for(const[key,value]of Object.entries(patch))if(!sameDraftField(key,before[key],state.ai.config[key])&&!sameDraftField(key,value,state.ai.config[key]))throw Object.assign(Error('participation_setting_changed'),{code:'participation_setting_changed'});
+      const submit=async(path,body,check)=>{
+        posted=true;let failure;
+        try{await participationRequest(path,body);}catch(error){failure=error;}
+        try{state=await participationRequest('/api/state');lastState=state;}catch(error){participationSaveState.unknown=true;throw error;}
+        if(participationScopeKey(state.ai.config)!==operation.scope)throw Object.assign(Error('participation_scope_changed'),{code:'participation_scope_changed'});
+        if(!check(state)){if(failure&&!(failure.status>=400&&failure.status<500))participationSaveState.unknown=true;throw failure||Object.assign(Error('settings_save_failed'),{code:'settings_save_failed'});}
+      };
+      if(operation.consent&&!participationHasConsent(state.ai)){
+        participationSaveStatus.textContent='正在保存已说明范围的背景文字授权…';
+        await submit('/api/ai/context-permission',{enabled:true,expected_base:state.ai.config.api_base_url},s=>participationHasConsent(s.ai));
+      }
+      if(Object.keys(patch).length){participationSaveStatus.textContent='正在保存本区修改，其他参数保持原样…';await submit('/api/ai/participation',patch,s=>Object.entries(patch).every(([key,value])=>sameDraftField(key,value,s.ai.config[key])));}
+      const ok=participationOutcome(state,operation);if(!ok)throw Object.assign(Error('settings_save_failed'),{code:'settings_save_failed'});
+      applyParticipationReadback(state,operation,true);participationSaveStatus.textContent='已保存并读回确认；'+participationStatusView(state.ai).text+' 其他分区草稿保留，未发起模型或QQ测试。';
+    }catch(error){
+      if(posted&&!lastState)participationSaveState.unknown=true;
+      if(posted&&(!lastState||error?.name==='TimeoutError'||error?.name==='AbortError'||error instanceof TypeError))participationSaveState.unknown=true;
+      if(lastState)applyParticipationReadback(lastState,operation,false);
+      aiDirty=true;
+      const partial=lastState&&operation.consent&&participationHasConsent(lastState.ai)&&!participationOutcome(lastState,operation)?'背景文字授权已保存，但主动参与参数尚未全部确认。 ':'';
+      participationSaveStatus.textContent=partial+(participationSaveState.unknown?'保存结果未确认，请点“重新读取保存结果”；不会自动重复提交。':participationError(error)+' 输入已保留。');
+      if(error?.field)get('ai-'+error.field)?.setAttribute('aria-invalid','true');
+    }finally{participationSaveState.busy=false;lockParticipationControls(false);renderParticipationSave();}
+  };
+  participationReadback.onclick=async()=>{
+    if(participationSaveState.busy||!participationSaveState.operation)return;
+    participationSaveState.busy=true;renderParticipationSave();
+    try{const state=await participationRequest('/api/state'),ok=participationOutcome(state,participationSaveState.operation);applyParticipationReadback(state,participationSaveState.operation,ok);participationSaveState.unknown=false;participationSaveStatus.textContent=ok?'已重新读回确认；没有重复提交。 '+participationStatusView(state.ai).text:'当前读回未确认全部预期修改；输入保留，没有重复提交。请核对运行状态后再决定是否保存。';}
+    catch{participationSaveStatus.textContent='仍无法读回保存结果；没有重复提交，请核对本机助手连接。';}
+    finally{participationSaveState.busy=false;renderParticipationSave();}
+  };
+  get('ai-participation_enabled').addEventListener('change',renderParticipationSave);
+
   participationCard.append(node('p','professional-only','所有频率和话题阈值均使用下方已保存配置。尝试=开始一次判断任务（失败、沉默也计）；模型提交=HTTP客户端已实际调用，不等于供应商接收或计费；提交前取消不计提交，崩溃后无法判定的记录单列并保守占用预算；实际发送=QQ返回成功回执。小时/日为滚动1小时/24小时。模型预算在任务结束时释放未使用预留；发送回执不确定时保留额度并单列显示，不自动重发。普通回复与主动参与的长度、超时分别设置；已启用账户池的每连接预算、上游配额和全部功能每日任务预算仍独立生效。每条新消息至多触发一个候选；自己和已知机器人的消息不触发，防止自答循环。'));
   participationCard.append(node('p','professional-only','逐群JSON示例：{"50001":{"cooldown_seconds":0,"hourly_attempts":30,"daily_attempts":0,"hourly_sent":20,"daily_sent":0}}。逐群已填值优先于通用的同群默认值；未填项继承。0只取消该项本地限制；全部群总预算、每日生成任务、每连接预算与上游限流仍生效，不会被逐群规则解除。关闭共同话题筛选、寒暄筛选或把最少消息/成员数设0，可取消对应业务门槛；凭据检查和可信来源边界继续适用。'));
   const participationStatus=node('p','quick-status','正在读取参与状态');participationStatus.id='participation-runtime-status';participationStatus.setAttribute('role','status');participationCard.append(participationStatus);ai.daily.append(participationCard);
@@ -1274,7 +1384,7 @@ function installWorkbench(){
   function wrapConnections(){for(const box of get('pool-connections').querySelectorAll('fieldset[data-connection-id]')){let wrapper=box.parentElement;if(!wrapper.classList.contains('connection-card')){wrapper=node('details','connection-card');wrapper.dataset.connectionCard=box.dataset.connectionId;wrapper.open=foldedConnections.get(box.dataset.connectionId)??!poolLast?.connectionManager?.connections.some(c=>c.id===box.dataset.connectionId);const summary=node('summary','');summary.append(node('span','',box.querySelector('legend')?.textContent||'API 连接'),node('small','','展开编辑'));wrapper.append(summary);box.before(wrapper);wrapper.append(box);wrapper.addEventListener('toggle',()=>foldedConnections.set(box.dataset.connectionId,wrapper.open));const advanced=box.querySelector('details');if(advanced?.querySelector('summary'))advanced.querySelector('summary').textContent='预算、并发与超时';}const summary=wrapper.querySelector('summary');summary.querySelector('span').textContent=box.querySelector('legend')?.textContent||'API 连接';summary.querySelector('small').textContent=poolDraft?.primaryId===box.dataset.connectionId?'主连接':poolDraft?.backupIds?.includes(box.dataset.connectionId)?'备用连接':'未选用';}}
   function sync(){for(const{source,input}of quickBindings){if(document.activeElement!==input){if(source.type==='checkbox')input.checked=source.checked;else input.value=source.value;}input.disabled=!aiLoaded||source.disabled;}if(aiLast){const storageFailed=aiLast.diagnostics?.persistence?.status==='failed';storageAlert.hidden=!storageFailed;storageAlert.textContent=storageFailed?'诊断未能写入磁盘，当前仅在内存保留；重启可能丢失。请检查本地磁盘空间或写权限。':'';get('quick-runtime').textContent=aiLast.enabled?(aiLast.paused?'已暂停':'已开启'):'已关闭';get('quick-model').textContent=aiLast.config.backend==='api'?(aiLast.config.api_model||'尚未设置'):(aiLast.config.siwc_model||'套餐未选择');const manager=aiLast.account_pool?.connectionManager;get('quick-connections').textContent=(manager?.connections?.length||0)+' 个'+(manager?.enabled?' · 主备已启用':' · 原连接');}editorBadge.textContent=get('recall-name-group').readOnly?'编辑现有绑定':'新增绑定';if(get('candidate-preview-banner')){get('connection').textContent='模拟预览';get('connection').className='tag wait';}wrapConnections();}
   const understandingCard=card('群聊上下文选择','当前问题优先，再核对最多4跳引用、同一人的相关任务历史及相关群背景。未核对的来源不会猜补；别人的问号或插话不替换本人任务。不限时指缓存不按年龄过期，容量和本次输入预算仍分别生效。'),understandingStatus=node('p','quick-status','尚无上下文组装记录');understandingStatus.id='group-understanding-status';understandingCard.append(understandingStatus);ai.advanced.prepend(understandingCard);
-  function syncParticipation(){if(!aiLast)return;suggestionText.textContent=aiLast.persona_suggestion||'';const p=aiLast.group_participation;const policy=p?.effective;if(policy){const describe=n=>n===0?'不设此项本地上限':String(n),lines=[policy.precedence,'全部群：每小时尝试 '+describe(policy.global.hourlyAttempts)+'；24小时尝试 '+describe(policy.global.dailyAttempts)+'；每小时确认发送 '+describe(policy.global.hourlySent)+'；24小时确认发送 '+describe(policy.global.dailySent),'单次模型提交：设置最多 '+policy.requestedCallsPerAttempt+'，按当前可用独立账户最多预留 '+policy.effectiveCallsPerAttempt+'（同一账户不重复重试）','模型：每小时HTTP调用 '+describe(policy.global.hourlyHTTPCalls)+'；24小时HTTP调用 '+describe(policy.global.dailyHTTPCalls)+'；全部功能每日生成任务 '+describe(policy.global.dailyGenerationTasks)+'（'+policy.global.dailyTaskTimezone+'）',...policy.groups.map(v=>'群 '+v.group+(v.excluded?'【已排除】':v.hasOverrides?'【使用逐群覆盖】':'【使用通用默认】')+'：冷却 '+v.cooldown+'秒；小时/24小时尝试 '+describe(v.hourly)+' / '+describe(v.daily)+'；小时/24小时发送 '+describe(v.hourlySent)+' / '+describe(v.dailySent)),...policy.connections.map(v=>'连接 '+v.name+'：主动输出最多 '+v.outputTokens+'Token，每路 '+v.timeoutSeconds+'秒；账户额度 '+JSON.stringify(v.limits)),'当前开关与范围：AI '+policy.scope.aiEnabled+'；主动 '+policy.scope.participationEnabled+'；后端可用 '+policy.scope.backendSupported+'；背景文字接收方已授权 '+policy.scope.nearbyConsent+'；QQ在线且绑定一致 '+policy.scope.qqReady+'；共享队列空闲 '+policy.scope.sharedQueueIdle,policy.fixedImplementation];get('participation-effective-policy').textContent=lines.join('\n');}const labels={global_hourly_limit:'已达全部群每小时尝试上限',group_daily_limit:'已达同群24小时尝试上限',daily_model_calls:'已达全部群24小时模型预算',group_hourly_sent_limit:'已达同群每小时发送上限',group_daily_sent_limit:'已达同群24小时发送上限',global_hourly_sent_limit:'已达全部群每小时发送上限',global_daily_sent_limit:'已达全部群24小时发送上限',waiting_for_activity:'等待多人讨论',disabled_or_scope:'当前开关或会话范围未满足',not_human_text:'跳过机器人或非文字输入',waiting_for_gap:'等待发言间隙',activity_expired:'讨论已不活跃',not_enough_activity:'活跃度不足',no_suitable_topic:'没有适合插话的共同话题',topic_changed:'话题已切换',already_attempted:'本轮讨论已尝试，等待新消息',cooldown:'处于同群冷却',hourly_model_calls:'小时模型预算不足以覆盖本次预留；可调整单次请求上限或小时预算',hourly_limit:'已达同群每小时上限',daily_limit:'已达全部群24小时上限',ledger_unavailable:'主动参与计数不可用，已暂停此能力',candidate:'发现可参与话题',model_declined:'模型选择保持沉默',sent:'已自然参与一次',local_check_failed:'本地参与检查未完成'};participationStatus.textContent=!aiLast.config.participation_enabled?'主动参与已关闭；明确提问照常处理。':p?'主动参与已开启 · '+(labels[p.lastReason]||'等待合适讨论')+' · 24小时尝试 '+p.attempts24h+' 次 · 本小时HTTP客户端调用 '+p.modelRequestsHour+' / 待提交或状态不确定 '+p.unconfirmedModelSubmissionsHour+' / 待用预留 '+p.pendingModelReservationsHour+' / 旧版保守预留 '+p.legacyModelReservationsHour+' · 本小时确认发送 '+p.sentHour+' / 待回执或不确定 '+p.pendingOrUncertainSendsHour+(p.error?' · 计数不可用，当前不会主动发言。':''):'尚未读取到参与状态';const s=aiLast.group_understanding?.last;understandingStatus.textContent=s?'最近一次：引用 '+s.replyChain+' 段，本人历史 '+s.ownTurns+' 轮，相关背景 '+s.background+' 条；省略 '+s.omitted+' 条（引用缺口 '+s.reasons.missing_reference+'、预算 '+s.reasons.budget+'）。这些是本地选择记录，真实模型回答质量需另外验证。':'尚无上下文组装记录；不会额外调用模型分析每条消息。';}
+  function syncParticipation(){if(!aiLast)return;suggestionText.textContent=aiLast.persona_suggestion||'';const p=aiLast.group_participation;const policy=p?.effective;if(policy){const describe=n=>n===0?'不设此项本地上限':String(n),lines=[policy.precedence,'全部群：每小时尝试 '+describe(policy.global.hourlyAttempts)+'；24小时尝试 '+describe(policy.global.dailyAttempts)+'；每小时确认发送 '+describe(policy.global.hourlySent)+'；24小时确认发送 '+describe(policy.global.dailySent),'单次模型提交：设置最多 '+policy.requestedCallsPerAttempt+'，按当前可用独立账户最多预留 '+policy.effectiveCallsPerAttempt+'（同一账户不重复重试）','模型：每小时HTTP调用 '+describe(policy.global.hourlyHTTPCalls)+'；24小时HTTP调用 '+describe(policy.global.dailyHTTPCalls)+'；全部功能每日生成任务 '+describe(policy.global.dailyGenerationTasks)+'（'+policy.global.dailyTaskTimezone+'）',...policy.groups.map(v=>'群 '+v.group+(v.excluded?'【已排除】':v.hasOverrides?'【使用逐群覆盖】':'【使用通用默认】')+'：冷却 '+v.cooldown+'秒；小时/24小时尝试 '+describe(v.hourly)+' / '+describe(v.daily)+'；小时/24小时发送 '+describe(v.hourlySent)+' / '+describe(v.dailySent)),...policy.connections.map(v=>'连接 '+v.name+'：主动输出最多 '+v.outputTokens+'Token，每路 '+v.timeoutSeconds+'秒；账户额度 '+JSON.stringify(v.limits)),'当前开关与范围：AI '+policy.scope.aiEnabled+'；主动 '+policy.scope.participationEnabled+'；后端可用 '+policy.scope.backendSupported+'；背景文字接收方已授权 '+policy.scope.nearbyConsent+'；QQ在线且绑定一致 '+policy.scope.qqReady+'；共享队列空闲 '+policy.scope.sharedQueueIdle,policy.fixedImplementation];get('participation-effective-policy').textContent=lines.join('\n');}const view=participationStatusView(aiLast);participationStatus.dataset.state=view.kind;participationStatus.textContent=view.text;renderParticipationSave();const s=aiLast.group_understanding?.last;understandingStatus.textContent=s?'最近一次：引用 '+s.replyChain+' 段，本人历史 '+s.ownTurns+' 轮，相关背景 '+s.background+' 条；省略 '+s.omitted+' 条（引用缺口 '+s.reasons.missing_reference+'、预算 '+s.reasons.budget+'）。这些是本地选择记录，真实模型回答质量需另外验证。':'尚无上下文组装记录；不会额外调用模型分析每条消息。';}
   const oldDisplay=display;display=function(state){oldDisplay(state);sync();syncParticipation();renderMediaLibraryUI(state.media_library);renderVisionToggle();};
   get('ai-account-pool-settings').addEventListener('input',()=>queueMicrotask(sync));
   new MutationObserver(sync).observe(get('recall-name-group'),{attributes:true,attributeFilter:['readonly']});
