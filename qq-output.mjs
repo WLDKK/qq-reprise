@@ -141,7 +141,34 @@ export function formatQQOutput(text){
    display+=block.text;
   }else display+=proseForQQ(block.text,warnings);
  }
- // One retained-outbox item and one QQ call: never split a code block/formula
- // across independent deliveries or race their ordering. No file is sent.
+ // Formatting preserves the complete answer. Delivery may split it afterwards,
+ // using one ordered logical job with a receipt for every part.
  return {text:display,blocks,warnings:[...warnings],message:[{type:'text',data:{text:display}}]};
+}
+
+// These are QQ transport parts, not regenerated/independently formatted replies.
+// Joining their text reconstructs the formatted answer byte for byte. In
+// particular, no trim(), code fence, numbering or indentation is inserted.
+export function splitQQMessage(message,maxChars=3500){
+ if(!Array.isArray(message)||!Number.isSafeInteger(maxChars)||maxChars<2)throw new TypeError('Invalid QQ text part limit');
+ const parts=[];let current=[],chars=0;
+ const flush=()=>{if(current.length){parts.push(current);current=[];chars=0;}};
+ for(const segment of message){
+  if(segment?.type!=='text'){current.push(structuredClone(segment));continue;}
+  if(typeof segment.data?.text!=='string')throw new TypeError('Invalid QQ text segment');
+  let text=segment.data.text;
+  while(text.length){
+   const room=maxChars-chars;if(!room){flush();continue;}
+   if(text.length<=room){current.push({...segment,data:{...segment.data,text}});chars+=text.length;break;}
+   let end=room,at=text.lastIndexOf('\n',end-1);
+   if(at>=Math.floor(room/2))end=at+1;
+   // A long line may need a hard boundary, but never split CRLF or a UTF-16 pair.
+   if(text[end-1]==='\r'&&text[end]==='\n')end--;
+   const previous=text.charCodeAt(end-1),next=text.charCodeAt(end);
+   if(previous>=0xd800&&previous<=0xdbff&&next>=0xdc00&&next<=0xdfff)end--;
+   if(!end){flush();continue;}
+   current.push({...segment,data:{...segment.data,text:text.slice(0,end)}});text=text.slice(end);chars+=end;flush();
+  }
+ }
+ flush();return parts.length?parts:[structuredClone(message)];
 }

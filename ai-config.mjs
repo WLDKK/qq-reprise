@@ -36,6 +36,7 @@ export function validateAISettings(input) {
   if(!Object.hasOwn(input,'chat_address_mode'))result.chat_address_mode=input.bot_address&&input.bot_address!=='你'?'fixed':'auto';
   if (!Object.hasOwn(input, 'plan_allow_self')) result.plan_allow_self = result.allow_self;
   for (const key of ['enabled', 'allow_self', 'plan_allow_self', 'group_context_export','private_local_review','vision_enabled','vision_reference_enabled','vision_recent_enabled','group_name_trigger','participation_enabled','temporary_recovery_enabled',...FREEDOM_BOOLEAN_FIELDS]) if (typeof result[key] !== 'boolean') throw new Error('AI开关必须为true或false。');
+  if(typeof result.conversation_cache_binding!=='string'||result.conversation_cache_binding!==''&&!/^[a-f0-9]{64}$/.test(result.conversation_cache_binding))throw new Error('会话缓存绑定无效。');
   if (!['custom','intern_discovery','cmecloud','openai'].includes(result.api_platform) || !['api', 'chatgpt'].includes(result.backend) || !['responses', 'chat_completions'].includes(result.api_format) || !['mention', 'command', 'both'].includes(result.trigger)) throw new Error('AI后端或触发方式无效。');
   for (const key of ['groups', 'private_peers', 'private_blacklist', 'group_blacklist', 'users','participation_group_blacklist','group_allowed_users']) result[key] = ids(result[key]);
   for (const key of ['api_model', 'siwc_model', 'active_profile', 'binding_qq', 'prefix', 'instructions', 'api_base_url']) if (typeof result[key] !== 'string') throw new Error('AI文本设置无效。');

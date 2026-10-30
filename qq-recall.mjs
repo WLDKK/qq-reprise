@@ -992,6 +992,7 @@ export async function startApp(options = {}) {
           else if (request.url === '/api/ai/pool/review') await app.ai.poolService.review(value);
           else if (request.url === '/api/ai/group-settings') await app.ai.configureGroupSettings(value);
           else if (request.url === '/api/ai/context-permission') await app.ai.configureContextPermission(value);
+          else if (request.url === '/api/ai/conversation-cache') await app.ai.configureConversationCache(value);
           else if (request.url === '/api/ai/context-settings') await app.ai.configureContext(value);
           else if (request.url === '/api/ai/content-screening') await app.ai.configureContentScreening(value);
           else if (request.url === '/api/ai/runtime-settings') await app.ai.configureRuntime(value);

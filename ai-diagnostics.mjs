@@ -40,7 +40,7 @@ export function summarizeUpstreamDiagnostics(records={}){
     const http=Number.isInteger(r.httpStatus)&&r.httpStatus>=100&&r.httpStatus<=599?r.httpStatus:null;
     const error=typeof r.errorCode==='string'&&r.errorCode?(localErrors.has(r.errorCode)?r.errorCode:safeCode(r.errorCode)):'';
     if(http===null&&!(providerPhases.has(r.phase)&&(r.status==='running'||providerNetworkErrors.has(error))))return;
-    const outputChars=Number.isSafeInteger(r.outputChars)&&r.outputChars>=0?Math.min(12000,r.outputChars):0;
+    const outputChars=Number.isSafeInteger(r.outputChars)&&r.outputChars>=0?Math.min(1000000000,r.outputChars):0;
     const complete=http!==null&&http>=200&&http<300&&outputChars>0&&['stop','completed'].includes(r.finishReason)&&
       (r.status==='completed'||r.status==='failed'&&['qq_delivery_uncertain','qq_not_submitted'].includes(error));
     const outcome=complete?'response_completed':http>=400?'request_failed':r.status==='running'?'request_pending':
@@ -75,13 +75,14 @@ export class AIDiagnostics {
     imageHTTPStatus:Number.isInteger(value.imageHTTPStatus)&&value.imageHTTPStatus>=100&&value.imageHTTPStatus<=599?value.imageHTTPStatus:null,
     imageMime:['image/png','image/jpeg','image/webp'].includes(value.imageMime)?value.imageMime:null,imageBytes:bounded(value.imageBytes,5242880),imageCount:bounded(value.imageCount,8),imageTotalBytes:bounded(value.imageTotalBytes,20971520),imageStaticFrame:value.imageStaticFrame===true,
     probeReplyFormat:PROBE_REPLY_FORMATS.includes(value.probeReplyFormat)?value.probeReplyFormat:null,probeExpectedColors:bounded(value.probeExpectedColors,32),probeRecognizedColors:bounded(value.probeRecognizedColors,32),probeMatchedPositions:bounded(value.probeMatchedPositions,32),...cleanSyntheticProbeDiagnostic(value),
-    finishReason:finishes.has(value.finishReason)?value.finishReason:null,outputChars:Number.isSafeInteger(value.outputChars)&&value.outputChars>=0?Math.min(value.outputChars,12000):0,
+    finishReason:finishes.has(value.finishReason)?value.finishReason:null,outputChars:bounded(value.outputChars,1000000000),
     outputTokenMode:['custom','platform_default','chatgpt_managed'].includes(value.outputTokenMode)?value.outputTokenMode:value.backend==='chatgpt'?'chatgpt_managed':'custom',
     outputTokenLimit:['platform_default','chatgpt_managed'].includes(value.outputTokenMode)||value.backend==='chatgpt'?null:Number.isSafeInteger(value.outputTokenLimit)&&value.outputTokenLimit>=0?value.outputTokenLimit:0,
     localReservationTokens:tokenCount(value.localReservationTokens),localBudgetUsed:tokenCount(value.localBudgetUsed),localBudgetLimit:tokenCount(value.localBudgetLimit),localCapacityWaitMs:bounded(value.localCapacityWaitMs,2147483647),localCapacityWaitPlannedMs:bounded(value.localCapacityWaitPlannedMs,2147483647),localAdmissionState:['checking','waiting','admitted','rejected','cancelled'].includes(value.localAdmissionState)?value.localAdmissionState:null,localBudgetReason:['checking','rpm','tpm','tokens5h','tokens7d','held','cooldown','concurrency','record_limit'].includes(value.localBudgetReason)?value.localBudgetReason:null,
     requestedTokenField:['max_tokens','max_completion_tokens','max_output_tokens'].includes(value.requestedTokenField)?value.requestedTokenField:null,
     requestedTokenLimit:Number.isSafeInteger(value.requestedTokenLimit)&&value.requestedTokenLimit>0?value.requestedTokenLimit:null,
-    outputCharLimit:Number.isSafeInteger(value.outputCharLimit)&&value.outputCharLimit>0?Math.min(12000,value.outputCharLimit):null,
+    outputCharLimit:Number.isSafeInteger(value.outputCharLimit)&&value.outputCharLimit>0?Math.min(1000000000,value.outputCharLimit):null,
+    deliveryPartsTotal:bounded(value.deliveryPartsTotal,1000000),deliveryPartsConfirmed:bounded(value.deliveryPartsConfirmed,1000000),deliveryPartIndex:bounded(value.deliveryPartIndex,1000000),deliveryPartsStopped:value.deliveryPartsStopped===true,
      streamEvents:bounded(value.streamEvents,100000),textDeltaEvents:bounded(value.textDeltaEvents,100000),reasoningChars:bounded(value.reasoningChars,2097152),
      firstContentMs:Number.isSafeInteger(value.firstContentMs)&&value.firstContentMs>=0?Math.min(36000000,value.firstContentMs):null,
      timeoutSeconds:bounded(value.timeoutSeconds,3600),

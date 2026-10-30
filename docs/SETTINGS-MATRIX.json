@@ -2,10 +2,10 @@
   "schema": 1,
   "scope": "Anonymous public settings only; no production configuration read",
   "interpretation": "Static references identify consumers, not proof of executing every branch. External API and real QQ delivery are not verified by this matrix.",
-  "fields": 212,
-  "aiFields": 124,
+  "fields": 216,
+  "aiFields": 128,
   "mediaFields": 19,
-  "validationRanges": 66,
+  "validationRanges": 68,
   "rows": [
     {
       "module": "AI",
@@ -3362,6 +3362,80 @@
         "connection-pool-service.mjs"
       ],
       "evidence": "competition-platform.test.mjs and backend recovery tests; credentials are entered only through explicit protected forms"
+    },
+    {
+      "module": "AI",
+      "field": "conversation_cache_enabled",
+      "type": "boolean",
+      "editable": true,
+      "defaultSource": "FREEDOM_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/conversation-cache",
+      "view": "simple and professional",
+      "range": null,
+      "staticReferences": [
+        "conversation-cache.mjs",
+        "ai-chat.mjs",
+        "ui.html"
+      ],
+      "evidence": "conversation-cache.test.mjs and isolated browser workflow",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "conversation_cache_binding",
+      "type": "string",
+      "editable": false,
+      "defaultSource": "FREEDOM_DEFAULTS (anonymous public source)",
+      "save": "derived only by recipient-bound consent",
+      "view": "derived; not directly editable",
+      "range": null,
+      "staticReferences": [
+        "conversation-cache.mjs",
+        "ai-chat.mjs",
+        "ui.html"
+      ],
+      "evidence": "conversation-cache.test.mjs and isolated browser workflow",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "context_recent_messages",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "FREEDOM_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/context-settings",
+      "view": "professional",
+      "range": {
+        "min": 0,
+        "integer": true
+      },
+      "staticReferences": [
+        "conversation-cache.mjs",
+        "ai-chat.mjs",
+        "ui.html"
+      ],
+      "evidence": "conversation-cache.test.mjs and isolated browser workflow",
+      "individuallyRuntimeVaried": true
+    },
+    {
+      "module": "AI",
+      "field": "context_related_messages",
+      "type": "number",
+      "editable": true,
+      "defaultSource": "FREEDOM_DEFAULTS (anonymous public source)",
+      "save": "/api/ai/context-settings",
+      "view": "professional",
+      "range": {
+        "min": 0,
+        "integer": true
+      },
+      "staticReferences": [
+        "conversation-cache.mjs",
+        "ai-chat.mjs",
+        "ui.html"
+      ],
+      "evidence": "conversation-cache.test.mjs and isolated browser workflow",
+      "individuallyRuntimeVaried": true
     }
   ],
   "otherModules": [

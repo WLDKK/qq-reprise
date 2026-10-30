@@ -198,7 +198,7 @@ export class PooledAPIProvider {
       execute: async (route, context) => {
         const target = await this.providerForRoute(route); signal?.throwIfAborted();
         if (!target?.provider || target.config?.backend !== 'api' || !sameAPIBinding(apiBinding(config), apiBinding(target.config)) || target.config.api_model !== config.api_model) throw new PoolError('pool_transport_invalid');
-        return target.provider.generate(target.config, history, prompt, signal, p => { context.progress(p); try { onProgress(p); } catch {} });
+        return target.provider.generate(target.config, history, prompt, signal, p => { context.progress(p); try { onProgress(p); } catch {} },{conversationContextBinding:options.conversationContextBinding});
       } });
     return result.answer;
   }

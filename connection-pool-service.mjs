@@ -142,12 +142,12 @@ export class ConnectionPoolService extends AccountPoolService {
     if(!this.referenceReady(c))fail('connection_reference_unavailable');
     if(c.credential.kind==='existing'){
      const provider=new AIProviders({auth:{readAPIFor:async target=>{if(!this.referenceReady(c))fail('connection_reference_unavailable');const key=await this.auth.readAPIFor(target);if(!this.referenceReady(c))fail('connection_reference_unavailable');return key;}},fetcher:this.fetcher});
-     return provider.generate(config,history,prompt,signal,progress,{beforeSubmit:options.beforeSubmit,onSubmitted:options.onSubmitted,onNotSubmitted:options.onNotSubmitted});
+     return provider.generate(config,history,prompt,signal,progress,{beforeSubmit:options.beforeSubmit,onSubmitted:options.onSubmitted,onNotSubmitted:options.onNotSubmitted,conversationContextBinding:options.conversationContextBinding});
     }
     const sessionId=c.credential.kind==='managed'?'connections.v2:'+c.id:c.credential.handle,saved=await this.secrets.readSession(sessionId);
     if(!saved?.key||!sameAPIBinding(saved.target,c.target))fail('connection_credentials_required');
     const provider=new AIProviders({auth:{readAPIFor:async()=>saved.key},fetcher:this.fetcher});
-    try{return await provider.generate(config,history,prompt,signal,progress,{beforeSubmit:options.beforeSubmit,onSubmitted:options.onSubmitted,onNotSubmitted:options.onNotSubmitted});}finally{saved.key='';}
+    try{return await provider.generate(config,history,prompt,signal,progress,{beforeSubmit:options.beforeSubmit,onSubmitted:options.onSubmitted,onNotSubmitted:options.onNotSubmitted,conversationContextBinding:options.conversationContextBinding});}finally{saved.key='';}
    }});return result.answer;
   }catch(error){error.accountPoolHandled=true;throw error;}
  }

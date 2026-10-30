@@ -1,0 +1,12 @@
+{
+  "conversation_cache_enabled": false,
+  "conversation_cache_binding": "",
+  "group_cache_limit": 500,
+  "group_cache_total_messages": 5000,
+  "group_cache_total_bytes": 8388608,
+  "group_cache_ttl_minutes": 0,
+  "context_recent_messages": 12,
+  "context_related_messages": 12,
+  "context_chars": 16000,
+  "group_context_chars": 8000
+}

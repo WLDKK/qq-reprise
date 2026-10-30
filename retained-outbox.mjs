@@ -60,7 +60,9 @@ export class RetainedOutbox {
     this.prune();
     if (this.disposed) return Promise.resolve('cancelled');
     if (this.jobs.has(input.key) || this.completed.has(input.key)) return Promise.resolve('duplicate');
-    const message = structuredClone(input.message), bytes = Buffer.byteLength(JSON.stringify(message), 'utf8');
+    const parts=input.messageParts===undefined?null:structuredClone(input.messageParts);
+    if(parts!==null&&(!Array.isArray(parts)||!parts.length||parts.some(v=>!Array.isArray(v))))throw new TypeError('Invalid delivery parts');
+    const message = structuredClone(parts?.[0]??input.message), bytes = Buffer.byteLength(JSON.stringify(parts??message), 'utf8');
     const mediaBytes = input.mediaBytes || 0;
     if (bytes > this.byteLimit || mediaBytes > this.mediaLimit) return Promise.resolve('queue_full');
     while (this.jobs.size >= this.limit || this.bytes + bytes > this.byteLimit || this.mediaBytes + mediaBytes > this.mediaLimit) {
@@ -70,7 +72,8 @@ export class RetainedOutbox {
     }
     return new Promise(resolveFirst => {
       const job = { ...input, message, bytes, mediaBytes, resolveFirst, created: this.now(), attempts: 0, nextAt: 0,
-        state: 'queued', inFlight: false, receipt: null };
+        state: 'queued', inFlight: false, receipt: null,
+        ...(parts?{messageParts:parts,partIndex:0,partReceipts:[],partsStopped:false}: {}) };
       this.jobs.set(job.key, job); this.bytes += bytes; this.mediaBytes += mediaBytes;
       this.state(job, 'queued');
       // 入队确认不等待排在前面的离线任务恢复；每条通知可以立即完成接收。
@@ -79,9 +82,20 @@ export class RetainedOutbox {
       void this.pump();
     });
   }
-  confirm(key, messageId) {
+  confirm(key, messageId, partIndex) {
     if (!/^-?\d+$/.test(String(messageId))) return;
     const job = this.jobs.get(key); if (!job || job.receipt) return;
+    if(job.messageParts){
+      // Closures pass the submitted index: a duplicate/late receipt from an
+      // earlier part can never confirm the next part or advance it twice.
+      if(!Number.isSafeInteger(partIndex)||partIndex!==job.partIndex)return;
+      job.partReceipts[partIndex]=String(messageId);job.partIndex++;
+      if(job.partIndex<job.messageParts.length){
+        job.message=job.messageParts[job.partIndex];job.attempts=0;job.nextAt=0;
+        if(job.partsStopped){this.finish(job,'cancelled');this.kick();return;}
+        this.state(job,'queued');this.kick();return;
+      }
+    }
     job.receipt = String(messageId); this.finish(job, 'sent'); this.kick();
   }
   cancel(predicate = () => true, reason = 'cancelled') {
@@ -105,13 +119,15 @@ export class RetainedOutbox {
     this.running = true;
     try {
       this.prune();
-      for (const job of [...this.jobs.values()]) {
+      jobsLoop: for (const job of [...this.jobs.values()]) {
+       do {
         if (!this.jobs.has(job.key)) continue;
         const permission = this.inspect(job);
         if (['cancelled', 'exempt', 'scope_changed'].includes(permission)) { this.finish(job, permission); continue; }
         if (job.state === 'uncertain') continue; // 没有回执证明时绝不再次提交。
-        if (permission !== 'ready') { this.state(job, 'deferred'); break; }
-        if (job.nextAt > this.now()) break;
+        if (permission !== 'ready') { this.state(job, 'deferred'); break jobsLoop; }
+        if (job.nextAt > this.now()) break jobsLoop;
+        const partIndex=job.partIndex??0;
         job.attempts++; if (job.attempts > 1) this.counters.retries++;
         const result = await this.pace.enqueue(async signal => {
           if (!this.jobs.has(job.key)) return 'cancelled';
@@ -121,17 +137,22 @@ export class RetainedOutbox {
           job.inFlight = true; this.state(job, 'sending');
           try {
             const response = await this.submit(job);
-            if (/^-?\d+$/.test(String(response?.message_id))) { job.receipt = String(response.message_id); return 'sent'; }
+            if (/^-?\d+$/.test(String(response?.message_id))) {
+              if(job.messageParts){this.confirm(job.key,response.message_id,partIndex);return 'part_sent';}
+              job.receipt = String(response.message_id); return 'sent';
+            }
             return 'uncertain';
           } catch (error) { return deliveryFailure(error); }
           finally { job.inFlight = false; }
         }, { authorId: job.authorId, isSelf: job.isSelf, mediaBytes: job.mediaBytes, priority: this.priority, key: job.key });
         if (!this.jobs.has(job.key)) continue; // 异步消息 ID 回执已确认。
+        if(job.messageParts&&job.partIndex>partIndex)continue; // A receipt already advanced this part.
         if (job.receipt) this.finish(job, 'sent');
         else if (['sent', 'exempt', 'scope_changed', 'expired'].includes(result)) this.finish(job, result);
-        else if (result === 'uncertain') { this.counters.uncertain_total++; this.state(job, 'uncertain'); }
+        else if (result === 'uncertain') { job.partsStopped=true;this.counters.uncertain_total++; this.state(job, 'uncertain'); }
         else if (result === 'cancelled' && this.inspect(job) !== 'offline') this.finish(job, 'cancelled');
-        else { job.nextAt = this.now() + Math.min(60000, 2000 * 2 ** Math.min(job.attempts - 1, 5)); this.state(job, 'deferred'); break; }
+        else { job.nextAt = this.now() + Math.min(60000, 2000 * 2 ** Math.min(job.attempts - 1, 5)); this.state(job, 'deferred'); break jobsLoop; }
+       } while(this.jobs.has(job.key)&&job.messageParts&&job.state!=='uncertain');
       }
     } finally {
       this.running = false;

@@ -1,3 +1,4 @@
+import{conversationBinding}from'./conversation-cache.mjs';
 import { AIError, SIWC, readJSONResponse, safeCode } from './ai-auth.mjs';
 import { redactTestReply } from './ai-api-draft.mjs';
 import {visionTarget,visionEnabled,visionLimits,imageData} from './ai-vision.mjs';
@@ -31,7 +32,7 @@ export async function withAbort(promise, signal) {
   try { return await Promise.race([promise, interrupted]); } finally { signal.removeEventListener('abort', cancel); }
 }
 
-export async function* sseEvents(response, signal) {
+export async function* sseEvents(response, signal,{maxBytes=2097152}={}) {
   if (!response.ok) { await readJSONResponse(response); return; }
   if (!String(response.headers.get('content-type') || '').toLowerCase().includes('text/event-stream')) throw new AIError('stream_required');
   const reader = response.body?.getReader(); if (!reader) throw new AIError('stream_missing');
@@ -42,14 +43,14 @@ export async function* sseEvents(response, signal) {
     while (true) {
       signal?.throwIfAborted();
       const part = await (signal ? withAbort(reader.read(), signal) : reader.read()); if (part.done) break;
-      bytes += part.value.length; if (bytes > 2097152) throw new AIError('stream_too_large');
+      bytes += part.value.length; if (bytes > maxBytes) throw new AIError('stream_too_large');
       buffer += decoder.decode(part.value, { stream: true }); buffer = buffer.replace(/\r\n/g, '\n');
-      if (buffer.length > 262144) throw new AIError('stream_event_too_large');
       let at;
       while ((at = buffer.indexOf('\n\n')) >= 0) {
-        const block = buffer.slice(0, at); buffer = buffer.slice(at + 2);
+        const block = buffer.slice(0, at); buffer = buffer.slice(at + 2);if(block.length>262144)throw new AIError('stream_event_too_large');
         const event = parseSSEBlock(block); if (event) yield event;
       }
+      if(buffer.length>262144)throw new AIError('stream_event_too_large');
     }
     buffer += decoder.decode();
     if (buffer.trim()) { const event = parseSSEBlock(buffer); if (event) yield event; }
@@ -87,6 +88,7 @@ export class AIProviders {
     const progress=value=>{try{onProgress(value);}catch{}};
     const began = Date.now();
     progress({phase:'credentials'});
+    if(options.conversationContextBinding&&options.conversationContextBinding!==conversationBinding(config))throw new AIError('context_recipient_changed');
     const combined = AbortSignal.any([signal || new AbortController().signal, AbortSignal.timeout(config.timeout_seconds * 1000)]);
     combined.throwIfAborted();
     const detail = await withAbort(this.details(config, options), combined); combined.throwIfAborted();
@@ -128,7 +130,7 @@ export class AIProviders {
     const appendText = value => { if (typeof value !== 'string') throw new AIError('invalid_upstream_response'); text += value; if (value) { textDeltaEvents++; if (firstContentMs === null) { firstContentMs = Date.now() - began; progress({phase:'streaming'}); } } };
     const preview = () => { if (options.onText) options.onText(redactTestReply(text, detail.key)); };
     progress({phase:'http_response',httpStatus:response.status,retryAfterSeconds:retryAfterSeconds(response.headers.get('retry-after'))});let firstEvent=true;
-    try { for await (const event of sseEvents(response, combined)) {
+    try { for await (const event of sseEvents(response, combined,{maxBytes:Math.max(2097152,Math.min(33554432,config.output_chars*128))})) {
       streamEvents++;
       if(firstEvent){progress({phase:'streaming'});firstEvent=false;}
       if (event.type === 'done') break;
